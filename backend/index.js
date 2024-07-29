@@ -6,7 +6,7 @@ const cors = require('cors')
  
 connectToMongo();
 const app = express()
-const port = process.env.REACT_APP_PORT
+const port = process.env.REACT_APP_PORT || 8080
  
 // console.log(process.env.REACT_APP_PORT)  
 // console.log(process.env.REACT_APP_MONGO_URL)  
@@ -14,10 +14,14 @@ const port = process.env.REACT_APP_PORT
 app.use(cors())
 app.use(express.json())
 
+app.get('/ping', (req, res) => {
+    res.send('pong 🏓')
+})
+
 //Available routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
 
 app.listen(port, () => {
-  console.log(`iNotebook backend listening http://localhost:${port}`)
+  console.log(`iNotebook backend listening at port :${port}`)
 })
