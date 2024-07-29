@@ -21,12 +21,4 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "engine" : {
-    "name": "api-make",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "engines": {
-      "node": "14.x"
-  },
 }
