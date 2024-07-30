@@ -14,10 +14,6 @@ const port = process.env.REACT_APP_PORT || 8080
 app.use(cors())
 app.use(express.json())
 
-app.get('/ping', (req, res) => {
-    res.send('pong 🏓')
-})
-
 //Available routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
