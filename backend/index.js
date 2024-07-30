@@ -8,10 +8,11 @@ connectToMongo();
 const app = express()
 const port = process.env.REACT_APP_PORT || 8080
  
-// console.log(process.env.REACT_APP_PORT)  
-// console.log(process.env.REACT_APP_MONGO_URL)  
+let corsOptions = {
+  origin: ["http://localhost:3000"],
+};
 
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.json())
 
 //Available routes
