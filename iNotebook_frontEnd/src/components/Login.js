@@ -7,22 +7,27 @@ const Login = (props) => {
 
     const handleSubmit = async (e)=> {
         e.preventDefault(); // to prevent page from reloading
-        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login`, {
-            method: "POST", 
-            headers: {
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify({email: credentials.email, password: credentials.password}), // body data type must match "Content-Type" header
-        });
-        const json = await response.json();
-        console.log(json);
-        if(json.success){
-            localStorage.setItem('token', json.authToken);
-            navigate("/"); // to redirect the page to home page
-            props.showAlert("Logged in successfully", "success");
-        }
-        else {
-            props.showAlert(json.error, "danger");
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login`, {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({email: credentials.email, password: credentials.password}), // body data type must match "Content-Type" header
+            });
+            const json = await response.json();
+            console.log(json);
+            if(json.success){
+                localStorage.setItem('token', json.authToken);
+                navigate("/"); // to redirect the page to home page
+                props.showAlert("Logged in successfully", "success");
+            }
+            else {
+                props.showAlert(json.error, "danger");
+            }
+        } catch (err) {
+            console.log('Error** ', err);
+            props.showAlert("Some Error Occured", "danger");
         }
     }
 

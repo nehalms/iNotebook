@@ -11,7 +11,7 @@ let corsOptions = {
   origin: ["http://localhost:3000"],
 };
 
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.get("/test", (req, res) => {
