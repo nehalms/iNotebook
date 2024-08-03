@@ -10,7 +10,7 @@ const port = process.env.REACT_APP_PORT || 8080
 let corsOptions = {
   origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Access-Control-Allow-Origin']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', 'auth-token']
 };
 
 app.use(cors(corsOptions))
@@ -22,9 +22,6 @@ app.get("/test", (req, res) => {
  res.send("Hello");
 });
 
-app.use('/api/auth/login', (req, res) => {
-  res.status(200).send({sucess: true, authToken : 'nehal'})
-});
 //Available routes
 app.use('/api/auth', require('../routes/auth'));
 app.use('/api/notes', require('../routes/notes'));
