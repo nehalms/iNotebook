@@ -13,7 +13,7 @@ const Notes = (props) => {
 
     useEffect(() => {
         if(localStorage.getItem('token')){
-            fetchNotes();
+            fetchNotes(props);
         }
         else {
             navigate("/login");

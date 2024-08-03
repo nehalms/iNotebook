@@ -1,20 +1,52 @@
 import { React } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Alert(props) {
 
-    const capitalize = (word)=> {
-        if(word == 'danger'){
-            word = 'error';
-        }
-        const lower = word.toLowerCase();
-        return lower.charAt(0).toUpperCase() + lower.slice(1);
+    // const capitalize = (word)=> {
+    //     if(word == 'danger'){
+    //         word = 'error';
+    //     }
+    //     const lower = word.toLowerCase();
+    //     return lower.charAt(0).toUpperCase() + lower.slice(1);
+    // }
+
+    const showToast = (type, msg, id) => {
+      if (type === 'success') {
+        toast.success(msg, {
+          theme: "dark",
+          position: "top-center",
+          toastId: id
+        });
+      } else if (type === 'danger') {
+        toast.error(msg, {
+          theme: "dark",
+          position: "top-center",
+          toastId: id
+        });
+      } else if (type === 'warning') {
+        toast.warning(msg, {
+          theme: "dark",
+          position: "top-center",
+          toastId: id
+        });
+      } else {
+        toast.info(msg, {
+          theme: "dark",
+          position: "top-center",
+          toastId: id
+        });
+      }
     }
 
   return (
     <div style={{height: '50px'}}> 
-      {props.alert && <div className={`alert alert-${props.alert.type} alert-dismissible fade show`} role="alert">
+      {/* {props.alert && <div className={`alert alert-${props.alert.type} alert-dismissible fade show`} role="alert">
           <strong>{capitalize(props.alert.type)}</strong> : {props.alert.msg}
-      </div>}
+      </div>}  */}
+      {props.alert && showToast(props.alert.type, props.alert.msg, props.alert.id)}
+      <ToastContainer autoClose={5000}/>
     </div>
   )
 }

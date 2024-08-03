@@ -14,35 +14,42 @@ const Signup = (props) => {
     const[Verified, setVerified] = useState(false);
 
     const handleSubmit = async (e)=> {
-        if(credentials.password !== credentials.cpassword) {
-          props.showAlert("Password didn't match",'warning');
-          e.preventDefault();
-          return;
-        }
-        console.log(Verified);
-        if(!Verified) {
-          props.showAlert("Email not verified", 'danger');
-          mail.current.style.border = '2px solid red';  
-          e.preventDefault();
-          return;
-        }
-        e.preventDefault();
-        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/createuser`, {
-            method: "POST", 
-            headers: {
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify({name: credentials.name, email: credentials.email, password: credentials.password}), // body data type must match "Content-Type" header
-        });
-        const json = await response.json();
-        console.log(json); 
-        if(json.success){
-          localStorage.setItem('token', json.authToken);
-          navigate("/login"); // to redirect the page to home page
-          props.showAlert("Sign in successfull", "success");
-        }
-        else {
-            props.showAlert(json.error, "danger");
+        try {
+            if(credentials.password !== credentials.cpassword) {
+            props.showAlert("Password didn't match",'warning');
+            e.preventDefault();
+            return;
+            }
+            console.log(Verified);
+            if(!Verified) {
+            props.showAlert("Email not verified", 'danger');
+            mail.current.style.border = '2px solid red';  
+            e.preventDefault();
+            return;
+            }
+            e.preventDefault();
+            props.setLoader({ showLoader: true, msg: "Signing in please wait"});
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/createuser`, {
+                method: "POST", 
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify({name: credentials.name, email: credentials.email, password: credentials.password}), // body data type must match "Content-Type" header
+            });
+            props.setLoader({ showLoader: false });
+            const json = await response.json();
+            // console.log(json); 
+            if(json.success){
+            localStorage.setItem('token', json.authToken);
+            navigate("/login"); // to redirect the page to home page
+            props.showAlert("Sign in successfull", "success");
+            }
+            else {
+                props.showAlert(json.error, "danger");
+            }
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger');
         }
     }
 
@@ -87,7 +94,7 @@ const Signup = (props) => {
     };
 
     const verify = (code)=> {
-      console.log(code + " " + code_);
+    //   console.log(code + " " + code_);
       if(code == code_){
         setVerified(true);
         setShow(false);
@@ -100,29 +107,43 @@ const Signup = (props) => {
     }
 
     return (
-      <div className='container my-5'>
+      <div className='container my-3'>
           <form onSubmit={handleSubmit}>
-            <h2 className='my-3'>Create an account to use iNotebook</h2>
-            <div className="mb-3">
-              <label htmlFor="name" className="form-label">Name</label>
-              <input type="text" className="form-control" id="name" name="name" onChange={onChange} aria-describedby="emailHelp" minLength={5} required/>
+            <div className="container-fluid vh-50 d-flex align-items-center">
+                <div className="row w-100">
+                    <h2 className='my-3 text-center'>Create an account to use iNotebook</h2>
+                    <div className="col-md-3 d-none d-md-block bg-image"></div>
+                    <div className="col-md-6 d-flex align-items-center justify-content-center">
+                        <div className="card p-5 w-100">
+                          <div className="mb-3">
+                            <label htmlFor="name" className="form-label">Name</label>
+                            <input type="text" className="form-control" id="name" name="name" onChange={onChange} aria-describedby="emailHelp" minLength={5} required/>
+                          </div>
+                          <div className="mb-3">
+                            <label htmlFor="email" className="form-label">Email</label>
+                            <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>
+                            { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code</button> }
+                          </div>
+                          { Verified && <><i class="mx-2 fa-solid fa-cVerified heck" style={{color: "#63E6BE"}}></i><h6 style={{display : "inline"}}>Verified</h6></>}
+                          {show && <Verification verify={verify} sendEmail={sendEmail}/>}
+                          <div className="mb-3 my-3">
+                            <label htmlFor="password" className="form-label">Password</label>
+                            <input type="password" ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
+                          </div>
+                          <div className="mb-3">
+                            <label htmlFor="cpassword" className="form-label">Confirm Password</label>
+                            <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
+                          </div>
+                          <button type="submit" className="btn btn-primary mt-3">Submit</button>
+                        </div>
+                    </div>
+                    <div className="col-md-3 d-none d-md-block bg-image"></div>
+                </div>
             </div>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email</label>
-              <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>
-              { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code</button> }
-            </div>
-            { Verified && <><i class="mx-2 fa-solid fa-cVerified heck" style={{color: "#63E6BE"}}></i><h6 style={{display : "inline"}}>Verified</h6></>}
-            {show && <Verification verify={verify} sendEmail={sendEmail}/>}
-            <div className="mb-3 my-3">
-              <label htmlFor="password" className="form-label">Password</label>
-              <input type="password" ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-              <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
-            </div>
-            <button type="submit" className="btn btn-primary">Submit</button>
+            
+            
+            
+            
           </form>
       </div>
     )
