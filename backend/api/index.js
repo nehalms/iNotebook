@@ -22,6 +22,9 @@ app.get("/test", (req, res) => {
  res.send("Hello");
 });
 
+app.use('/api/auth/login', (req, res) => {
+  res.status(200).send({sucess: true, authToken : 'nehal'})
+});
 //Available routes
 app.use('/api/auth', require('../routes/auth'));
 app.use('/api/notes', require('../routes/notes'));
