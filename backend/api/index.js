@@ -10,13 +10,13 @@ const port = process.env.REACT_APP_PORT || 8080
 let corsOptions = {
   origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin']
+  allowedHeaders: ['Content-Type', 'Access-Control-Allow-Origin']
 };
 
 app.use(cors(corsOptions))
 app.use(express.json())
 
-app.options('*', cors(corsOptions));
+// app.options('*', cors(corsOptions));
 
 app.get("/test", (req, res) => {
  res.send("Hello");
