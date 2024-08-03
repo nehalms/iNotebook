@@ -16,6 +16,8 @@ let corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 
+app.options('*', cors(corsOptions));
+
 app.get("/test", (req, res) => {
  res.send("Hello");
 });
