@@ -1,9 +1,16 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import emailjs from '@emailjs/browser';
+import Verification from './Verification';
 
 const Login = (props) => {
     let navigate = useNavigate();
     const[credentials, setCredentials] = useState({email: "", password: ""});
+    let [checkForAdminUser, setCheckForAdminUser] = useState(true);
+    let [authEmail, setAuthEmail] = useState();
+    const [isAdminUser, setIsAdminUser] = useState(false);
+    const[code, setCode] = useState();
+    const[Verified, setVerified] = useState(false);
 
     const handleSubmit = async (e)=> {
         e.preventDefault(); // to prevent page from reloading
@@ -20,6 +27,35 @@ const Login = (props) => {
             props.setLoader({ showLoader: false });
             const json = await response.json();
             // console.log(json);
+            if (json.success && checkForAdminUser) {
+                console.log("checking for admin user");
+                setCheckForAdminUser(false);
+                props.setLoader({ showLoader: true, msg: "Please wait"});
+                const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
+                    method: "POST", 
+                    headers: {
+                        "Content-Type": "application/json",
+                        "auth-token": json.authToken,
+                    }
+                });
+                props.setLoader({ showLoader: false });
+                const adminData = await response.json();
+                console.log(adminData);
+                if(adminData && adminData.isAdmin) {
+                    setAuthEmail(adminData.authEmail);
+                    var val = Math.floor((Math.random()*1000000)+1);
+                    setCode(val);
+                    setIsAdminUser(true);
+                    sendEmail(e, adminData.authEmail);
+                    e.preventDefault();
+                    return;
+                }
+            }
+            if( isAdminUser && !Verified) {
+                props.showAlert("Admin passkey not verified", 'danger');
+                e.preventDefault();
+                return;
+            }
             if(json.success){
                 localStorage.setItem('token', json.authToken);
                 navigate("/"); // to redirect the page to home page
@@ -33,6 +69,49 @@ const Login = (props) => {
             props.showAlert("Some Error Occured", "danger");
         }
     }
+
+    const sendEmail = (e, email = null) => {
+        if(credentials.email.toString().endsWith(".com")){
+          setVerified(false);
+          props.showAlert("Code send to your mail", "success");
+          var val = Math.floor((Math.random()*1000000)+1);
+          setCode(val);
+          let json = {
+            to_name: "Nehal",
+            message: "Verification code ",
+            code : val,
+            to_mail: email ? email : authEmail
+          }
+          console.log(json);
+
+          emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
+            to_name: "Nehal",
+            message: "Verification code ",
+            code : val,
+            to_mail: email ? email : authEmail,
+          } , 'ytEYvYv1q0VNEV4EE', 
+          )
+          .then((result) => {
+                console.log(result.text);
+            }, (error) => {
+                props.showAlert(error.text, 'danger');
+                console.log(error.text);
+            });
+        }
+        else{
+          props.showAlert("Email cannot be empty", 'danger');
+        }
+      };
+
+    const verify = (verCode)=> {
+        if(code == verCode){
+          setVerified(true);
+          props.showAlert("Verified", "success");
+        }
+        else {
+          props.showAlert("Invalid code", "danger")
+        }
+      };
 
     const onChange = (e)=> {
         setCredentials({...credentials, [e.target.name]: e.target.value}) //helps to keep data in note as same and append the new values being typed
@@ -55,7 +134,9 @@ const Login = (props) => {
                                     <label htmlFor="password" className="form-label">Password</label>
                                     <input type="password" className="form-control" onChange={onChange} value={credentials.password} id="password" name="password" required/>
                                 </div>
-                                <Link className='mx-0 my-0' to="/login/forgot" role='button'>Forgot password?</Link><br/>
+                                { !isAdminUser && <><Link className='mx-0 my-0' to="/login/forgot" role='button'>Forgot password?</Link><br/></>}
+                                { isAdminUser && !Verified && <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey"/> }
+                                { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
                                 <button type="submit" className="btn btn-primary mt-3">Login</button>
                             </div>
                         </div>

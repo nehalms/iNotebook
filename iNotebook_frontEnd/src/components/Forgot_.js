@@ -18,6 +18,10 @@ const Forgot_ = (props)=> {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      if(credentials.password !== credentials.cpassword) {
+        props.showAlert("Password does not match", 'warning');
+        return;
+      }
       props.setLoader({ showLoader: true, msg: "Updating password"});
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/updatePassword`, {
         method: "POST", 

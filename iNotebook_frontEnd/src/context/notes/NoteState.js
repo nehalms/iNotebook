@@ -9,34 +9,46 @@ const NoteState = (props)=> {
 
     //get all notes
     const fetchNotes = async ()=> {
-        const response = await fetch(`${host}/notes/fetchallnotes`, {
-            method: "GET", 
-            headers: {
-            "Content-Type": "application/json",
-            "auth-token": localStorage.getItem('token')
-            }
-        });
-        const json = await response.json();
-        console.log(json);
-        setNotes(json);
+        try {
+            props.setLoader({ showLoader: true, msg: "Fetching Notes"});
+            const response = await fetch(`${host}/notes/fetchallnotes`, {
+                method: "GET", 
+                headers: {
+                "Content-Type": "application/json",
+                "auth-token": localStorage.getItem('token')
+                }
+            });
+            props.setLoader({ showLoader: false });
+            const json = await response.json();
+            console.log(json);
+            setNotes(json);
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger');
+        }
     }
 
 
     //Add a note
     const addNote = async (title, description, tag)=> {
-
-        const response = await fetch(`${host}/notes/addnote`, {
-            method: "POST", 
-            headers: {
-            "Content-Type": "application/json",
-            "auth-token": localStorage.getItem('token')
-            },
-            body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
-        });
-        
-        const json = response.json();
-        console.log(json);
-        fetchNotes();
+        try {
+            props.setLoader({ showLoader: true, msg: "Adding Notes"});
+            const response = await fetch(`${host}/notes/addnote`, {
+                method: "POST", 
+                headers: {
+                "Content-Type": "application/json",
+                "auth-token": localStorage.getItem('token')
+                },
+                body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
+            });
+            props.setLoader({ showLoader: false });
+            const json = response.json();
+            console.log(json);
+            fetchNotes();
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger');
+        }
 
         // const note = {
         //     "_id": "655dc7c322037a12484024ef",
@@ -54,15 +66,22 @@ const NoteState = (props)=> {
     //Delete a note
     const deleteNote = async (id)=> {
 
-        const response = await fetch(`${host}/notes/deletenote/${id}`, {
-            method: "PUT", 
-            headers: {
-            "Content-Type": "application/json",
-            "auth-token": localStorage.getItem('token')
-            },
-        });
-        console.log(response.json());
-        fetchNotes();
+        try { 
+            props.setLoader({ showLoader: true, msg: "Deleting Notes"});
+            const response = await fetch(`${host}/notes/deletenote/${id}`, {
+                method: "PUT", 
+                headers: {
+                "Content-Type": "application/json",
+                "auth-token": localStorage.getItem('token')
+                },
+            });
+            props.setLoader({ showLoader: false });
+            console.log(response.json());
+            fetchNotes();
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger');
+        }
         // const newNotes = notes.filter((note) => {return note._id !== id});
         // setNotes(newNotes);
     }
@@ -70,16 +89,22 @@ const NoteState = (props)=> {
 
     //Edit a note
     const updateNote = async (id, title, description, tag)=> {
-        console.log("Got a request")
-        const response = await fetch(`${host}/notes/updatenote/${id}`, {
-            method: "PUT", 
-            headers: {
-            "Content-Type": "application/json",
-            "auth-token": localStorage.getItem('token')
-            },
-            body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
-        });
-        fetchNotes();
+        try {
+            props.setLoader({ showLoader: true, msg: "Updating Notes"});
+            const response = await fetch(`${host}/notes/updatenote/${id}`, {
+                method: "PUT", 
+                headers: {
+                "Content-Type": "application/json",
+                "auth-token": localStorage.getItem('token')
+                },
+                body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
+            });
+            props.setLoader({ showLoader: false });
+            fetchNotes();
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger');
+        }
     }
 
 

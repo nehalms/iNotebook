@@ -11,9 +11,9 @@ function Verification(props) {
   return (
     <div>
         <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">Enter the verification code</label>
+          <label htmlFor="exampleInputEmail1" className="form-label">{props.msg ? props.msg : 'Enter the verification code'}</label>
           <input type="text" onChange={onChange} className="form-control" id="code" name="code"/>
-          <div id="emailHelp" className="form-text">Code will be sent to your email</div>
+          <div id="emailHelp" className="form-text">Code will be sent to {props.msg ? 'admin' : 'your'} email</div>
         </div>
         <div className="buttons d-flex my-3">
           <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2">Resend</button>

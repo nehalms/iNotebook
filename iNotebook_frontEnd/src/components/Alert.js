@@ -46,7 +46,7 @@ export default function Alert(props) {
           <strong>{capitalize(props.alert.type)}</strong> : {props.alert.msg}
       </div>}  */}
       {props.alert && showToast(props.alert.type, props.alert.msg, props.alert.id)}
-      <ToastContainer autoClose={5000}/>
+      <ToastContainer autoClose={1500}/>
     </div>
   )
 }

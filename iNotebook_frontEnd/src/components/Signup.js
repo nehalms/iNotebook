@@ -16,16 +16,16 @@ const Signup = (props) => {
     const handleSubmit = async (e)=> {
         try {
             if(credentials.password !== credentials.cpassword) {
-            props.showAlert("Password didn't match",'warning');
-            e.preventDefault();
-            return;
+              props.showAlert("Password didn't match",'warning');
+              e.preventDefault();
+              return;
             }
             console.log(Verified);
             if(!Verified) {
-            props.showAlert("Email not verified", 'danger');
-            mail.current.style.border = '2px solid red';  
-            e.preventDefault();
-            return;
+              props.showAlert("Email not verified", 'danger');
+              mail.current.style.border = '2px solid red';  
+              e.preventDefault();
+              return;
             }
             e.preventDefault();
             props.setLoader({ showLoader: true, msg: "Signing in please wait"});
@@ -40,9 +40,9 @@ const Signup = (props) => {
             const json = await response.json();
             // console.log(json); 
             if(json.success){
-            localStorage.setItem('token', json.authToken);
-            navigate("/login"); // to redirect the page to home page
-            props.showAlert("Sign in successfull", "success");
+              localStorage.setItem('token', json.authToken);
+              navigate("/login"); // to redirect the page to home page
+              props.showAlert("Sign in successfull", "success");
             }
             else {
                 props.showAlert(json.error, "danger");
@@ -124,7 +124,7 @@ const Signup = (props) => {
                             <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>
                             { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code</button> }
                           </div>
-                          { Verified && <><i class="mx-2 fa-solid fa-cVerified heck" style={{color: "#63E6BE"}}></i><h6 style={{display : "inline"}}>Verified</h6></>}
+                          { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
                           {show && <Verification verify={verify} sendEmail={sendEmail}/>}
                           <div className="mb-3 my-3">
                             <label htmlFor="password" className="form-label">Password</label>

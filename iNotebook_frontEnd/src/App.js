@@ -35,19 +35,21 @@ function App() {
 
   useEffect(() => {
     removeBodyClasses();
-    let theme = localStorage.getItem('theme').split('bg-')[1]
-    if (theme === 'dark') {
-      setMode('dark');
-      document.body.style.backgroundColor = '#042743';
-      document.body.style.color = 'white';
-      document.body.classList.add(theme);
-    } else if (localStorage.getItem('theme') === 'light') {
-      setMode('light');
-      document.body.style.backgroundColor = 'white';
-      document.body.style.color = 'black';
-      document.body.classList.add(theme);
-    } else if (localStorage.getItem('theme').startsWith('bg-')){
-      document.body.classList.add(localStorage.getItem('theme'));
+    if (localStorage.getItem('theme')) {
+      let theme = localStorage.getItem('theme').split('bg-')[1]
+      if (theme === 'dark') {
+        setMode('dark');
+        document.body.style.backgroundColor = '#042743';
+        document.body.style.color = 'white';
+        document.body.classList.add(theme);
+      } else if (localStorage.getItem('theme') === 'light') {
+        setMode('light');
+        document.body.style.backgroundColor = 'white';
+        document.body.style.color = 'black';
+        document.body.classList.add(theme);
+      } else if (localStorage.getItem('theme').startsWith('bg-')){
+        document.body.classList.add(localStorage.getItem('theme'));
+      }
     }
   }, [])
 

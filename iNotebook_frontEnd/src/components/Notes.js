@@ -27,9 +27,9 @@ const Notes = (props) => {
     const ref = useRef(null);
     const refClose = useRef(null);
 
-    const handleClick = (e)=> {
+    const handleClick = async (e)=> {
         e.preventDefault();
-        updateNote(note.id, note.etitle, note.edescription, note.etag);
+        await updateNote(note.id, note.etitle, note.edescription, note.etag);
         props.showAlert("Notes updated successfully", "success");
         refClose.current.click();
     }

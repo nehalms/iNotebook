@@ -6,9 +6,9 @@ const Addnote = (props) => {
     const {addNote} = context;
     const [note, setNote] = useState({title: "", description: "", tag: ""})
 
-    const handleClick = (e)=> {
+    const handleClick = async (e)=> {
         e.preventDefault();
-        addNote(note.title, note.description, note.tag);
+        await addNote(note.title, note.description, note.tag);
         props.showAlert("Note added successfully", 'success');
         setNote({title: "", description: "", tag: ""})
     }
