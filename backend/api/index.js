@@ -25,6 +25,7 @@ app.get("/test", (req, res) => {
 //Available routes
 app.use('/api/auth', require('../routes/auth'));
 app.use('/api/notes', require('../routes/notes'));
+app.use('/api/getdata', require('../routes/data'));
 
 app.listen(port, () => {
   console.log(`iNotebook backend listening at port :${port}`)
