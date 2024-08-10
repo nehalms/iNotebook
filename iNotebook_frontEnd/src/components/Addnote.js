@@ -1,13 +1,21 @@
 import React, {useContext, useState} from 'react'
 import noteContext from '../context/notes/noteContext';
+import {jwtDecode} from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const Addnote = (props) => {
+    let navigate = useNavigate();
     const context = useContext(noteContext);
     const {addNote} = context;
     const [note, setNote] = useState({title: "", description: "", tag: ""})
 
     const handleClick = async (e)=> {
         e.preventDefault();
+        if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
+            props.showAlert("Session expired Login again", 'danger');
+            navigate("/login");
+            return;
+        }
         await addNote(note.title, note.description, note.tag);
         props.showAlert("Note added successfully", 'success');
         setNote({title: "", description: "", tag: ""})

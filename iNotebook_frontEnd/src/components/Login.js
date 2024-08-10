@@ -7,7 +7,7 @@ const Login = (props) => {
     let navigate = useNavigate();
     const[credentials, setCredentials] = useState({email: "", password: ""});
     let [checkForAdminUser, setCheckForAdminUser] = useState(true);
-    let [authEmail, setAuthEmail] = useState();
+    let [authEmail, setAuthEmail] = useState("");
     const [isAdminUser, setIsAdminUser] = useState(false);
     const[code, setCode] = useState();
     const[Verified, setVerified] = useState(false);
@@ -28,7 +28,6 @@ const Login = (props) => {
             const json = await response.json();
             // console.log(json);
             if (json.success && checkForAdminUser) {
-                console.log("checking for admin user");
                 setCheckForAdminUser(false);
                 props.setLoader({ showLoader: true, msg: "Please wait"});
                 const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
@@ -40,9 +39,9 @@ const Login = (props) => {
                 });
                 props.setLoader({ showLoader: false });
                 const adminData = await response.json();
-                console.log(adminData);
                 if(adminData && adminData.isAdmin) {
                     setAuthEmail(adminData.authEmail);
+                    sessionStorage.setItem('adminToken', json.authToken);
                     var val = Math.floor((Math.random()*1000000)+1);
                     setCode(val);
                     setIsAdminUser(true);
@@ -51,12 +50,18 @@ const Login = (props) => {
                     return;
                 }
             }
-            if( isAdminUser && !Verified) {
-                props.showAlert("Admin passkey not verified", 'danger');
-                e.preventDefault();
-                return;
+            if(isAdminUser) {
+                if(!Verified) {
+                    props.showAlert("Admin passkey not verified", 'danger');
+                    e.preventDefault();
+                    return;
+                } else if(Verified) {
+                    navigate('/dashboard');
+                    props.showAlert("Logged in as Admin", 'success');
+                }
             }
-            if(json.success){
+            else if(json.success){
+                sessionStorage.removeItem('adminToken');
                 localStorage.setItem('token', json.authToken);
                 navigate("/"); // to redirect the page to home page
                 props.showAlert("Logged in successfully", "success");

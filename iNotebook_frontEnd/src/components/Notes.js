@@ -3,7 +3,7 @@ import noteContext from '../context/notes/noteContext';
 import NoteItem from './NoteItem';
 import Addnote from './Addnote';
 import { useNavigate } from 'react-router-dom';
-
+import {jwtDecode} from 'jwt-decode';
 
 const Notes = (props) => {
     let navigate = useNavigate();
@@ -13,7 +13,12 @@ const Notes = (props) => {
 
     useEffect(() => {
         if(localStorage.getItem('token')){
-            fetchNotes(props);
+            if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
+                props.showAlert("Session expired Login again", 'danger');
+                navigate("/login");
+            } else {
+                fetchNotes(props);
+            }
         }
         else {
             navigate("/login");
@@ -29,6 +34,11 @@ const Notes = (props) => {
 
     const handleClick = async (e)=> {
         e.preventDefault();
+        if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
+            props.showAlert("Session expired Login again", 'danger');
+            navigate("/login");
+            return;
+        }
         await updateNote(note.id, note.etitle, note.edescription, note.etag);
         props.showAlert("Notes updated successfully", "success");
         refClose.current.click();
@@ -41,10 +51,10 @@ const Notes = (props) => {
     return (
         <>
             <Addnote showAlert={props.showAlert}/>  
-            <button type="button" className="btn btn-primary" ref={ref} hidden="true" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <button type="button" className="btn btn-primary" ref={ref} hidden={true} data-bs-toggle="modal" data-bs-target="#exampleModal">
             Launch demo modal</button>
 
-            <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -79,7 +89,7 @@ const Notes = (props) => {
                 <div className='container mx-2'>
                 {notes.length === 0 && "No Notes to display"}
                 </div>
-                {notes.map((note)=> {
+                {notes.length > 0 && notes.map((note)=> {
                     return <NoteItem showAlert={props.showAlert} key={note.id} editNote={editNote} note={note}/>
                 })}
             </div>

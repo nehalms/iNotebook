@@ -31,12 +31,18 @@ export default function Alert(props) {
           position: "top-center",
           toastId: id
         });
-      } else {
+      } else if (type === 'info') {
         toast.info(msg, {
           theme: "dark",
           position: "top-center",
           toastId: id
         });
+      } else {
+        toast(msg, {
+          theme: "dark",
+          position: "top-center",
+          toastId: id
+        })
       }
     }
 

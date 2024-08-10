@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-const JWT_SCERET = "Nehal_@token!";
+const JWT_SCERET = process.env.REACT_APP_JWT_SCERET;
 
 const fetchuser = (req, res, next) => {
     //Get the user from the jwt token and append id to req object
@@ -14,7 +14,11 @@ const fetchuser = (req, res, next) => {
         next(); // used to call next present function after call to this fetchuser function
     }
     catch(err){
-        res.status(401).send({error: 'Pleaze authenticate using valid token'});
+        if(err.message === 'jwt expired') {
+            res.status(401).send({success: false, error: 'Session expired please login again'});
+        } else {
+            res.status(401).send({error: 'Pleaze authenticate using valid token'});
+        }
     }
 }
 

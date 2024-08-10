@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Routes
+  Routes,
 } from "react-router-dom";
 import Home from './components/Home';
 import Navbar from './components/Navbar'
@@ -15,14 +15,16 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Forgot from './components/Forgot_';
 import Spinner from './components/Spinner';
-
+import DashBoard from './components/DashBoard';
+import Confirmation from './components/Confirmation';
 
 function App() {
   const [alert, setAlert] = useState(null);
   const [mode, setMode] = useState('light');
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
+  const [dialogInfo, setDialogInfo] = useState({open: false});
 
-  const showAlert = (message, type)=> {
+  const showAlert = (message, type, id=null)=> {
     setAlert({
       msg: message,
       type: type,
@@ -51,7 +53,7 @@ function App() {
         document.body.classList.add(localStorage.getItem('theme'));
       }
     }
-  }, [])
+  }, []);
 
   const removeBodyClasses = ()=> {
     document.body.classList.remove('bg-light');
@@ -85,13 +87,52 @@ function App() {
     }
   }
 
+  const setUserInactive = async () => {
+    try {
+      setLoader({ showLoader: true, msg: "Please wait"});
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/changestatus`, {
+          method: "POST", 
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": localStorage.getItem('token')
+          }
+      });
+      setLoader({ showLoader: false });
+      localStorage.removeItem('token');
+    } catch (err) {
+      console.log("Error**" ,err);
+      showAlert("Some Error Occured", 'danger')
+    }
+  }
+
+  const setDialog = (open_, path_, title_) => {
+    setDialogInfo({
+      open: open_,
+      path: path_,
+      title: title_,
+    });
+  }
+
+  const onConfirm = () => {
+    setDialogInfo({open: false});
+    showAlert(`${dialogInfo.title} Success`, 'success');
+    setUserInactive();
+    window.location.reload();
+  }
+
+  const onClose = () => {
+    setDialogInfo({open: false});
+    return;
+  }
+
   return (
     <>
       <NoteState showAlert={showAlert}  setLoader={setLoader}>  {/* components inside this can access the context data */}
         <Router>
-          <Navbar showAlert={showAlert} mode={mode} toggleMode={toggleMode} setLoader={setLoader}/>
+          <Navbar showAlert={showAlert} mode={mode} toggleMode={toggleMode} setLoader={setLoader} setDialog={setDialog} />
           <Alert alert={alert} setLoader={setLoader} />
           {loader.showLoader && <Spinner msg={loader.msg}/>}
+          {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
           <div className="container">
             <Routes>
               <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
@@ -99,6 +140,7 @@ function App() {
               <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
               <Route exact path='/login/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>
           </div>
         </Router>

@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { Link, useLocation } from "react-router-dom";
 
-
-
 const Navbar = (props) => {
     const [userinfo, setUserinfo] = useState({name: "", email: "", })
     let location = useLocation(); //helps to get the exact location i,e the path where exactly the we are(url)
@@ -50,28 +48,31 @@ const Navbar = (props) => {
                         <div className="bg-danger rounded mx-2" onClick={() => {props.toggleMode('danger')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                     </div>
 
-                    <div class={`form-check form-switch mx-5 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
+                    <div className={`form-check form-switch mx-5 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
                         { props.mode == 'light' ? 
                             <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault"/> : 
                             <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault" checked/>
                         }
                         <label className="form-check-label text-white" htmlFor="flexSwitchCheckDefault">Dark Mode</label>
                     </div>
-                    {location.pathname !== '/'  ?
+                    { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname === '/' || location.pathname === '/dashboard')) ?
+                        <>
+                        { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
+                            <div className="dropdown">
+                                <button className="btn btn-success mx-1 my-2" type="button" onClick={() => {return getUser()}} data-bs-toggle="dropdown" aria-expanded="false">Profile</button>
+                                <ul className="dropdown-menu">
+                                    <li><div className="text-bg-light p-3 rounded">{userinfo.name}</div></li>
+                                    <li><div className="text-bg-light p-3 rounded">{userinfo.email}</div></li>
+                                </ul>
+                            </div>
+                        }
+                        <Link className='btn btn-warning mx-3' to="/login" role='button' onClick={() => {props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.removeItem('adminToken'); }}>Logout</Link>
+                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger mx-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account</Link>}
+                        </> :
                         <form className="d-flex" role="search">
                             <Link className='btn btn-success mx-1' to="/login" role='button'>Login</Link>
                             <Link className='btn btn-warning mx-3' to="/signup" role='button'>Signup</Link>
-                        </form> : 
-                        <>
-                        <div class="dropdown">
-                            <button class="btn btn-success mx-3 my-2" type="button" onClick={() => {return getUser()}} data-bs-toggle="dropdown" aria-expanded="false">Profile</button>
-                            <ul class="dropdown-menu">
-                                <li><div class="text-bg-light p-3 rounded">{userinfo.name}</div></li>
-                                <li><div class="text-bg-light p-3 rounded">{userinfo.email}</div></li>
-                            </ul>
-                        </div>
-                        <Link className='btn btn-warning mx-3' to="/login" role='button' onClick={() => {props.showAlert("logged out", "success"); localStorage.removeItem('token');}}>Logout</Link>
-                        </>
+                        </form>
                     }
                     </div>
                 </div>
