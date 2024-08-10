@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const LoginHistory = require("../models/LoginHistory")
 const { body, validationResult } = require("express-validator"); //to validate the inputs
 const bcrpyt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -26,7 +27,7 @@ router.post("/createuser",
 
     try {
       //check wheather the user with this email exists already
-      let user = await User.findOne({ email: req.body.email });
+      let user = await User.findOne({ email: req.body.email, isActive: true});
       if (user) {
         return res
           .status(400)
@@ -51,7 +52,7 @@ router.post("/createuser",
         },
       };
 
-      const authToken = jwt.sign(data, JWT_SCERET);
+      const authToken = jwt.sign(data, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
       res.json({success, authToken });
     } 
@@ -80,7 +81,7 @@ router.post(
 
     const { email, password } = req.body;
     try {
-      let user = await User.findOne({ email: email });
+      let user = await User.findOne({ email: email, isActive: true });
       if (!user) {
         success = false;
         return res.status(400).json({success, error: "Sorry no user found with this email" });
@@ -97,8 +98,13 @@ router.post(
           id: user.id,
         },
       };
-      const authToken = jwt.sign(payload, JWT_SCERET);
+      const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
+      await LoginHistory.create({
+        name: user.name,
+        email: user.email,
+      });
+      await User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
       res.json({ success, authToken });
     } 
     catch (err) {
@@ -173,6 +179,21 @@ router.post("/updatePassword",
     }
   }
 );
+
+router.post("/changestatus", fetchuser,  async (req, res) => {
+  try {
+    const userEmail = await User.findById(req.user.id);
+    console.log(userEmail);
+    let email = `${userEmail.email}__${req.user.id}`;
+    const user = await User.findByIdAndUpdate(req.user.id, {isActive: false, email : email}, {new: true});
+    console.log(user);
+    res.send(user);
+  } 
+  catch (err) {
+    console.log(err.message);
+    return res.status(500).send("Internal Server Error!!");
+  }
+});
 
 module.exports = router;
 
