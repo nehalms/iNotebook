@@ -117,7 +117,7 @@ function App() {
     setDialogInfo({open: false});
     showAlert(`${dialogInfo.title} Success`, 'success');
     setUserInactive();
-    window.location.reload();
+    // window.location.reload();
   }
 
   const onClose = () => {
