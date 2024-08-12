@@ -17,6 +17,7 @@ import Forgot from './components/Forgot_';
 import Spinner from './components/Spinner';
 import DashBoard from './components/DashBoard';
 import Confirmation from './components/Confirmation';
+import { history } from './History';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -115,9 +116,9 @@ function App() {
 
   const onConfirm = () => {
     setDialogInfo({open: false});
-    showAlert(`${dialogInfo.title} Success`, 'success');
+    showAlert(`Account deleted Successfully`, 'success');
     setUserInactive();
-    // window.location.reload();
+    history.navigate('/login');
   }
 
   const onClose = () => {

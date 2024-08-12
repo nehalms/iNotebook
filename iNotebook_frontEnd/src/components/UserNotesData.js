@@ -3,18 +3,17 @@ import { DataGrid, GridActionsCellItem ,GridToolbarContainer, GridToolbarExport,
 import { Tooltip, tooltipClasses } from '@mui/material';
 import moment from 'moment'
 import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import { history } from '../History';
 
 export default function UserNotesData(props) {
     
-    let navigate = useNavigate();
     const [rows, setRows] = useState([]);
     const [totalcount, setTotalCount] = useState({usersCount: 0, notesCount: 0});
 
     useEffect(() => {
       if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
         props.showAlert("Session expired Login again", 'danger');
-        navigate("/login");
+        history.navigate("/login");
         return;
       }
       if(sessionStorage.getItem('adminToken'))

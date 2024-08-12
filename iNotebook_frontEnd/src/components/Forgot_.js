@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Verification from './Verification';
 import emailjs from '@emailjs/browser';
+import { history } from '../History';
 
 const Forgot_ = (props)=> {
   let navigate = useNavigate();
@@ -39,7 +40,7 @@ const Forgot_ = (props)=> {
       else{
         props.showAlert("Something went wrong", 'danger');
       }
-      navigate('/login');
+      history.navigate('/login');
     } catch (err) {
       console.log("Error**", err);
       props.showAlert("Some error Occured", 'danger');

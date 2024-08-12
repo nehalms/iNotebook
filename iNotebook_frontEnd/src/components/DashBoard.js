@@ -5,6 +5,7 @@ import 'react-tabs/style/react-tabs.css';
 import UserNotesData from './UserNotesData';
 import Analytics_tab from './Analytics';
 import { jwtDecode } from 'jwt-decode';
+import { history } from '../History';
 
 export default function DashBoard(props) {
     let navigate = useNavigate();
@@ -17,12 +18,12 @@ export default function DashBoard(props) {
     useEffect(()=> {
         if(!sessionStorage.getItem('adminToken')) {
             props.showAlert("Only admin can access the dashboard", 'info');
-            navigate('/login');
+            history.navigate('/login');
             return;
         }
         if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
             props.showAlert("Session expired Login again", 'danger');
-            navigate("/login");
+            history.navigate("/login");
             return;
         }
     }, []);

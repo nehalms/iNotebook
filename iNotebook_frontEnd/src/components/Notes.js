@@ -4,6 +4,7 @@ import NoteItem from './NoteItem';
 import Addnote from './Addnote';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
+import { history } from '../History';
 
 const Notes = (props) => {
     let navigate = useNavigate();
@@ -15,13 +16,13 @@ const Notes = (props) => {
         if(localStorage.getItem('token')){
             if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
                 props.showAlert("Session expired Login again", 'danger');
-                navigate("/login");
+                history.navigate("/login");
             } else {
                 fetchNotes(props);
             }
         }
         else {
-            navigate("/login");
+            history.navigate("/login");
         }
     }, [])
 
@@ -36,7 +37,7 @@ const Notes = (props) => {
         e.preventDefault();
         if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
             props.showAlert("Session expired Login again", 'danger');
-            navigate("/login");
+            history.navigate("/login");
             return;
         }
         await updateNote(note.id, note.etitle, note.edescription, note.etag);

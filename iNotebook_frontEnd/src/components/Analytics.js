@@ -4,6 +4,7 @@ import { Bar } from "react-chartjs-2";
 import { Chart, registerables } from 'chart.js';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import { history } from '../History';
 
 export default function Analytics(props) {
   Chart.register(...registerables);
@@ -14,7 +15,7 @@ export default function Analytics(props) {
   useEffect(() => {
     if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
       props.showAlert("Session expired Login again", 'danger');
-      navigate("/login");
+      history.navigate("/login");
       return;
     }
     if(sessionStorage.getItem('adminToken'))

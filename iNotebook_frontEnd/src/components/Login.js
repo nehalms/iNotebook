@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import emailjs from '@emailjs/browser';
 import Verification from './Verification';
+import { history } from '../History';
 
 const Login = (props) => {
     let navigate = useNavigate();
@@ -11,6 +12,7 @@ const Login = (props) => {
     const [isAdminUser, setIsAdminUser] = useState(false);
     const[code, setCode] = useState();
     const[Verified, setVerified] = useState(false);
+    history.navigate = useNavigate();
 
     const handleSubmit = async (e)=> {
         e.preventDefault(); // to prevent page from reloading
@@ -56,14 +58,14 @@ const Login = (props) => {
                     e.preventDefault();
                     return;
                 } else if(Verified) {
-                    navigate('/dashboard');
+                    history.navigate('/dashboard');
                     props.showAlert("Logged in as Admin", 'success');
                 }
             }
             else if(json.success){
                 sessionStorage.removeItem('adminToken');
                 localStorage.setItem('token', json.authToken);
-                navigate("/"); // to redirect the page to home page
+                history.navigate("/"); // to redirect the page to home page
                 props.showAlert("Logged in successfully", "success");
             }
             else {

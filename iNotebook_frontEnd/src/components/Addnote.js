@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react'
 import noteContext from '../context/notes/noteContext';
 import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import { history } from '../History';
 
 const Addnote = (props) => {
     let navigate = useNavigate();
@@ -13,7 +14,7 @@ const Addnote = (props) => {
         e.preventDefault();
         if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
             props.showAlert("Session expired Login again", 'danger');
-            navigate("/login");
+            history.navigate("/login");
             return;
         }
         await addNote(note.title, note.description, note.tag);

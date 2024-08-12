@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import Verification from './Verification';
+import { history } from '../History';
 
 const Signup = (props) => {
     const mail = useRef(null);
@@ -12,6 +13,7 @@ const Signup = (props) => {
     const[code_, setCode] = useState(0);
     const[show, setShow] = useState(false);
     const[Verified, setVerified] = useState(false);
+    history.navigate = useNavigate();
 
     const handleSubmit = async (e)=> {
         try {
@@ -41,7 +43,19 @@ const Signup = (props) => {
             // console.log(json); 
             if(json.success){
               localStorage.setItem('token', json.authToken);
-              navigate("/login"); // to redirect the page to home page
+              emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
+                to_name: 'Nehal',
+                message: "New-user Sign Up alert ",
+                code : credentials.name,
+                to_mail: process.env.REACT_APP_ADMIN_MAIL,
+              } , 'ytEYvYv1q0VNEV4EE', 
+              )
+              .then((result) => {
+                    console.log(result.text);
+                }, (error) => {
+                    console.log(error.text);
+                });
+              history.navigate("/login"); // to redirect the page to home page
               props.showAlert("Sign in successfull", "success");
             }
             else {
