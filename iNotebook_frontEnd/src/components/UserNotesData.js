@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { DataGrid, GridActionsCellItem ,GridToolbarContainer, GridToolbarExport, renderActionsCell, renderEditDateCell, renderEditInputCell } from '@mui/x-data-grid';
-import { Tooltip, tooltipClasses } from '@mui/material';
+import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
+import { Tooltip } from '@mui/material';
 import moment from 'moment'
 import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
@@ -22,7 +22,7 @@ export default function UserNotesData(props) {
 
     function CustomToolbar() {
         return (
-          <GridToolbarContainer className='ps-4 bg-light'>
+          <GridToolbarContainer className='ps-4 me-3 bg-light d-flex align-items-center justify-content-end'>
             <GridToolbarExport />
           </GridToolbarContainer>
         );
@@ -54,12 +54,13 @@ export default function UserNotesData(props) {
 
     const columns = [
         { 
-            field: 'id', 
-            headerName: 'SL.No', 
-            minWidth: 90,
-            headerAlign: 'center',
-            cellClassName: 'text-center',
-            headerClassName: 'bg-primary text-light',
+          field: 'id', 
+          headerName: 'SL.No', 
+          minWidth: 70,
+          headerAlign: 'center',
+          cellClassName: 'text-center',
+          headerClassName: 'bg-primary text-light',
+          flex: 1,
         },
         {
           field: 'name',
@@ -143,7 +144,7 @@ export default function UserNotesData(props) {
             </div>
         </div>
       </div>
-      <div style={{ height: 600, width: '100%' }}>
+      <div style={{ height: 'auto', width: '100%' }}>
         <DataGrid
           disableColumnResize
           disableColumnMenu
@@ -151,13 +152,12 @@ export default function UserNotesData(props) {
           columns={columns}
           initialState={{
             pagination: {
-              color: 'blue',
               paginationModel: {
-                pageSize: 10,
+                pageSize: 5,
               },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[5, 10, 25, 50]}
           disableRowSelectionOnClick
           slots={{
               toolbar: CustomToolbar,
@@ -165,6 +165,27 @@ export default function UserNotesData(props) {
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? 'bg-body-tertiary' : 'bg-body-secondary'
           }
+          sx={{
+            '& .MuiDataGrid-footerContainer': {
+              backgroundColor: '#0d6efd',
+            },
+            '& .MuiTablePagination-root': {
+              color: 'white',
+            },
+            '& .MuiTablePagination-selectLabel': {
+              fontSize: '1rem',
+              margin: '0px',
+              color: 'white'
+            },
+            '& .MuiTablePagination-displayedRows': {
+              fontWeight: 'bold',
+              margin: '0px',
+              color: 'white'
+            },
+            '& .MuiTablePagination-selectIcon': {
+              color: 'white',
+            },
+          }}
         />
       </div>
     </>

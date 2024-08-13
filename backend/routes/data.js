@@ -46,40 +46,51 @@ router.get('/graphData', fetchuser, async (req, res) => {
         let loginData = [];
         let notesData = [];
         let colors = ["aqua", "green", "red", "yellow", "coral", "aquamarine", "deeppink"];
-        for(let i=6; i>=0; i--) {
-            let startDate = moment(new Date())
-                .subtract(i, 'days')
-                .add(6, 'hours');
-            startDate.hours(0);
-            startDate.minutes(0);
-            startDate.seconds(0);
-            startDate.milliseconds(0);
-            let endDate =  moment(new Date())
-                .subtract(i-1, 'days')
-                .add(6, 'hours');
-            endDate.hours(0);
-            endDate.minutes(0);
-            endDate.seconds(0);
-            endDate.milliseconds(0);
-            let xAxisDate = moment(new Date())
-                .subtract(i, 'days')
+        let reqStartDate = moment(req.query.startDate 
+            ? new Date(req.query.startDate) 
+            : moment(new Date())
+                .subtract(6, 'days')
+            );
+        reqStartDate.hours(0);
+        reqStartDate.minutes(0);
+        reqStartDate.seconds(0);
+        reqStartDate.milliseconds(0);
+
+        let reqEndDate = moment(req.query.endDate ? new Date(req.query.endDate) : new Date())
+            .add(1, 'days')
+        reqEndDate.hours(0);
+        reqEndDate.minutes(0);
+        reqEndDate.seconds(0);
+        reqEndDate.milliseconds(0);
+
+        while(reqStartDate < reqEndDate) {
+            let startDate = reqStartDate;
+            let endDate =  moment(reqStartDate)
+                .add(1, 'days');
+            let xAxisDate = moment(new Date(reqStartDate))
                 .format('MMM-DD');
             xAxisValues.push(xAxisDate);
             
-            let logins = await LoginHistory.find({date: {$gte: new Date(startDate), $lt: new Date(endDate)}});
-            loginData.push(logins && logins.length ? logins.length : 0);
+            if(req.query.reqType === 'user' || req.query.reqType === 'both') {
+                let logins = await LoginHistory.find({date: {$gte: new Date(startDate), $lt: new Date(endDate)}});
+                loginData.push(logins && logins.length ? logins.length : 0);
+            }
+            if(req.query.reqType === 'notes' || req.query.reqType === 'both') {
+                let noteData = await Notes.find({date: {$gte: startDate, $lt: endDate}});
+                notesData.push(noteData && noteData.length ? noteData.length : 0);
+            }
 
-            let noteData = await Notes.find({date: {$gte: startDate, $lt: endDate}});
-            notesData.push(noteData && noteData.length ? noteData.length : 0);
-
-            console.log(i, startDate, endDate);
-            console.log('logins', i, logins);
-            console.log('notes', i, noteData);
+            reqStartDate = moment(new Date(reqStartDate))
+                .add(1, 'days');
         }
         response.xAxisDates = xAxisValues;
-        response.loginData = loginData;
-        response.notesData = notesData;
         response.colors = colors;
+        if(req.query.reqType === 'user' || req.query.reqType === 'both') {
+            response.loginData = loginData;
+        }
+        if(req.query.reqType === 'notes' || req.query.reqType === 'both') {
+            response.notesData = notesData;
+        }
         res.send(response);
 
     } catch (err) {
