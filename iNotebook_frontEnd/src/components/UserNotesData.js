@@ -53,78 +53,76 @@ export default function UserNotesData(props) {
     }
 
     const columns = [
-      { 
-        field: 'id', 
-        headerName: 'SL.No', 
-        minWidth: 70,
-        headerAlign: 'center',
-        cellClassName: 'text-center',
-        headerClassName: 'bg-primary text-light',
-        flex: 1,
-      },
-      {
-        field: 'name',
-        headerName: 'User Name',
-        minWidth: 190,
-        headerAlign: 'center',
-        headerClassName: 'bg-primary text-light',
-        cellClassName: 'ps-5',
-        flex: 1,
-      },
-      {
-        field: 'email',
-        headerName: 'Email',
-        minWidth: 280,
-        headerAlign: 'center',
-        headerClassName: 'bg-primary text-light',
-        cellClassName: 'ps-5',
-        valueGetter: (email) => {return email.split("__")[0]},
-        flex: 1,
-      },
-      {
-          field: 'date',
-          headerName: 'Created On',
+        { 
+          field: 'id', 
+          headerName: 'SL.No', 
+          minWidth: 70,
+          headerAlign: 'center',
+          cellClassName: 'text-center',
+          headerClassName: 'bg-primary text-light',
+          flex: 1,
+        },
+        {
+          field: 'name',
+          headerName: 'User Name',
+          minWidth: 190,
+          headerAlign: 'center',
+          headerClassName: 'bg-primary text-light',
+          cellClassName: 'ps-5',
+          flex: 1,
+        },
+        {
+          field: 'email',
+          headerName: 'Email',
+          minWidth: 280,
+          headerAlign: 'center',
+          headerClassName: 'bg-primary text-light',
+          cellClassName: 'ps-5',
+          valueGetter: (email) => {return email.split("__")[0]},
+          flex: 1,
+        },
+        {
+            field: 'date',
+            headerName: 'Created On',
+            minWidth: 250,
+            headerAlign: 'center',
+            headerClassName: 'bg-primary text-light',
+            cellClassName: 'text-center',
+            valueGetter: (date) => {return moment(new Date(date)).format('LLL')},
+            flex: 1,
+        },
+        {
+            field: 'count',
+            headerName: 'Notes Count',
+            minWidth: 100,
+            headerAlign: 'center',
+            headerClassName: 'bg-primary text-light',
+            cellClassName: 'text-center',
+            flex: 1,
+        },
+        {
+            field: 'isActive',
+            headerName: 'Account Status',
+            minWidth: 150,
+            headerAlign: 'center',
+            headerClassName: 'bg-primary text-light',
+            cellClassName: 'text-center',
+            renderCell: (params) => {
+              return(<Tooltip title={params.row.isActive == true ? 'Active' : 'Inactive'}>  
+                <span><i className="fa-solid fa-circle" style={{color: `${params.row.isActive == true ? '#63E6BE' : '#fe3434'}`}}></i></span>
+              </Tooltip>)
+            },
+            flex: 1,
+        },
+        {
+          field: 'lastLoggedOn',
+          headerName: 'Last Login',
           minWidth: 250,
           headerAlign: 'center',
           headerClassName: 'bg-primary text-light',
           cellClassName: 'text-center',
           valueGetter: (date) => {return moment(new Date(date)).format('LLL')},
-          sortComparator: (v1, v2) => moment(v1).diff(moment(v2)),
           flex: 1,
-      },
-      {
-          field: 'count',
-          headerName: 'Notes Count',
-          minWidth: 100,
-          headerAlign: 'center',
-          headerClassName: 'bg-primary text-light',
-          cellClassName: 'text-center',
-          flex: 1,
-      },
-      {
-          field: 'isActive',
-          headerName: 'Account Status',
-          minWidth: 150,
-          headerAlign: 'center',
-          headerClassName: 'bg-primary text-light',
-          cellClassName: 'text-center',
-          renderCell: (params) => {
-            return(<Tooltip title={params.row.isActive == true ? 'Active' : 'Inactive'}>  
-              <span><i className="fa-solid fa-circle" style={{color: `${params.row.isActive == true ? '#63E6BE' : '#fe3434'}`}}></i></span>
-            </Tooltip>)
-          },
-          flex: 1,
-      },
-      {
-        field: 'lastLoggedOn',
-        headerName: 'Last Login',
-        minWidth: 250,
-        headerAlign: 'center',
-        headerClassName: 'bg-primary text-light',
-        cellClassName: 'text-center',
-        valueGetter: (date) => {return moment(new Date(date)).format('LLL')},
-        sortComparator: (v1, v2) => moment(v1).diff(moment(v2)),
-        flex: 1,
       },
     ] 
 
