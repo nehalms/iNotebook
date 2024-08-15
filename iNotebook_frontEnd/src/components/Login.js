@@ -143,7 +143,7 @@ const Login = (props) => {
                                 </div>
                                 { !isAdminUser && <><Link className='mx-0 my-0' to="/login/forgot" role='button'>Forgot password?</Link><br/></>}
                                 { isAdminUser && !Verified && <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey"/> }
-                                { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
+                                { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey verified</div>}
                                 <button type="submit" className="btn btn-primary mt-3">Login</button>
                             </div>
                         </div>

@@ -5,12 +5,13 @@ import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 import moment from 'moment';
 import loading from './loading.gif' 
+import './table.css'
 
 export default function Analytics(props) {
   Chart.register(...registerables);
 
-  const [notesData, setNotesData] = useState({xAxisDates: [], notesData: [], colors: []});
-  const [loginData, setLoginData] = useState({xAxisDates: [], loginData: [], colors: []});
+  const [notesData, setNotesData] = useState({xAxisDates: [], notesData: [], colors: [], tempxAxisDates: []});
+  const [loginData, setLoginData] = useState({xAxisDates: [], loginData: [], colors: [], tempxAxisDates: []});
   const [showUserLoader, setShowUserLoader] = useState(false);
   const [showNoteLoader, setShowNoteLoader] = useState(false);
   const [userDates, setUserDates] = useState({
@@ -20,7 +21,8 @@ export default function Analytics(props) {
   const [notesDates, setNotesDates] = useState({
     startDate: moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD'),
     endDate: moment(new Date()).format('YYYY-MM-DD'),
-  })
+  });
+  const [tableData, setTableData] = useState({data: [], date: new Date()});
 
   useEffect(() => {
     if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
@@ -32,7 +34,7 @@ export default function Analytics(props) {
       fetchData();
   }, [])
 
-  const fetchData = async (reqType='both') => {
+  const fetchData = async (reqType='both', isReqData=false) => {
     try {
       let dates;
       if(reqType == 'both') {
@@ -47,7 +49,6 @@ export default function Analytics(props) {
       else if(reqType === 'notes') {
         dates = {...notesDates};
       }
-      console.log("differesce",(moment(new Date(dates.endDate)).diff(moment(new Date(dates.startDate))))/(60*60*24*1000));
       if(
         dates.endDate > moment(new Date()).format('YYYY-MM-DD') || 
         dates.startDate > dates.endDate || 
@@ -67,7 +68,7 @@ export default function Analytics(props) {
         : reqType === 'user' 
             ? setShowUserLoader(true) 
             : setShowNoteLoader(true);
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/graphData?reqType=${reqType}&startDate=${dates.startDate}&endDate=${dates.endDate}`, {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/graphData?reqType=${reqType}&startDate=${dates.startDate}&endDate=${dates.endDate}&isReqData=${isReqData}`, {
           method: "GET", 
           headers: {
               "Content-Type": "application/json",
@@ -79,17 +80,29 @@ export default function Analytics(props) {
       setShowUserLoader(false);
       setShowNoteLoader(false);
       if(reqType === 'both' || reqType === 'user') {
+        let axisLabels = [];
+        await data.xAxisDates.map((date) => {
+            let lastIdx = date.lastIndexOf('-');
+            axisLabels.push(date.substring(0, lastIdx));
+        })
         setLoginData({
             xAxisDates: data.xAxisDates,
             loginData: data.loginData,
             colors: data.colors,
+            tempxAxisDates: axisLabels,
         });
       }
       if(reqType === 'both' || reqType === 'notes') {
+        let axisLabels = [];
+        await data.xAxisDates.map((date) => {
+            let lastIdx = date.lastIndexOf('-');
+            axisLabels.push(date.substring(0, lastIdx));
+        })
         setNotesData({
             xAxisDates: data.xAxisDates,
             notesData: data.notesData,
             colors: data.colors,
+            tempxAxisDates: axisLabels,
         });
       }
     } catch (err) {
@@ -98,7 +111,27 @@ export default function Analytics(props) {
     }
   }
 
+  const handleClick = async (reqType, date) => {
+    if(!moment(new Date(date)).isValid()) {
+        return;
+    }
+    date = moment(new Date(date)).format('YYYY-MM-DD');
+    const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/graphData?reqType=${reqType}&startDate=${date}&endDate=${date}&isReqData=true`, {
+        method: "GET", 
+        headers: {
+            "Content-Type": "application/json",
+            "auth-token": sessionStorage.getItem('adminToken')
+        }
+    });
+    let json = await response.json();
+    setTableData({
+      data: json.tableData,
+      date: date,
+    });
+  }
+
   return (
+    <>
     <div className="row align-items-center justify-content-center">
       <div className='col-md-6'>
           <div className="card my-3 py-2">
@@ -121,10 +154,11 @@ export default function Analytics(props) {
                     </div>
                 </div>
                 <h6>Total count : {loginData.loginData.length > 1 ? loginData.loginData.reduce((val, sum) => {return sum + val}) : loginData.loginData}</h6>
+                <h6 className='text-danger'>* Click on data bar to get the detailed view</h6>
                 <div style={{ maxWidth: "650px", maxHeight: '600px'}}>
                     {!showUserLoader && <Bar
                         data={{
-                            labels: loginData.xAxisDates,
+                            labels: loginData.tempxAxisDates,
                             datasets: [
                                 {
                                     label: `total count/value`,
@@ -151,6 +185,14 @@ export default function Analytics(props) {
                                 labels: {
                                     fontSize: 15,
                                 },
+                            },
+                            onClick: async (event, elements) => {
+                                if (elements.length > 0) {
+                                  const clickedElementIndex = elements[0].index;
+                                  const label = loginData.xAxisDates[clickedElementIndex];
+                                  // Update the state with the clicked label
+                                  await handleClick('user', moment(new Date(label)));
+                                }
                             },
                         }}
                     />}
@@ -185,7 +227,7 @@ export default function Analytics(props) {
                 <div style={{ maxWidth: "650px" }}>
                     {!showNoteLoader && <Bar
                         data={{
-                            labels: notesData.xAxisDates,
+                            labels: notesData.tempxAxisDates,
                             datasets: [
                                 {
                                     label: `total count/value`,
@@ -237,5 +279,46 @@ export default function Analytics(props) {
           </div>
       </div> */}
     </div>
+    {
+      tableData.data.length > 0 &&
+        <table>
+          <thead>
+            <tr>
+              <th colSpan={3}>
+                {moment(new Date(tableData.date)).format('MMMM Do YYYY')}
+              </th>   
+            </tr>
+            <tr>
+              <th style={{width: '250px'}}>
+                Name
+              </th>
+              <th style={{width: '350px'}}>
+                Email
+              </th>
+              <th style={{width: '200px'}}>
+                Time
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          {
+            tableData.data.map((row) => 
+              <tr>
+                <td key={row.name}>
+                  {row.name}
+                </td>
+                <td key={row.email}>
+                  {row.email} 
+                </td>
+                <td key={row.date}>
+                  {moment(new Date(row.date)).format('h:mm:ss a')} 
+                </td>
+              </tr>
+            )
+          }
+          </tbody>
+        </table>
+      }
+    </>
   )
 }
