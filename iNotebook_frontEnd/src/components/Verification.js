@@ -16,8 +16,8 @@ function Verification(props) {
           <div id="emailHelp" className="form-text">Code will be sent to {props.msg ? 'admin' : 'your'} email</div>
         </div>
         <div className="buttons d-flex my-3">
-          <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2">Resend</button>
-          <button type="button" onClick={() => {props.verify(code.code)}} className="btn btn-success mx-2">Verify</button>
+          <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2">Resend <i className="fa-solid fa-paper-plane mx-2"></i></button>
+          <button type="button" onClick={() => {props.verify(code.code)}} className="btn btn-success mx-2">Verify <i className="fa-solid fa-certificate mx-2"></i></button>
         </div>
     </div>
   )

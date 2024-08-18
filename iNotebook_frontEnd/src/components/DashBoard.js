@@ -30,7 +30,7 @@ export default function DashBoard(props) {
 
   return (
     <>
-        <h2 className='text-center'>Information Dashboard</h2>
+        <h2 className='text-center'><i className="fa-solid fa-gauge mx-3"></i>Information Dashboard</h2>
         <Tabs 
             defaultactivekey="users"
             id="controlled-tabs"
@@ -40,10 +40,10 @@ export default function DashBoard(props) {
             >
             <TabList>
                 <Tab eventKey="users" title="Users" style={{width: '200px'}}>
-                    <div className="m-0 text-center my-3 rounded">Users</div>
+                    <div className="m-0 text-center my-3 rounded">Users <i className="fa-solid fa-users mx-2"></i></div>
                 </Tab>
                 <Tab eventKey="analytics" title="Analytics"  style={{width: '200px'}}>
-                    <div className="m-0 text-center my-3 rounded">Analytics</div>
+                    <div className="m-0 text-center my-3 rounded">Analytics <i className="fa-solid fa-chart-simple mx-2"></i></div>
                 </Tab>
             </TabList>
             <TabPanel>

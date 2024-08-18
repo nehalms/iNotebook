@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { Link, useLocation } from "react-router-dom";
+import img from './favicon-32x32.png'
 
 const Navbar = (props) => {
     const [userinfo, setUserinfo] = useState({name: "", email: "", })
@@ -31,7 +32,7 @@ const Navbar = (props) => {
         <div>
             <nav className="navbar navbar-expand-lg bg-black">
                 <div className="container-fluid ">
-                    <Link className="navbar-brand text-white" to="/">iNotebook</Link>
+                    <Link className="navbar-brand text-white" to="/"><span><img src={img} alt="image" /></span> iNotebook</Link>
                     <button className="navbar-toggler bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                     </button>
@@ -46,6 +47,10 @@ const Navbar = (props) => {
                         <div className="bg-warning rounded mx-2" onClick={() => {props.toggleMode('warning')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                         <div className="bg-success rounded mx-2" onClick={() => {props.toggleMode('success')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                         <div className="bg-danger rounded mx-2" onClick={() => {props.toggleMode('danger')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
+                        <div className="bg-info rounded mx-2" onClick={() => {props.toggleMode('info')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
+                        <div className="bg-primary-subtle rounded mx-2" onClick={() => {props.toggleMode('primary-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
+                        <div className="bg-secondary-subtle rounded mx-2" onClick={() => {props.toggleMode('secondary-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
+                        <div className="bg-info-subtle rounded mx-2" onClick={() => {props.toggleMode('info-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                     </div>
 
                     <div className={`form-check form-switch mx-5 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
@@ -59,19 +64,19 @@ const Navbar = (props) => {
                         <>
                         { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
                             <div className="dropdown">
-                                <button className="btn btn-success mx-1 my-2" type="button" onClick={() => {return getUser()}} data-bs-toggle="dropdown" aria-expanded="false">Profile</button>
+                                <button className="btn btn-success me-3 my-2" type="button" onClick={() => {return getUser()}} data-bs-toggle="dropdown" aria-expanded="false">Profile <i className="fa-solid fa-user mx-2"></i></button>
                                 <ul className="dropdown-menu">
                                     <li><div className="text-bg-light p-3 rounded">{userinfo.name}</div></li>
                                     <li><div className="text-bg-light p-3 rounded">{userinfo.email}</div></li>
                                 </ul>
                             </div>
                         }
-                        <Link className='btn btn-warning mx-3' to="/login" role='button' onClick={() => {props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.removeItem('adminToken'); }}>Logout</Link>
-                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger mx-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account</Link>}
+                        <Link className='btn btn-warning me-3 my-2' to="/login" role='button' onClick={() => {props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.removeItem('adminToken'); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
+                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger me-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="fa-solid fa-trash mx-2"></i></Link>}
                         </> :
                         <form className="d-flex" role="search">
-                            <Link className='btn btn-success mx-1' to="/login" role='button'>Login</Link>
-                            <Link className='btn btn-warning mx-3' to="/signup" role='button'>Signup</Link>
+                            <Link className='btn btn-success mx-1' to="/login" role='button'>Login<i className="fa-solid fa-right-to-bracket mx-2"></i></Link>
+                            <Link className='btn btn-warning mx-3' to="/signup" role='button'>Signup <i className="fa-solid fa-user-plus mx-2"></i></Link>
                         </form>
                     }
                     </div>
