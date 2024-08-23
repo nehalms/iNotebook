@@ -8,7 +8,8 @@ import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 
 export default function DashBoard(props) {
-    let navigate = useNavigate();
+    
+    history.navigate = useNavigate();
 
     let tabKeyMaps = {
         0 : 'Users',
@@ -21,7 +22,7 @@ export default function DashBoard(props) {
             history.navigate('/login');
             return;
         }
-        if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
+        if(sessionStorage.getItem('adminToken') && jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
             props.showAlert("Session expired Login again", 'danger');
             history.navigate("/login");
             return;

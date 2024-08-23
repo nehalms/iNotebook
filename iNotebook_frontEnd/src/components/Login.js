@@ -5,7 +5,6 @@ import Verification from './Verification';
 import { history } from '../History';
 
 const Login = (props) => {
-    let navigate = useNavigate();
     const[credentials, setCredentials] = useState({email: "", password: ""});
     let [checkForAdminUser, setCheckForAdminUser] = useState(true);
     let [authEmail, setAuthEmail] = useState("");
@@ -141,7 +140,7 @@ const Login = (props) => {
                                     <label htmlFor="password" className="form-label">Password</label>
                                     <input type="password" className="form-control" onChange={onChange} value={credentials.password} id="password" name="password" required/>
                                 </div>
-                                { !isAdminUser && <><Link className='mx-0 my-0' to="/login/forgot" role='button'>Forgot password?</Link><br/></>}
+                                { !isAdminUser && <><Link className='mx-0 my-0' to="/forgot" role='button'>Forgot password?</Link><br/></>}
                                 { isAdminUser && !Verified && <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey"/> }
                                 { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
                                 <button type="submit" className="btn btn-primary mt-3">Login <i className="fa-solid fa-right-to-bracket mx-2"></i></button>

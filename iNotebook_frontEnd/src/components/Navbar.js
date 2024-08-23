@@ -42,7 +42,7 @@ const Navbar = (props) => {
                             {location.pathname === '/' ? <Link className={`nav-link ${location.pathname === '/' ? 'active' : ""} text-white`} aria-current="page" to="/">Home</Link> : <></>}
                         </li> */}
                     </ul>
-                    <div className="d-flex mx-5">
+                    <div className="d-flex mx-5 my-1">
                         <div className="bg-primary rounded mx-2" onClick={() => {props.toggleMode('primary')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                         <div className="bg-warning rounded mx-2" onClick={() => {props.toggleMode('warning')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                         <div className="bg-success rounded mx-2" onClick={() => {props.toggleMode('success')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
@@ -53,14 +53,14 @@ const Navbar = (props) => {
                         <div className="bg-info-subtle rounded mx-2" onClick={() => {props.toggleMode('info-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                     </div>
 
-                    <div className={`form-check form-switch mx-5 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
+                    <div className={`form-check form-switch mx-5 my-1 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
                         { props.mode == 'light' ? 
                             <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault"/> : 
                             <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault" checked/>
                         }
                         <label className="form-check-label text-white" htmlFor="flexSwitchCheckDefault">Dark Mode</label>
                     </div>
-                    { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname === '/' || location.pathname === '/dashboard')) ?
+                    { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
                         <>
                         { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
                             <div className="dropdown">

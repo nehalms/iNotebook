@@ -1,14 +1,12 @@
 import React, {useContext, useState} from 'react'
 import noteContext from '../context/notes/noteContext';
 import {jwtDecode} from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
 import { history } from '../History';
 
 const Addnote = (props) => {
-    let navigate = useNavigate();
     const context = useContext(noteContext);
     const {addNote} = context;
-    const [note, setNote] = useState({title: "", description: "", tag: ""})
+    const [note, setNote] = useState({title: "", description: "", tag: ""});
 
     const handleClick = async (e)=> {
         e.preventDefault();

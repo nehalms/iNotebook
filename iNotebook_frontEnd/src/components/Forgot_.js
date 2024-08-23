@@ -5,7 +5,7 @@ import emailjs from '@emailjs/browser';
 import { history } from '../History';
 
 const Forgot_ = (props)=> {
-  let navigate = useNavigate();
+  history.navigate = useNavigate();
   const mail = useRef(null);
   const pass = useRef(null);
   const cpass = useRef(null);

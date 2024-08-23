@@ -4,14 +4,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Alert(props) {
 
-    // const capitalize = (word)=> {
-    //     if(word == 'danger'){
-    //         word = 'error';
-    //     }
-    //     const lower = word.toLowerCase();
-    //     return lower.charAt(0).toUpperCase() + lower.slice(1);
-    // }
-
     const showToast = (type, msg, id) => {
       if (type === 'success') {
         toast.success(msg, {

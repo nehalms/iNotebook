@@ -20,6 +20,10 @@ const NoteState = (props)=> {
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
+            if(json.error) {
+                props.showAlert(json.error, 'danger');
+                return;
+            }
             console.log(json);
             setNotes(json);
         } catch (err) {
@@ -42,7 +46,11 @@ const NoteState = (props)=> {
                 body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
             });
             props.setLoader({ showLoader: false });
-            const json = response.json();
+            const json = await response.json();
+            if(json.error) {
+                props.showAlert(json.error, 'danger');
+                return;
+            }
             console.log(json);
             fetchNotes();
         } catch (err) {
@@ -76,7 +84,12 @@ const NoteState = (props)=> {
                 },
             });
             props.setLoader({ showLoader: false });
-            console.log(response.json());
+            const json = await response.json();
+            if(json.error) {
+                props.showAlert(json.error, 'danger');
+                return;
+            }
+            console.log(json);
             fetchNotes();
         } catch (err) {
             console.log("Error**", err);
@@ -100,6 +113,11 @@ const NoteState = (props)=> {
                 body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
             });
             props.setLoader({ showLoader: false });
+            const json = await response.json();
+            if(json.error) {
+                props.showAlert(json.error, 'danger');
+                return;
+            }
             fetchNotes();
         } catch (err) {
             console.log("Error**", err);

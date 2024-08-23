@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import Home from './components/Home';
 import Navbar from './components/Navbar'
-import About from './components/About';
 import NoteState from './context/notes/NoteState';
 import Alert from './components/Alert';
 import Login from './components/Login';
@@ -73,7 +72,7 @@ function App() {
     removeBodyClasses();
     if(cls !== null) {
       document.body.classList.add('bg-' + cls);
-      showAlert("Background color changed", 'info');
+      // showAlert("Background color changed", 'info');
       localStorage.setItem('theme', `bg-${cls}`);
     }
     if(mode === 'light' && cls === null) {
@@ -141,9 +140,8 @@ function App() {
           <div className="container">
             <Routes>
               <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
-              <Route exact path='/about' element={<About showAlert={showAlert} setLoader={setLoader}/>} />    
               <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
-              <Route exact path='/login/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>

@@ -11,7 +11,7 @@ export default function UserNotesData(props) {
     const [totalcount, setTotalCount] = useState({usersCount: 0, notesCount: 0});
 
     useEffect(() => {
-      if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
+      if(sessionStorage.getItem('adminToken') && jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
         props.showAlert("Session expired Login again", 'danger');
         history.navigate("/login");
         return;
@@ -40,6 +40,10 @@ export default function UserNotesData(props) {
             });
             props.setLoader({ showLoader: false });
             const data = await response.json();
+            if(data.error) {
+              props.showAlert(data.error, 'danger');
+              return;
+            }
             setRows(data.users);
             data.users.sort((ob1, ob2) => {return ob1.id-ob2.id});
             setTotalCount({

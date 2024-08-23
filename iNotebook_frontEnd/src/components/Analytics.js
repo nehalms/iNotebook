@@ -75,6 +75,10 @@ export default function Analytics(props) {
           }
       });
       const data = await response.json();
+      if(data.error) {
+        props.showAlert(data.error, 'danger');
+        return;
+      }
       props.setLoader({ showLoader: false});
       setShowUserLoader(false);
       setShowNoteLoader(false);
