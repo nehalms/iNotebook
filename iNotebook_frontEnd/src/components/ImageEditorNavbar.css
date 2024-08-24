@@ -1,0 +1,40 @@
+.left-nav-bar {
+    min-width: 250px;
+    height: auto;
+    background-color: #f1f1f1;
+    position: fixed;
+    border: 1px solid black;
+    top: auto;
+    left: auto;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 110;
+  }
+  
+  .left-nav-bar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .left-nav-bar ul li {
+    padding: 5px;
+    text-align: center;
+    border-bottom-color: #000000;    
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    margin: 0 0 10px;
+    padding: 0 0 10px;
+  }
+  
+  .left-nav-bar ul li a {
+    color: black;
+    text-decoration: none;
+    margin: 0px;
+    display: block;
+  }
+  
+  .left-nav-bar ul li a:hover {
+    background-color: #ffffff;
+    border-radius: 8px;
+  }
+  

@@ -17,6 +17,8 @@ import Spinner from './components/Spinner';
 import DashBoard from './components/DashBoard';
 import Confirmation from './components/Confirmation';
 import { history } from './History';
+import Notes from  './components/Notes'
+import ImageEditor from './components/ImageEditor';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -144,6 +146,8 @@ function App() {
               <Route exact path='/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>
           </div>
         </Router>
