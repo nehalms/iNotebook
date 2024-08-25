@@ -58,7 +58,7 @@ export default function RoundCorners(props) {
       const json = await response.json();
       console.log(json);
       if(json.err) {
-          props.showAlert(json.error, 'danger')
+          props.showAlert(json.err, 'danger')
           return;
       }
       if(json.status) {
@@ -106,7 +106,7 @@ export default function RoundCorners(props) {
                 <div className="text-center">
                     {url !== null ? <img src={url} alt="Failed to load image Click on translate again" width={dimsns.width} height={dimsns.height}/> : 'No image'}
                 </div>
-                {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage}>Download New Image<i class="mx-2 fa-solid fa-download"></i></button>}
+                {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage}>Download Image<i class="mx-2 fa-solid fa-download"></i></button>}
             </div>
         </div>
     </div>

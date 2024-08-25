@@ -7,21 +7,26 @@ cloudinary.v2.config({
     secure: true,
   });
 
-const uploadImage = async (id, fileName, timeStamp) => {
-    let uploadResult = await cloudinary.v2.uploader
-        .upload(
-            `./uploads/${fileName}`, {
-                public_id: id+timeStamp,
+const uploadImage = async (buffer) => {
+    return await new Promise(async (resolve, reject) => {
+        let cld_upload_stream = cloudinary.v2.uploader.upload_stream({folder: "iNotebook"},
+            (err, res) => {
+                if(err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
             }
         )
-        .catch((error) => {
-            console.log(error);
-            return error;
-        });
-    return uploadResult;
+        // streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
+        cld_upload_stream.write(buffer);
+        cld_upload_stream.end();
+    });
 }
 
 const deleteImage = (id) => {
+    return;
     cloudinary.v2.api
         .delete_resources([id], 
         { type: 'upload', resource_type: 'image' })
@@ -30,10 +35,7 @@ const deleteImage = (id) => {
 async function roundCorners(id, req) {
     return new Promise(async (resolve, reject) => {
         try {
-            let fileName = req.file.originalname;
-            let timeStamp = moment(new Date()).format();
-            let uploadResult = await uploadImage(id, fileName, timeStamp);
-            
+            let uploadResult = await uploadImage(req.file.buffer);
             if(uploadResult){
                 let transformation = [
                     {gravity: "auto", width: 500, crop: "auto"},
@@ -53,7 +55,7 @@ async function roundCorners(id, req) {
                     url: url,
                 });
             } else {
-                reject(uploadResult);
+                reject({err: 'Image uploading failed'});
             }
         } catch (err) {
             console.log(err);
@@ -65,9 +67,7 @@ async function roundCorners(id, req) {
 async function enhance(id, req) {
     return new Promise( async (resolve, reject) => {
         try {
-            let fileName = req.file.originalname;
-            let timeStamp = moment(new Date()).format();
-            let uploadResult = await uploadImage(id, fileName, timeStamp);
+            let uploadResult = await uploadImage(req.file.buffer);
     
             if(uploadResult) {
                 let url = cloudinary.v2.url(uploadResult.public_id, {effect: "enhance"});
@@ -77,7 +77,7 @@ async function enhance(id, req) {
                     url: url,
                 });
             } else {
-                reject(uploadResult);
+                reject({err: 'Image uploading failed'});
             }
         } catch (err) {
             console.log(err);
