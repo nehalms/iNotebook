@@ -27,6 +27,7 @@ const NoteState = (props)=> {
             console.log(json);
             setNotes(json);
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log("Error**", err);
             props.showAlert("Some error Occured", 'danger');
         }
@@ -54,6 +55,7 @@ const NoteState = (props)=> {
             console.log(json);
             fetchNotes();
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log("Error**", err);
             props.showAlert("Some error Occured", 'danger');
         }
@@ -92,6 +94,7 @@ const NoteState = (props)=> {
             console.log(json);
             fetchNotes();
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log("Error**", err);
             props.showAlert("Some error Occured", 'danger');
         }
@@ -120,6 +123,7 @@ const NoteState = (props)=> {
             }
             fetchNotes();
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log("Error**", err);
             props.showAlert("Some error Occured", 'danger');
         }

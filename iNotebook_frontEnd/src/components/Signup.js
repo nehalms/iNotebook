@@ -62,6 +62,7 @@ const Signup = (props) => {
                 props.showAlert(json.error, "danger");
             }
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log("Error**", err);
             props.showAlert("Some error Occured", 'danger');
         }

@@ -42,6 +42,7 @@ const Forgot_ = (props)=> {
       }
       history.navigate('/login');
     } catch (err) {
+      props.setLoader({ showLoader: false });
       console.log("Error**", err);
       props.showAlert("Some error Occured", 'danger');
     }
@@ -102,6 +103,7 @@ const Forgot_ = (props)=> {
         props.showAlert("Email not found", 'danger');
       }
     } catch (err) {
+      props.setLoader({ showLoader: false });
       console.log("Error**", err);
       props.showAlert("Some error Occured", 'danger');
     }

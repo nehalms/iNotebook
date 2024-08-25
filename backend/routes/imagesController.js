@@ -21,6 +21,9 @@ router.post('/roundcorners', fetchuser, upload.single('image'), async (req, res)
     try {
         if((req.file.size / 1000000) > 10) {
             res.send({msg: 'File size is too large'});
+            tmpPath = filePath + req.file.originalname
+            console.log(tmpPath);
+            fs.unlinkSync(tmpPath);
         }
         await roundCorners(req.user.id, req)
             .then((data) => {
@@ -40,6 +43,9 @@ router.post('/enhance', fetchuser, upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
             res.send({msg: 'File size is too large'});
+            tmpPath = filePath + req.file.originalname
+            console.log(tmpPath);
+            fs.unlinkSync(tmpPath);
         }
         await enhance(req.user.id, req)
             .then((data) => {

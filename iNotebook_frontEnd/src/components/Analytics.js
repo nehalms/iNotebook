@@ -97,8 +97,9 @@ export default function Analytics(props) {
         });
       }
     } catch (err) {
-      console.log('Error**', err);
-      props.showAlert("Some Error occured", 'danger');
+        props.setLoader({ showLoader: false });
+        console.log('Error**', err);
+        props.showAlert("Some Error occured", 'danger');
     }
   }
 

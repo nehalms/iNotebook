@@ -51,6 +51,7 @@ export default function UserNotesData(props) {
               notesCount: data.notesCount,
             });
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log('Error**', err);
             props.showAlert("Some Error occured", 'danger');
         }

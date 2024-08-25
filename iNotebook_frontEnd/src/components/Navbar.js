@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import { Link, useLocation } from "react-router-dom";
 import img from './favicon-32x32.png'
+import moment from 'moment'
 
 const Navbar = (props) => {
-    const [userinfo, setUserinfo] = useState({name: "", email: "", })
+    const [userinfo, setUserinfo] = useState({name: "", email: "", createdOn: ""})
     let location = useLocation(); //helps to get the exact location i,e the path where exactly the we are(url)
     useEffect(() => {       
         console.log(location.pathname)
@@ -21,8 +22,10 @@ const Navbar = (props) => {
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
-            setUserinfo({name: json.name, email: json.email});
+            console.log(json);
+            setUserinfo({name: json.name, email: json.email, createdOn: json.date});
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log("Error**", err);
             props.showAlert("Some error Occured", 'danger');
         }
@@ -66,13 +69,14 @@ const Navbar = (props) => {
                             <div className="dropdown">
                                 <button className="btn btn-success me-3 my-2" type="button" onClick={() => {return getUser()}} data-bs-toggle="dropdown" aria-expanded="false">Profile <i className="fa-solid fa-user mx-2"></i></button>
                                 <ul className="dropdown-menu">
-                                    <li><div className="text-bg-light p-3 rounded">{userinfo.name}</div></li>
-                                    <li><div className="text-bg-light p-3 rounded">{userinfo.email}</div></li>
+                                    <li><p className="text-bg-light m-0 p-3 rounded border border-2 border-top-0 border-end-0 border-start-0">{userinfo.name}</p></li>
+                                    <li><p className="text-bg-light m-0 p-3 rounded border border-2 border-top-0 border-end-0 border-start-0">{userinfo.email}</p></li>
+                                    <li><p className="text-bg-light m-0 p-3 rounded"><strong>Created on: </strong>{moment(new Date (userinfo.createdOn)).format('MMMM Do YYYY, h:mm:ss a')}</p></li>
                                 </ul>
                             </div>
                         }
                         <Link className='btn btn-warning me-3 my-2' to="/login" role='button' onClick={() => {props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.removeItem('adminToken'); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
-                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger me-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="fa-solid fa-trash mx-2"></i></Link>}
+                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger me-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i class="mx-2 fa-solid fa-trash-can"></i></Link>}
                         </> :
                         <form className="d-flex" role="search">
                             <Link className='btn btn-success mx-1' to="/login" role='button'>Login<i className="fa-solid fa-right-to-bracket mx-2"></i></Link>
