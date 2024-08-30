@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Verification from './Verification';
 import emailjs from '@emailjs/browser';
@@ -10,11 +10,21 @@ const Forgot_ = (props)=> {
   const pass = useRef(null);
   const cpass = useRef(null);
   const [show, setShow] = useState(false);
+  const divRef = useRef();
+  const [height, setHeight] = useState(0);
   const [code_, setCode] = useState(0);
   const[Verified, setVerified] = useState(false);
   const[id, setid] = useState("");
   const[credentials, setCredentials] = useState({email: "", password: "", cpassword: ""});
 
+  useEffect(() => {
+    if(!divRef.current) { return; }
+    const resizeObserver = new ResizeObserver(() => {
+        setHeight(divRef.current.clientHeight);
+    });
+    resizeObserver.observe(divRef.current);
+    return () => resizeObserver.disconnect();
+  }, [])
   
   const handleSubmit = async (e) => {
     try {
@@ -124,13 +134,21 @@ const Forgot_ = (props)=> {
 
   return (
     <div className='container my-3'>
-      <form onSubmit={handleSubmit}>
-        <div className="container-fluid vh-50 d-flex align-items-center">
-            <div className="row w-100">
-                <h2 className='my-3 text-center'>Reset Password</h2>
-                <div className="col-md-3 d-none d-md-block bg-image"></div>
-                <div className="col-md-6 d-flex align-items-center justify-content-center">
-                    <div className="card p-5 w-100">
+      <div className='row ps-5 pe-5 pb-5'>
+        <div className="col-md-2"></div>
+        <div className='col-lg-3 p-0'>
+            <div className="card my-3" style={{backgroundColor: '#198754', height: window.innerWidth > 992 ? height : 'auto'}}>
+                <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                    <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
+                    <h6 className='m-0 p-1 text-center text-white'>Reset your password. Please note that we cannot recover your original password because we store it using hashing and salting techniques</h6>
+                </div>
+            </div>
+        </div>
+        <div className='col-lg p-0'>
+            <div className="card my-3 p-2 border rounded-start" style={{borderTopLeftRadius: '0px'}} ref={divRef}>
+                <div className="card-body">
+                    <form onSubmit={handleSubmit}>
+                        <h2 className='my-3 text-center'>Reset Password</h2>
                         <div className="mb-3">
                           <label htmlFor="email" className="form-label">Email</label>
                           <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>
@@ -147,14 +165,12 @@ const Forgot_ = (props)=> {
                           <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
                         </div>}
                         { Verified && <button type="submit" className="btn btn-primary mt-4">Update</button>}
-                    </div>
+                    </form>
                 </div>
-                <div className="col-md-3 d-none d-md-block bg-image"></div>
             </div>
         </div>
-        
-        
-      </form>
+        <div className="col-md-2"></div>
+      </div>
     </div>
   )
 }

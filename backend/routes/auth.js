@@ -101,6 +101,7 @@ router.post(
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
       await LoginHistory.create({
+        userId: user.id,
         name: user.name,
         email: user.email,
       });

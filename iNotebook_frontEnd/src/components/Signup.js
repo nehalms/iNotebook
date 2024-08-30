@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import Verification from './Verification';
@@ -8,12 +8,22 @@ const Signup = (props) => {
     const mail = useRef(null);
     const pass = useRef(null);
     const cpass = useRef(null);
-    let navigate = useNavigate();
     const[credentials, setCredentials] = useState({name:"", email: "", password: "", cpassword: ""});
+    const divRef = useRef();
+    const [height, setHeight] = useState(0);
     const[code_, setCode] = useState(0);
     const[show, setShow] = useState(false);
     const[Verified, setVerified] = useState(false);
     history.navigate = useNavigate();
+
+    useEffect(() => {
+      if( !divRef.current ) { return; }
+      const resizeObserver = new ResizeObserver(() => {
+          setHeight(divRef.current.clientHeight);
+      });
+      resizeObserver.observe(divRef.current);
+      return () => resizeObserver.disconnect();
+    }, [])
 
     const handleSubmit = async (e)=> {
         try {
@@ -123,43 +133,47 @@ const Signup = (props) => {
 
     return (
       <div className='container my-3'>
-          <form onSubmit={handleSubmit}>
-            <div className="container-fluid vh-50 d-flex align-items-center">
-                <div className="row w-100">
-                    <h2 className='my-3 text-center'>Create an account to use iNotebook</h2>
-                    <div className="col-md-3 d-none d-md-block bg-image"></div>
-                    <div className="col-md-6 d-flex align-items-center justify-content-center">
-                        <div className="card p-5 w-100">
-                          <div className="mb-3">
-                            <label htmlFor="name" className="form-label">Name</label>
-                            <input type="text" className="form-control" id="name" name="name" onChange={onChange} aria-describedby="emailHelp" minLength={5} required/>
-                          </div>
-                          <div className="mb-3">
-                            <label htmlFor="email" className="form-label">Email</label>
-                            <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>
-                            { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code <i className="fa-solid fa-paper-plane mx-2"></i></button> }
-                          </div>
-                          { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
-                          {show && <Verification verify={verify} sendEmail={sendEmail}/>}
-                          <div className="mb-3 my-3">
-                            <label htmlFor="password" className="form-label">Password</label>
-                            <input type="password" ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
-                          </div>
-                          <div className="mb-3">
-                            <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-                            <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
-                          </div>
-                          <button type="submit" className="btn btn-primary mt-3">Submit</button>
+        <div className='row ps-5 pe-5 pb-5'>
+          <div className="col-md-2"></div>
+          <div className='col-lg-3 p-0'>
+              <div className="card my-3" style={{backgroundColor: '#ffc107', height: window.innerWidth > 992 ? height : 'auto'}}>
+                  <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                      <h2 className='m-0 p-1 text-center'>iNotebook</h2>
+                      <h6 className='m-0 p-1 text-center'>Welcome! Create an account and enjoy the features</h6>
+                  </div>
+              </div>
+          </div>
+          <div className='col-lg p-0'>
+              <div className="card my-3 p-2 border rounded-start" style={{borderTopLeftRadius: '0px'}} ref={divRef}>
+                  <div className="card-body">
+                      <form onSubmit={handleSubmit}>
+                      <h2 className='my-3 text-center'>Sign Up</h2>
+                      <div className="mb-3">
+                          <label htmlFor="name" className="form-label">Name</label>
+                          <input type="text" className="form-control" id="name" name="name" onChange={onChange} aria-describedby="emailHelp" minLength={5} required/>
                         </div>
-                    </div>
-                    <div className="col-md-3 d-none d-md-block bg-image"></div>
-                </div>
-            </div>
-            
-            
-            
-            
-          </form>
+                        <div className="mb-3">
+                          <label htmlFor="email" className="form-label">Email</label>
+                          <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>
+                          { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code <i className="fa-solid fa-paper-plane mx-2"></i></button> }
+                        </div>
+                        { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
+                        {show && <Verification verify={verify} sendEmail={sendEmail}/>}
+                        <div className="mb-3 my-3">
+                          <label htmlFor="password" className="form-label">Password</label>
+                          <input type="password" ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="cpassword" className="form-label">Confirm Password</label>
+                          <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
+                        </div>
+                        <button type="submit" className="btn btn-primary mt-3" style={{width: '100%'}}>Submit</button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+          <div className="col-md-2"></div>
+        </div>
       </div>
     )
 }

@@ -94,6 +94,7 @@ export default function UserNotesData(props) {
             headerClassName: 'bg-primary text-light',
             cellClassName: 'text-center',
             valueGetter: (date) => {return moment(new Date(date)).format('LLL')},
+            sortComparator: (v1, v2) => moment(v1).diff(moment(v2)),
             flex: 1,
         },
         {
@@ -127,6 +128,7 @@ export default function UserNotesData(props) {
           headerClassName: 'bg-primary text-light',
           cellClassName: 'text-center',
           valueGetter: (date) => {return moment(new Date(date)).format('LLL')},
+          sortComparator: (v1, v2) => moment(v1).diff(moment(v2)),
           flex: 1,
       },
     ] 

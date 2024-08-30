@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import emailjs from '@emailjs/browser';
 import Verification from './Verification';
@@ -10,8 +10,19 @@ const Login = (props) => {
     let [authEmail, setAuthEmail] = useState("");
     const [isAdminUser, setIsAdminUser] = useState(false);
     const[code, setCode] = useState();
+    const divRef = useRef();
+    const [height, setHeight] = useState(0);
     const[Verified, setVerified] = useState(false);
     history.navigate = useNavigate();
+
+    useEffect(() => {
+        if( !divRef.current ) { return; }
+        const resizeObserver = new ResizeObserver(() => {
+            setHeight(divRef.current.clientHeight);
+        });
+        resizeObserver.observe(divRef.current);
+        return () => resizeObserver.disconnect();
+    }, [])
 
     const handleSubmit = async (e)=> {
         e.preventDefault(); // to prevent page from reloading
@@ -124,14 +135,22 @@ const Login = (props) => {
     }
 
     return (
-        <div className='container my-3'>
-            <form onSubmit={handleSubmit}>
-                <div className="container-fluid vh-50 d-flex align-items-center">
-                    <div className="row w-100">
-                        <h2 className='my-3 text-center'>Login to continue on iNotebook</h2>
-                        <div className="col-md-3 d-none d-md-block bg-image"></div>
-                        <div className="col-md-6 d-flex align-items-center justify-content-center">
-                            <div className="card p-5 w-100">
+        <div className='container my-5'>
+            <div className='row ps-5 pe-5 pb-5'>
+                <div className="col-md-2"></div>
+                <div className='col-lg-3 p-0'>
+                    <div className="card my-3" style={{backgroundColor: '#198754', height: window.innerWidth > 992 ? height : 'auto'}}>
+                        <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                            <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
+                            <h6 className='m-0 p-1 text-center text-white'>Log in and save from one place, then access it from anywhere</h6>
+                        </div>
+                    </div>
+                </div>
+                <div className='col-lg p-0'>
+                    <div className="card my-3 p-2 border rounded-start" style={{borderTopLeftRadius: '0px'}} ref={divRef}>
+                        <div className="card-body">
+                            <form onSubmit={handleSubmit}>
+                                <h2 className='my-3 pb-3 text-center'>Login</h2>
                                 <div className="mb-3">
                                     <label htmlFor="email" className="form-label">Email address</label>
                                     <input type="email" className="form-control" onChange={onChange} value={credentials.email} required id="email" name="email" aria-describedby="emailHelp"/>
@@ -143,13 +162,13 @@ const Login = (props) => {
                                 { !isAdminUser && <><Link className='mx-0 my-0' to="/forgot" role='button'>Forgot password?</Link><br/></>}
                                 { isAdminUser && !Verified && <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey"/> }
                                 { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
-                                <button type="submit" className="btn btn-primary mt-3">Login <i className="fa-solid fa-right-to-bracket mx-2"></i></button>
-                            </div>
+                                <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Login <i className="fa-solid fa-right-to-bracket mx-2"></i></button>
+                            </form>
                         </div>
-                        <div className="col-md-3 d-none d-md-block bg-image"></div>
                     </div>
                 </div>
-            </form>
+                <div className="col-md-2"></div>
+            </div>
         </div>
     )
 }

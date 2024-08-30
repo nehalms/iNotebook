@@ -17,7 +17,6 @@ export default function RoundCorners(props) {
   useEffect(() => {
     if (!imgDivRef.current) return;
     const resizeObserver = new ResizeObserver(() => {
-        console.log(imgDivRef.current.offsetWidth);
         setDimsns({width: imgDivRef.current.offsetWidth-30});
     });
     resizeObserver.observe(imgDivRef.current);

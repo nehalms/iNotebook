@@ -3,8 +3,8 @@ const { Schema } = mongoose;
 
 const ImageSchema = new Schema({
     userId : {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
     },
     count : {
         type: Number,
