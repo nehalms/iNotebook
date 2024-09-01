@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
-import noteContext from '../context/notes/noteContext';
+import noteContext from '../../context/notes/noteContext';
 import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import Popup from './Popup';
+import Popup from '../Utils/Popup';
 import { history } from '../History';
 
 const NoteItem = (props) => {
@@ -31,7 +31,7 @@ const NoteItem = (props) => {
 
     return (
         <div className='col-md-4'>
-            <div className="card my-3">
+            <div className="card shadow-lg my-3">
                 <div className="card-body">
                     <div className="d-flex align-items-center justify-content-between my-1">
                         <h5 className="card-title my-0">{note.title}</h5>

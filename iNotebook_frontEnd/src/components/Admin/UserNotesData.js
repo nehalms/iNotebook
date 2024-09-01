@@ -137,14 +137,14 @@ export default function UserNotesData(props) {
     <>
       <div className="row align-items-center justify-content-center">
         <div className='col-md-3'>
-            <div className="card my-3 py-2" style={{backgroundColor: '#facb89'}}>
+            <div className="card shadow-lg my-3 py-2" style={{backgroundColor: '#facb89'}}>
                 <div className="card-body">
                   <h5 className="card-title my-0 text-center">Total Users : {totalcount.usersCount}</h5>
                 </div>
             </div>
         </div>
         <div className='col-md-3'>
-            <div className="card my-3 py-2" style={{backgroundColor: '#89faba'}}>
+            <div className="card shadow-lg my-3 py-2" style={{backgroundColor: '#89faba'}}>
                 <div className="card-body">
                   <h5 className="card-title my-0 text-center">No. of Notes : {totalcount.notesCount}</h5>
                 </div>

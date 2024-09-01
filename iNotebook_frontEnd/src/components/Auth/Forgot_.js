@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Verification from './Verification';
+import Verification from '../Utils/Verification';
 import emailjs from '@emailjs/browser';
 import { history } from '../History';
 
@@ -18,7 +18,7 @@ const Forgot_ = (props)=> {
   const[credentials, setCredentials] = useState({email: "", password: "", cpassword: ""});
 
   useEffect(() => {
-    if(!divRef.current) { return; }
+    if(!divRef.current) return; 
     const resizeObserver = new ResizeObserver(() => {
         setHeight(divRef.current.clientHeight);
     });
@@ -89,7 +89,7 @@ const Forgot_ = (props)=> {
         props.showAlert("Code send to your mail", "success");
         setShow(true);
         e.preventDefault();
-        var val = Math.floor((Math.random()*1000000)+1);
+        var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
         setCode(val);
         
         emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
@@ -121,7 +121,7 @@ const Forgot_ = (props)=> {
 
   const verify = (code)=> {
     console.log(code + " " + code_);
-    if(code == code_){
+    if(code === code_){
       setVerified(true);
       setShow(false);
       mail.current.style.border = '3px solid #63E6BE';
@@ -137,7 +137,7 @@ const Forgot_ = (props)=> {
       <div className='row ps-5 pe-5 pb-5'>
         <div className="col-md-2"></div>
         <div className='col-lg-3 p-0'>
-            <div className="card my-3" style={{backgroundColor: '#198754', height: window.innerWidth > 992 ? height : 'auto'}}>
+            <div className="card my-3 bg-primary" style={{height: window.innerWidth > 992 ? height : 'auto'}}>
                 <div className="card-body d-flex flex-column align-items-center justify-content-center">
                     <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
                     <h6 className='m-0 p-1 text-center text-white'>Reset your password. Please note that we cannot recover your original password because we store it using hashing and salting techniques</h6>

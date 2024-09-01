@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
-import Verification from './Verification';
+import Verification from '../Utils/Verification';
 import { history } from '../History';
 
 const Signup = (props) => {
@@ -17,7 +17,7 @@ const Signup = (props) => {
     history.navigate = useNavigate();
 
     useEffect(() => {
-      if( !divRef.current ) { return; }
+      if( !divRef.current ) return; 
       const resizeObserver = new ResizeObserver(() => {
           setHeight(divRef.current.clientHeight);
       });
@@ -57,7 +57,7 @@ const Signup = (props) => {
                 to_name: 'Nehal',
                 message: "New-user Sign Up alert ",
                 code : credentials.name,
-                to_mail: process.env.REACT_APP_ADMIN_MAIL,
+                to_mail: process.env.ADMIN_MAIL,
               } , 'ytEYvYv1q0VNEV4EE', 
               )
               .then((result) => {
@@ -79,7 +79,6 @@ const Signup = (props) => {
     }
 
     const onChange = async (e)=> {
-        console.log(localStorage.getItem('token'));
         setCredentials({...credentials, [e.target.name]: e.target.value}) //helps to keep data in note as same and append the new values being typed
         // console.log(pass.current.value + " = " + cpass.current.value + " => " + (pass.current.value == cpass.current.value));
         if(cpass.current.value === pass.current.value && credentials.cpassword !== ""){
@@ -97,7 +96,7 @@ const Signup = (props) => {
         props.showAlert("Code send to your mail", "success");
         setShow(true);
         e.preventDefault();
-        var val = Math.floor((Math.random()*1000000)+1);
+        var val = Math.floor(Math.random()*(999999 - 100000 + 1)) + 100000;
         setCode(val);
         
         emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
@@ -120,7 +119,7 @@ const Signup = (props) => {
 
     const verify = (code)=> {
     //   console.log(code + " " + code_);
-      if(code == code_){
+      if(code === code_){
         setVerified(true);
         setShow(false);
         mail.current.style.border = '3px solid #63E6BE';
@@ -167,7 +166,7 @@ const Signup = (props) => {
                           <label htmlFor="cpassword" className="form-label">Confirm Password</label>
                           <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
                         </div>
-                        <button type="submit" className="btn btn-primary mt-3" style={{width: '100%'}}>Submit</button>
+                        <button type="submit" className="btn btn-primary mt-3" style={{width: '100%'}}>Sign up<i className="fa-solid fa-user-plus mx-2"></i></button>
                       </form>
                   </div>
               </div>

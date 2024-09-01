@@ -5,8 +5,8 @@ const Popup = (props) => {
         <div className='m-0' style={styles.popup}>
             <div className='d-flex align-items-center justify-content between'>
                 <p className='m-0'>Are you sure?</p>
-                <i class="fa-solid fa-circle-xmark" style={styles.icon_wrong} onClick={props.onCancel}></i>
-                <i class="fa-solid fa-square-check" style={styles.icon_tick} onClick={props.onConfirm}></i>
+                <i className="fa-solid fa-circle-xmark" style={styles.icon_wrong} onClick={props.onCancel}></i>
+                <i className="fa-solid fa-square-check" style={styles.icon_tick} onClick={props.onConfirm}></i>
             </div>
         </div>
     );

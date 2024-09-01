@@ -9,16 +9,17 @@ import {
 import Home from './components/Home';
 import Navbar from './components/Navbar'
 import NoteState from './context/notes/NoteState';
-import Alert from './components/Alert';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Forgot from './components/Forgot_';
-import Spinner from './components/Spinner';
-import DashBoard from './components/DashBoard';
-import Confirmation from './components/Confirmation';
-import { history } from './History';
-import Notes from  './components/Notes'
-import ImageEditor from './components/ImageEditor';
+import Alert from './components/Utils/Alert';
+import Login from './components/Auth/Login';
+import Signup from './components/Auth/Signup';
+import Forgot from './components/Auth/Forgot_';
+import Spinner from './components/Utils/Spinner';
+import DashBoard from './components/Admin/DashBoard';
+import Confirmation from './components/Utils/Confirmation';
+import { history } from '../src/components/History';
+import Notes from  './components/Notes/Notes'
+import ImageEditor from './components/Images/ImageEditor';
+import TrainInfo from './components/Train/TrainInfo';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -148,6 +149,7 @@ function App() {
               <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/traininfo' element={<TrainInfo showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>
           </div>
         </Router>

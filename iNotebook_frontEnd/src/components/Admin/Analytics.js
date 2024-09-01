@@ -106,7 +106,7 @@ export default function Analytics(props) {
   return (
     <div className="row align-items-center justify-content-center">
       <div className='col-md-6'>
-          <div className="card my-3 py-2">
+          <div className="card shadow-lg my-3 py-2">
               <div className="card-body">
                 <h4 className='text-center'>No. of Login's (Past 7 days)</h4>
                 <div className='d-flex align-items-center justify-content-end'>
@@ -121,7 +121,7 @@ export default function Analytics(props) {
                     <div>
                         <p className='m-0' style={{visibility: 'hidden'}}>Hide</p>
                         <div className='p-2 rounded' style={{backgroundColor: '#f5a52c', cursor: 'pointer'}} onClick={() => {fetchData('user')}}>
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <i className="fa-solid fa-magnifying-glass"></i>
                         </div>
                     </div>
                 </div>
@@ -167,7 +167,7 @@ export default function Analytics(props) {
           </div>
       </div>
       <div className='col-md-6'>
-          <div className="card my-3 py-2">
+          <div className="card shadow-lg my-3 py-2">
               <div className="card-body">
                 <h4 className='text-center'>No. Notes of created (Past 7 days)</h4>
                 <div className='d-flex align-items-center justify-content-end'>
@@ -182,7 +182,7 @@ export default function Analytics(props) {
                     <div>
                         <p className='m-0' style={{visibility: 'hidden'}}>Hide</p>
                         <div className='p-2 rounded' style={{backgroundColor: '#f5a52c', cursor: 'pointer'}} onClick={() => {fetchData('notes')}}>
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <i className="fa-solid fa-magnifying-glass"></i>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import emailjs from '@emailjs/browser';
-import Verification from './Verification';
+import Verification from '../Utils/Verification';
 import { history } from '../History';
 
 const Login = (props) => {
@@ -16,7 +16,7 @@ const Login = (props) => {
     history.navigate = useNavigate();
 
     useEffect(() => {
-        if( !divRef.current ) { return; }
+        if( !divRef.current ) return;
         const resizeObserver = new ResizeObserver(() => {
             setHeight(divRef.current.clientHeight);
         });
@@ -54,7 +54,7 @@ const Login = (props) => {
                 if(adminData && adminData.isAdmin) {
                     setAuthEmail(adminData.authEmail);
                     sessionStorage.setItem('adminToken', json.authToken);
-                    var val = Math.floor((Math.random()*1000000)+1);
+                    var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
                     setCode(val);
                     setIsAdminUser(true);
                     sendEmail(e, adminData.authEmail);
@@ -82,6 +82,7 @@ const Login = (props) => {
                 props.showAlert(json.error, "danger");
             }
         } catch (err) {
+            props.setLoader({ showLoader: false });
             console.log('Error** ', err);
             props.showAlert("Some Error Occured", "danger");
         }
@@ -91,7 +92,7 @@ const Login = (props) => {
         if(credentials.email.toString().endsWith(".com")){
           setVerified(false);
           props.showAlert("Code send to your mail", "success");
-          var val = Math.floor((Math.random()*1000000)+1);
+          var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
           setCode(val);
           let json = {
             to_name: "Nehal",
@@ -121,7 +122,7 @@ const Login = (props) => {
       };
 
     const verify = (verCode)=> {
-        if(code == verCode){
+        if(code === verCode){
           setVerified(true);
           props.showAlert("Verified", "success");
         }
@@ -142,7 +143,7 @@ const Login = (props) => {
                     <div className="card my-3" style={{backgroundColor: '#198754', height: window.innerWidth > 992 ? height : 'auto'}}>
                         <div className="card-body d-flex flex-column align-items-center justify-content-center">
                             <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
-                            <h6 className='m-0 p-1 text-center text-white'>Log in and save from one place, then access it from anywhere</h6>
+                            <h6 className='m-0 p-1 text-center text-white'>Log in and save from one place, access it from anywhere</h6>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
-import { history } from '../History';
+import { history } from './History';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
+import './Home.css';
 
 const Home = (props) => {
   history.navigate = useNavigate();
@@ -21,17 +22,24 @@ const Home = (props) => {
 
   return (
     <div className='row my-2'>
-      <div className='col-md-3'>
-        <div className="card my-3" onClick={() => {history.navigate('/notes')}}>
+      <div className='col-lg-3'>
+        <div className="card shadow-lg my-3 SaveNotes__left-right" onClick={() => {history.navigate('/notes')}}>
           <div className="card-body">
             <h5 className='text-center'>Save Notes</h5>
           </div>
         </div>
       </div>
-      <div className='col-md-3'>
-        <div className="card my-3" onClick={() => {history.navigate('/imEdit')}}>
+      <div className='col-lg-3'>
+        <div className="card shadow-lg my-3 ImagesEdit__left-right" onClick={() => {history.navigate('/imEdit')}}>
           <div className="card-body">
             <h5 className='text-center'>Image Editor</h5>
+          </div>
+        </div>
+      </div>
+      <div className='col-lg-3'>
+        <div className="card shadow-lg my-3 TrainInfo__left-right" onClick={() => {props.showAlert('Under development', 'info')}}>
+          <div className="card-body">
+            <h5 className='text-center'>Train Information</h5>
           </div>
         </div>
       </div>

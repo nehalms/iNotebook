@@ -5,7 +5,7 @@ const cors = require('cors')
  
 connectToMongo();
 const app = express()
-const port = process.env.REACT_APP_PORT || 8080
+const port = process.env.PORT || 8080
  
 let corsOptions = {
   origin: 'http://localhost:3000',
@@ -27,6 +27,7 @@ app.use('/api/auth', require('../routes/auth'));
 app.use('/api/notes', require('../routes/notes'));
 app.use('/api/getdata', require('../routes/data'));
 app.use('/api/image', require('../routes/imagesController'));
+app.use('/api/train/', require('../routes/trainController'));
 
 app.listen(port, () => {
   console.log(`iNotebook backend listening at port :${port}`)

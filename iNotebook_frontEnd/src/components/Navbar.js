@@ -76,7 +76,7 @@ const Navbar = (props) => {
                             </div>
                         }
                         <Link className='btn btn-warning me-3 my-2' to="/login" role='button' onClick={() => {props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.removeItem('adminToken'); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
-                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger me-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i class="mx-2 fa-solid fa-trash-can"></i></Link>}
+                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger me-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
                         </> :
                         <form className="d-flex" role="search">
                             <Link className='btn btn-success mx-1' to="/login" role='button'>Login<i className="fa-solid fa-right-to-bracket mx-2"></i></Link>
