@@ -114,8 +114,8 @@ export default function UserNotesData(props) {
             headerClassName: 'bg-primary text-light',
             cellClassName: 'text-center',
             renderCell: (params) => {
-              return(<Tooltip title={params.row.isActive == true ? 'Active' : 'Inactive'}>  
-                <span><i className="fa-solid fa-circle" style={{color: `${params.row.isActive == true ? '#63E6BE' : '#fe3434'}`}}></i></span>
+              return(<Tooltip title={params.row.isActive === true ? 'Active' : 'Inactive'}>  
+                <span><i className="fa-solid fa-circle" style={{color: `${params.row.isActive === true ? '#63E6BE' : '#fe3434'}`}}></i></span>
               </Tooltip>)
             },
             flex: 1,

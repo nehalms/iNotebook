@@ -97,7 +97,7 @@ function App() {
   const setUserInactive = async () => {
     try {
       setLoader({ showLoader: true, msg: "Please wait"});
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/changestatus`, {
+      await fetch(`${process.env.REACT_APP_BASE_URL}/auth/changestatus`, {
           method: "POST", 
           headers: {
             "Content-Type": "application/json",

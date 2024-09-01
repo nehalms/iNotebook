@@ -1,12 +1,10 @@
 import React, { useContext, useState } from 'react'
 import noteContext from '../../context/notes/noteContext';
 import {jwtDecode} from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
 import Popup from '../Utils/Popup';
 import { history } from '../History';
 
 const NoteItem = (props) => {
-    let navigate = useNavigate();
     const context = useContext(noteContext);
     const {deleteNote} = context;
     const {note, editNote} = props;

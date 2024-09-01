@@ -2,12 +2,10 @@ import React,{ useContext, useEffect, useRef, useState } from 'react'
 import noteContext from '../../context/notes/noteContext';
 import NoteItem from './NoteItem';
 import Addnote from './Addnote';
-import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 import { history } from '../History';
 
 const Notes = (props) => {
-    let navigate = useNavigate();
     const context = useContext(noteContext);
     const {notes, fetchNotes, updateNote} = context;
     const [note, setNote] = useState({id:"", etitle: "", edescription: "", etag: ""})

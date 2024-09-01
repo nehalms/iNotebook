@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Bar } from "react-chartjs-2";
 import { Chart, registerables } from 'chart.js';
 import { jwtDecode } from 'jwt-decode';
@@ -35,7 +35,7 @@ export default function Analytics(props) {
   const fetchData = async (reqType='both') => {
     try {
       let dates;
-      if(reqType == 'both') {
+      if(reqType === 'both') {
         dates = {
             startDate: moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD'),
             endDate: moment(new Date()).format('YYYY-MM-DD'),

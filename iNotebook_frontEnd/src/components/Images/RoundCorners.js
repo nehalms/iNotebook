@@ -37,7 +37,7 @@ export default function RoundCorners(props) {
         props.showAlert('No Image uploaded', 'warning');
         return;
     }
-    if((cornerValues.btmleft == 0 && cornerValues.btmright == 0 && cornerValues.topleft == 0 && cornerValues.topright == 0) && !maxChecked) {
+    if((cornerValues.btmleft === 0 && cornerValues.btmright === 0 && cornerValues.topleft === 0 && cornerValues.topright === 0) && !maxChecked) {
         props.showAlert('No change selected', 'warning');
         return;
     }
