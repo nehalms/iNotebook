@@ -18,7 +18,7 @@ function Verification(props) {
     if(!event) {return;}
     let id = Number(event.target.id);
     if(event.key !== 'Backspace') {
-      if(id < 7)
+      if(id < 6)
         document.getElementById(id+1).focus();
     }
      else if(event.key === 'Backspace') {
@@ -40,7 +40,6 @@ function Verification(props) {
               <input type="text" id='4' style={{width: window.innerHeight < 700 ? '40px' : '30px', height: window.innerHeight < 700 ? '40px' : '30px'}} className="otp-box" maxLength="1" autoComplete='off' onKeyUp={moveFocus} />
               <input type="text" id='5' style={{width: window.innerHeight < 700 ? '40px' : '30px', height: window.innerHeight < 700 ? '40px' : '30px'}} className="otp-box" maxLength="1" autoComplete='off' onKeyUp={moveFocus} />
               <input type="text" id='6' style={{width: window.innerHeight < 700 ? '40px' : '30px', height: window.innerHeight < 700 ? '40px' : '30px'}} className="otp-box" maxLength="1" autoComplete='off' onKeyUp={moveFocus} />
-              <input type="text" id='7' style={{display: 'none', visibility: 'hidden'}} />
             </div>
           <div id="emailHelp" className="form-text bg-danger p-1 text-center border rounded text-white">***Please check in spam folder too</div>
         </div>

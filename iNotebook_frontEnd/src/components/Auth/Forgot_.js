@@ -149,7 +149,7 @@ const Forgot_ = (props)=> {
 
   return (
     <div className='container my-3'>
-      <div className='row ps-5 pe-5 pb-5'>
+      <div className='row'>
         <div className="col-md-2"></div>
         <div className='col-lg-3 p-0'>
             <div className="card my-3 bg-primary" style={{height: window.innerWidth > 992 ? height : 'auto'}}>
