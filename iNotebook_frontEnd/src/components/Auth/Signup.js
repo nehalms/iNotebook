@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import emailjs from '@emailjs/browser';
 import Verification from '../Utils/Verification';
 import { history } from '../History';
+import { getSignUphtml, getAdminNotifyhtml } from './getEmailHtml';
 
 const Signup = (props) => {
     const mail = useRef(null);
@@ -53,18 +53,29 @@ const Signup = (props) => {
             // console.log(json); 
             if(json.success){
               localStorage.setItem('token', json.authToken);
-              emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
-                to_name: 'Nehal',
-                message: "New-user Sign Up alert ",
-                code : credentials.name,
-                to_mail: process.env.ADMIN_MAIL,
-              } , 'ytEYvYv1q0VNEV4EE', 
-              )
-              .then((result) => {
-                    console.log(result.text);
-                }, (error) => {
-                    console.log(error.text);
+              try {
+                let html = getAdminNotifyhtml(credentials.name, credentials.email); 
+                let email = [];
+                props.setLoader({ showLoader: true, msg: "Saving user data"});
+                let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
+                  method: "POST", 
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    email: email,
+                    cc: [],
+                    subject: 'New User Notification',
+                    text: '',
+                    html: html
+                  }),
                 });
+                props.setLoader({ showLoader: false });
+                const json = await response.json();
+              } catch (err) {
+                props.setLoader({ showLoader: false });
+                console.log("Error**");
+              }
               history.navigate("/login"); // to redirect the page to home page
               props.showAlert("Sign in successfull", "success");
             }
@@ -89,31 +100,46 @@ const Signup = (props) => {
         }
     }
 
-    const sendEmail = (e) => {
-      
+    const sendEmail = async (e) => {
       if(credentials.email.toString().endsWith(".com")){
+        var val = Math.floor(Math.random()*(999999 - 100000 + 1)) + 100000;
+        try {
+          let html = getSignUphtml(val); 
+          let email = [];
+          email.push(credentials.email);
+          props.setLoader({ showLoader: true, msg: "Sending email"});
+          let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send`, {
+            method: "POST", 
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email,
+              cc: [],
+              subject: 'Create Account',
+              text: '',
+              html: html
+            }),
+          });
+          const res = await response.json();
+          props.setLoader({ showLoader: false });
+          if(!res.success) {
+            props.showAlert("Mail error: cannot send email", 'danger');
+            return;
+          }
+          props.showAlert("Code send to your mail", "success");    
+        } catch (err) {
+          props.setLoader({ showLoader: false });
+          console.log("Error**", err);
+          props.showAlert("Mail error: cannot send email", 'danger');
+        }
         setVerified(false);
-        props.showAlert("Code send to your mail", "success");
         setShow(true);
         e.preventDefault();
-        var val = Math.floor(Math.random()*(999999 - 100000 + 1)) + 100000;
         setCode(val);
-        
-        emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
-          to_name: credentials.name,
-          message: "Verification code ",
-          code : val,
-          to_mail: credentials.email,
-        } , 'ytEYvYv1q0VNEV4EE', 
-        )
-        .then((result) => {
-              console.log(result.text);
-          }, (error) => {
-              console.log(error.text);
-          });
       }
       else{
-        props.showAlert("Email cannot be empty", 'danger');
+        props.showAlert("Invalid Email", 'danger');
       }
     };
 

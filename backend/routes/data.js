@@ -8,7 +8,7 @@ const moment = require('moment')
 
 router.get('/users', fetchuser, async (req, res)=> {
     try{
-        const Users = await User.find({email: {$ne: 'iNotebook@gmail.com'}});
+        const Users = await User.find({email: {$ne: 'inotebook002@gmail.com'}});
         const notes = await Notes.find();
         Users.sort((user1, user2) => {return user1.name.toLowerCase() > user2.name.toLowerCase() ? 1 : -1})
         let response = {};

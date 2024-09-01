@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import emailjs from '@emailjs/browser';
 import Verification from '../Utils/Verification';
 import { history } from '../History';
+import { getAdminhtml } from './getEmailHtml';
 
 const Login = (props) => {
     const[credentials, setCredentials] = useState({email: "", password: ""});
@@ -88,33 +88,35 @@ const Login = (props) => {
         }
     }
 
-    const sendEmail = (e, email = null) => {
+    const sendEmail = async () => {
         if(credentials.email.toString().endsWith(".com")){
           setVerified(false);
-          props.showAlert("Code send to your mail", "success");
           var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
           setCode(val);
-          let json = {
-            to_name: "Nehal",
-            message: "Verification code ",
-            code : val,
-            to_mail: email ? email : authEmail
-          }
-          console.log(json);
-
-          emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
-            to_name: "Nehal",
-            message: "Verification code ",
-            code : val,
-            to_mail: email ? email : authEmail,
-          } , 'ytEYvYv1q0VNEV4EE', 
-          )
-          .then((result) => {
-                console.log(result.text);
-            }, (error) => {
-                props.showAlert(error.text, 'danger');
-                console.log(error.text);
+          try {
+            let html = getAdminhtml(val); 
+            let email = [];
+            props.setLoader({ showLoader: true, msg: "Sending otp..."});
+            let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
+              method: "POST", 
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: email,
+                cc: [],
+                subject: 'Admin Login',
+                text: '',
+                html: html
+              }),
             });
+            props.setLoader({ showLoader: false });
+            props.showAlert("Code send to your mail", "success");
+            const json = await response.json();
+          } catch (err) {
+            props.setLoader({ showLoader: false });
+            console.log("Error**");
+          }    
         }
         else{
           props.showAlert("Email cannot be empty", 'danger');

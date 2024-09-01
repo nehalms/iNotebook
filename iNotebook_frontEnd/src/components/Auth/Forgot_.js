@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Verification from '../Utils/Verification';
-import emailjs from '@emailjs/browser';
 import { history } from '../History';
+import { getForgotPasshtml } from './getEmailHtml';
 
 const Forgot_ = (props)=> {
   history.navigate = useNavigate();
@@ -82,31 +82,46 @@ const Forgot_ = (props)=> {
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();
-      // console.log(json);
-      if(credentials.email.toString().endsWith("gmail.com") && json.found){
+      if(credentials.email.toString().endsWith(".com") && json.found){
+        var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+        try {
+          let html = getForgotPasshtml(val); 
+          let email = [];
+          email.push(credentials.email);
+          props.setLoader({ showLoader: true, msg: "Sending email"});
+          let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send`, {
+            method: "POST", 
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email,
+              cc: [],
+              subject: 'Reset Password',
+              text: '',
+              html: html
+            }),
+          });
+          const res = await response.json();
+          props.setLoader({ showLoader: false });
+          if(!res.success) {
+            props.showAlert("Mail error: cannot send email", 'danger');
+            return;
+          }
+          props.showAlert("Code send to your mail", "success");    
+        } catch (err) {
+          props.setLoader({ showLoader: false });
+          console.log("Error**", err);
+          props.showAlert("Mail error: cannot send email", 'danger');
+        }
         setid(json.user._id);
         setVerified(false);
-        props.showAlert("Code send to your mail", "success");
         setShow(true);
         e.preventDefault();
-        var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
         setCode(val);
-        
-        emailjs.send('service_91ihvdw', 'template_uh8dkxp',{
-          to_name: credentials.email.replace('@gmail.com', ''),
-          message: "Verification code ",
-          code : val,
-          to_mail: credentials.email,
-        } , 'ytEYvYv1q0VNEV4EE', 
-        )
-        .then((result) => {
-              console.log(result.text);
-          }, (error) => {
-              console.log(error.text);
-          });
-      }
+      } 
       else{
-        if(!credentials.email.toString().endsWith("@gmail.com")){
+        if(!credentials.email.toString().endsWith(".com")){
           props.showAlert("Enter valid email", 'warning');
           return
         }

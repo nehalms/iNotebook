@@ -45,7 +45,7 @@ function Verification(props) {
               <input type="text" id='5' style={{width: window.innerHeight < 700 ? '40px' : '30px', height: window.innerHeight < 700 ? '40px' : '30px'}} className="otp-box" maxLength="1" autoComplete='off' onKeyUp={moveFocus} />
               <input type="text" id='6' style={{width: window.innerHeight < 700 ? '40px' : '30px', height: window.innerHeight < 700 ? '40px' : '30px'}} className="otp-box" maxLength="1" autoComplete='off' onKeyUp={moveFocus} />
             </div>
-          <div id="emailHelp" className="form-text">Code will be sent to {props.msg ? 'admin' : 'your'} email</div>
+          <div id="emailHelp" className="form-text bg-danger p-1 text-center border rounded text-white">***Please check in spam folder too</div>
         </div>
         <div className="buttons d-flex my-3">
           <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2">Resend <i className="fa-solid fa-paper-plane mx-2"></i></button>
