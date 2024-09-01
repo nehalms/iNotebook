@@ -14,6 +14,7 @@ const Signup = (props) => {
     const[code_, setCode] = useState(0);
     const[show, setShow] = useState(false);
     const[Verified, setVerified] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     history.navigate = useNavigate();
 
     useEffect(() => {
@@ -156,6 +157,11 @@ const Signup = (props) => {
       }
     }
 
+    const handleShowPassword = (e) => {
+      e.preventDefault();
+      setShowPassword(!showPassword);
+    }
+
     return (
       <div className='container my-3'>
         <div className='row'>
@@ -186,11 +192,14 @@ const Signup = (props) => {
                         {show && <Verification verify={verify} sendEmail={sendEmail}/>}
                         <div className="mb-3 my-3">
                           <label htmlFor="password" className="form-label">Password</label>
-                          <input type="password" ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
+                          <input type={showPassword ? "text" : "password"} ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
                         </div>
                         <div className="mb-3">
                           <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-                          <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
+                          <div className='d-flex align-items-center justify-content-center'>
+                            <input type={showPassword ? "text" : "password"} ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
+                            <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
+                          </div>
                         </div>
                         <button type="submit" className="btn btn-primary mt-3" style={{width: '100%'}}>Sign up<i className="fa-solid fa-user-plus mx-2"></i></button>
                       </form>

@@ -16,6 +16,7 @@ const Forgot_ = (props)=> {
   const[Verified, setVerified] = useState(false);
   const[id, setid] = useState("");
   const[credentials, setCredentials] = useState({email: "", password: "", cpassword: ""});
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if(!divRef.current) return; 
@@ -147,6 +148,11 @@ const Forgot_ = (props)=> {
     }
   };
 
+  const handleShowPassword = (e) => {
+    e.preventDefault();
+    setShowPassword(!showPassword);
+  }
+
   return (
     <div className='container my-3'>
       <div className='row'>
@@ -173,11 +179,14 @@ const Forgot_ = (props)=> {
                         { show && <Verification verify={verify} sendEmail={sendEmail}/>}
                         { Verified && <div className="mb-3 my-3">
                           <label htmlFor="password" className="form-label">Password</label>
-                          <input type="password" ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
+                          <input type={showPassword ? "text" : "password"} ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
                         </div>}
                         { Verified && <div className="mb-3">
                           <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-                          <input type="password" ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
+                          <div className='d-flex align-items-center justify-content-center'>
+                            <input type={showPassword ? "text" : "password"} ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
+                            <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
+                          </div>
                         </div>}
                         { Verified && <button type="submit" className="btn btn-primary mt-4">Update</button>}
                     </form>

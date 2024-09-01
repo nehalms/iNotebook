@@ -7,12 +7,12 @@ import { getAdminhtml } from './getEmailHtml';
 const Login = (props) => {
     const[credentials, setCredentials] = useState({email: "", password: ""});
     let [checkForAdminUser, setCheckForAdminUser] = useState(true);
-    let [authEmail, setAuthEmail] = useState("");
     const [isAdminUser, setIsAdminUser] = useState(false);
     const[code, setCode] = useState();
     const divRef = useRef();
     const [height, setHeight] = useState(0);
     const[Verified, setVerified] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     history.navigate = useNavigate();
 
     useEffect(() => {
@@ -52,7 +52,6 @@ const Login = (props) => {
                 props.setLoader({ showLoader: false });
                 const adminData = await response.json();
                 if(adminData && adminData.isAdmin) {
-                    setAuthEmail(adminData.authEmail);
                     sessionStorage.setItem('adminToken', json.authToken);
                     var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
                     setCode(val);
@@ -137,6 +136,11 @@ const Login = (props) => {
         setCredentials({...credentials, [e.target.name]: e.target.value}) //helps to keep data in note as same and append the new values being typed
     }
 
+    const handleShowPassword = (e) => {
+        e.preventDefault();
+        setShowPassword(!showPassword);
+    }
+
     return (
         <div className='container my-5'>
             <div className='row'>
@@ -160,7 +164,10 @@ const Login = (props) => {
                                 </div>
                                 <div className="mb-2">
                                     <label htmlFor="password" className="form-label">Password</label>
-                                    <input type="password" className="form-control" onChange={onChange} value={credentials.password} id="password" name="password" required/>
+                                    <div className='d-flex align-items-center justify-content-center'>
+                                        <input type={showPassword ? "text" : "password"} className="form-control" onChange={onChange} value={credentials.password} id="password" name="password" required/>
+                                        <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
+                                    </div>
                                 </div>
                                 { !isAdminUser && <><Link className='mx-0 my-0' to="/forgot" role='button'>Forgot password?</Link><br/></>}
                                 { isAdminUser && !Verified && <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey"/> }
