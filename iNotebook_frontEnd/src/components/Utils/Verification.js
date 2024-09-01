@@ -17,10 +17,6 @@ function Verification(props) {
   const moveFocus = (event) => {
     if(!event) {return;}
     let id = Number(event.target.id);
-    event.target.value = event.code.startsWith('Digit') 
-      ? id !== 6 
-        ? event.key : event.target.value
-        : "";
     if(event.key !== 'Backspace') {
       if(id < 6)
         document.getElementById(id+1).focus();

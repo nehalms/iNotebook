@@ -135,7 +135,7 @@ const Forgot_ = (props)=> {
   };
 
   const verify = (code)=> {
-    console.log(code + " " + code_);
+    // console.log(code + " " + code_);
     if(code === code_){
       setVerified(true);
       setShow(false);
