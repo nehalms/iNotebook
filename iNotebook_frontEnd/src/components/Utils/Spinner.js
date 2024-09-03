@@ -1,10 +1,12 @@
 import React from 'react';
-import './LoadingScreen.css'; 
+import './Spinner.css'; 
 
 const LoadingScreen = (props) => {
     return (
       <div className="loading-screen">
-        <div className="loading-spinner"></div>
+        <div className="circle">
+          <div className='dots'></div>
+        </div>
         <h5>{props.msg}</h5>
       </div>
     );

@@ -10,10 +10,10 @@ cloudinary.v2.config({
 const uploadImage = async (buffer) => {
     return await new Promise(async (resolve, reject) => {
         let cld_upload_stream = cloudinary.v2.uploader.upload_stream({folder: "iNotebook"},
-            (err, res) => {
-                if(err) {
-                    console.log(err);
-                    reject(err);
+            (error, res) => {
+                if(error) {
+                    console.log(error);
+                    reject(error);
                 } else {
                     resolve(res);
                 }
@@ -25,14 +25,22 @@ const uploadImage = async (buffer) => {
     });
 }
 
-const deleteImage = (id) => {
-    return;
-    cloudinary.v2.api
-        .delete_resources([id], 
-        { type: 'upload', resource_type: 'image' })
+async function deleteImage() {
+    return new Promise(async (resolve, reject) => {
+        cloudinary.v2.api
+            .delete_resources_by_prefix('iNotebook', function (error, result) {
+                if(error) {
+                    reject({error: "Error in deleting the image"});
+                    console.log(error);
+                } else {
+                    resolve({msg: Object.keys(result.deleted).length ? "Images deleted Successfully" : "No images to delete"});
+                    console.log(result);
+                }
+            });
+    })
 }
   
-async function roundCorners(id, req) {
+async function roundCorners(req) {
     return new Promise(async (resolve, reject) => {
         try {
             let uploadResult = await uploadImage(req.file.buffer);
@@ -49,44 +57,43 @@ async function roundCorners(id, req) {
                 }
         
                 let url = cloudinary.v2.url(uploadResult.public_id, {transformation: transformation});
-                deleteImage(uploadResult.public_id);
                 resolve({
                     name: uploadResult.original_filename,
                     url: url,
                 });
             } else {
-                reject({err: 'Image uploading failed'});
+                reject({error: 'Image uploading failed'});
             }
-        } catch (err) {
-            console.log(err);
-            reject({err: 'Internal server error occured'});
+        } catch (error) {
+            console.log(error);
+            reject({error: 'Internal server error occured'});
         }
     });
 }
 
-async function enhance(id, req) {
+async function enhance(req) {
     return new Promise( async (resolve, reject) => {
         try {
             let uploadResult = await uploadImage(req.file.buffer);
     
             if(uploadResult) {
                 let url = cloudinary.v2.url(uploadResult.public_id, {effect: "enhance"});
-                deleteImage(uploadResult.public_id);
                 resolve({
                     name: uploadResult.original_filename,
                     url: url,
                 });
             } else {
-                reject({err: 'Image uploading failed'});
+                reject({error: 'Image uploading failed'});
             }
-        } catch (err) {
-            console.log(err);
-            reject({err: 'Internal server error occured'});
+        } catch (error) {
+            console.log(error);
+            reject({error: 'Internal server error occured'});
         }
     });
 }
 
 module.exports = {
     roundCorners,
-    enhance
+    enhance,
+    deleteImage
 }

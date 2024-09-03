@@ -78,7 +78,7 @@ const Login = (props) => {
                 props.showAlert("Logged in successfully", "success");
             }
             else {
-                props.showAlert(json.error, "danger");
+                props.showAlert(json.errors ? json.errors[0].msg : json.error, "danger");
             }
         } catch (err) {
             props.setLoader({ showLoader: false });

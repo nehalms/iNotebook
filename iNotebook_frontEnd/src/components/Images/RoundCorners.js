@@ -61,12 +61,12 @@ export default function RoundCorners(props) {
         });
         props.setLoader({ showLoader: false });
         const json = await response.json();
-        console.log(json);
-        if(json.err) {
-            props.showAlert(json.err, 'danger')
+        // console.log(json);
+        if(json.error) {
+            props.showAlert(json.error, 'danger')
             return;
         }
-        if(json.status) {
+        if(json.success) {
             props.showAlert('Image transformed success', 'success');
             setUrl(json.data.url);
         }
