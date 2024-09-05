@@ -6,6 +6,7 @@ const { body, validationResult } = require("express-validator"); //to validate t
 const bcrpyt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
+const UserHistory = require("../models/UserHistory");
 
 const JWT_SCERET = process.env.JWT_SCERET;
 
@@ -44,6 +45,11 @@ router.post("/createuser",
         name: req.body.name,
         email: req.body.email,
         password: secPass,
+      });
+
+      await UserHistory.create({
+        userId: user.id,
+        action: "Account Created",
       });
 
       const data = {
@@ -104,6 +110,10 @@ router.post(
         userId: user.id,
         name: user.name,
         email: user.email,
+      });
+      await UserHistory.create({
+        userId: user.id,
+        action: "Logged In",
       });
       await User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
       res.json({ success, authToken });
@@ -171,6 +181,10 @@ router.post("/updatePassword",
       const newUser = {};
       newUser.password = secPass;
       let user = await User.findByIdAndUpdate(req.body.id, {$set: newUser}, {new: true})
+      await UserHistory.create({
+        userId: user.id,
+        action: "Password updated",
+      });
       let success = true;
       res.json({success, user});
     }
@@ -187,10 +201,26 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
     console.log(userEmail);
     let email = `${userEmail.email}__${req.user.id}`;
     const user = await User.findByIdAndUpdate(req.user.id, {isActive: false, email : email}, {new: true});
+    await UserHistory.create({
+      userId: user.id,
+      action: "Account deleted",
+    });
     console.log(user);
     res.send(user);
   } 
   catch (err) {
+    console.log(err.message);
+    return res.status(500).send("Internal Server Error!!");
+  }
+});
+
+router.post('/logout', fetchuser, async (req, res) => {
+  try {
+    await UserHistory.create({
+      userId: req.user.id,
+      action: "Logged out",
+    });
+  }  catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");
   }

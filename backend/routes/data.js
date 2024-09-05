@@ -4,7 +4,8 @@ const router = express.Router()
 const User = require("../models/User");
 const Notes = require('../models/Notes')
 const LoginHistory = require('../models/LoginHistory')
-const moment = require('moment')
+const moment = require('moment');
+const UserHistory = require('../models/UserHistory');
 
 router.get('/users', fetchuser, async (req, res)=> {
     try{
@@ -93,6 +94,21 @@ router.get('/graphData', fetchuser, async (req, res) => {
         }
         res.send(response);
 
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).send("Internal Server Error!!");
+    }
+});
+
+router.get('/userhistory', fetchuser, async (req, res) => {
+    try{
+        let userHistory = await UserHistory.find({userId :req.user.id});
+        await Promise.all(
+            userHistory.sort((ob1, ob2) => {
+                return new Date(ob1.date) > new Date(ob2.date) ? -1 : 1;
+            })
+        )
+        res.send(userHistory);
     } catch (err) {
         console.log(err.message);
         return res.status(500).send("Internal Server Error!!");

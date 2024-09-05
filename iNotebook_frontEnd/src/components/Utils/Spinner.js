@@ -7,7 +7,7 @@ const LoadingScreen = (props) => {
         <div className="circle">
           <div className='dots'></div>
         </div>
-        <h5>{props.msg}</h5>
+        <h5>{props.msg ? props.msg : 'Loading...'}</h5>
       </div>
     );
 };

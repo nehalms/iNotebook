@@ -1,18 +1,19 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const ImageSchema = new Schema({
+const UserHistorySchema = new Schema({
     userId : {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
-    count : {
-        type: Number,
+    action : {
+        type: String,
+        required: true
     },
     date : {
         type: Date,
         default: Date.now
     }
 });
-const ImageInfo = mongoose.model('imageinfo', ImageSchema);
-module.exports = ImageInfo;
+const UserHistory = mongoose.model('userhistory', UserHistorySchema);
+module.exports = UserHistory;

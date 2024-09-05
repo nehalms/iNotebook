@@ -3,7 +3,7 @@ const fetchuser = require('../middleware/fetchuser')
 const router = express.Router()
 const Notes = require('../models/Notes')
 const { body, validationResult } = require("express-validator"); //to validate the inputs
-
+const UserHistory = require('../models/UserHistory');
 
 //Route-1 : Get all the notes : POST "/api/notes/fetchallnotes" => Login required
 router.get('/fetchallnotes', fetchuser, async (req, res)=> {
@@ -36,8 +36,11 @@ router.post('/addnote',
             const note = new Notes({
                 user:req.user.id, title, description, tag 
             })
-
             const savedNote = await note.save();
+            await UserHistory.create({
+                userId: req.user.id,
+                action: "Created note",
+            });
             res.send(savedNote);
         }
         catch(err){
@@ -67,8 +70,11 @@ router.put('/updatenote/:id', fetchuser, async (req, res)=> {
         if(note.user.toString() !== req.user.id){  // see that user id in note fetched and user id in request body is same
             return res.status(401).send("Not allowed");
         }
-
         note = await Notes.findByIdAndUpdate(req.params.id, {$set: newNote}, {new: true})
+        await UserHistory.create({
+            userId: req.user.id,
+            action: "Updated note",
+        });
         res.json({note});
     }
     catch(err){
@@ -93,6 +99,10 @@ router.put('/deletenote/:id', fetchuser, async (req, res)=> {
         }  
 
         note = await Notes.findByIdAndDelete(req.params.id)
+        await UserHistory.create({
+            userId: req.user.id,
+            action: "Deleted note",
+        });
         res.json({"Success" : "Note has been deleted", "note": note});
     }
     catch(err){

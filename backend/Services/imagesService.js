@@ -1,5 +1,6 @@
 const cloudinary = require('cloudinary')
-const moment = require('moment')
+const moment = require('moment');
+const UserHistory = require('../models/UserHistory');
 cloudinary.v2.config({
     cloud_name: 'djrw2o5s6',
     api_key: '439463939241154',
@@ -25,7 +26,7 @@ const uploadImage = async (buffer) => {
     });
 }
 
-async function deleteImage() {
+async function deleteImage(req) {
     return new Promise(async (resolve, reject) => {
         cloudinary.v2.api
             .delete_resources_by_prefix('iNotebook', function (error, result) {
@@ -33,6 +34,12 @@ async function deleteImage() {
                     reject({error: "Error in deleting the image"});
                     console.log(error);
                 } else {
+                    if(Object.keys(result.deleted).length > 0) {
+                        UserHistory.create({
+                            userId: req.user.id,
+                            action: "Images Deleted in server",
+                        });
+                    }
                     resolve({msg: Object.keys(result.deleted).length ? "Images deleted Successfully" : "No images to delete"});
                     console.log(result);
                 }
@@ -57,6 +64,10 @@ async function roundCorners(req) {
                 }
         
                 let url = cloudinary.v2.url(uploadResult.public_id, {transformation: transformation});
+                await UserHistory.create({
+                    userId: req.user.id,
+                    action: "Image transformation (Round Corners)",
+                });
                 resolve({
                     name: uploadResult.original_filename,
                     url: url,
@@ -78,6 +89,10 @@ async function enhance(req) {
     
             if(uploadResult) {
                 let url = cloudinary.v2.url(uploadResult.public_id, {effect: "enhance"});
+                await UserHistory.create({
+                    userId: req.user.id,
+                    action: "Image transformation (Enhance)",
+                });
                 resolve({
                     name: uploadResult.original_filename,
                     url: url,
