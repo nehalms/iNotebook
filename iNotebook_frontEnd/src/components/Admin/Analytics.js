@@ -47,11 +47,10 @@ export default function Analytics(props) {
       else if(reqType === 'notes') {
         dates = {...notesDates};
       }
-      console.log("differesce",(moment(new Date(dates.endDate)).diff(moment(new Date(dates.startDate))))/(60*60*24*1000));
       if(
         dates.endDate > moment(new Date()).format('YYYY-MM-DD') || 
         dates.startDate > dates.endDate || 
-        ((moment(new Date(dates.endDate)).diff(moment(new Date(dates.startDate))))/(60*60*24*1000)) > 20
+        ((moment(new Date(dates.endDate)).diff(moment(new Date(dates.startDate))))/(60*60*24*1000)) >= 20
       ) {
         if(dates.endDate > moment(new Date()).format('YYYY-MM-DD')) {
             props.showAlert('End date cannot be in future', 'info');
@@ -108,7 +107,7 @@ export default function Analytics(props) {
       <div className='col-md-6'>
           <div className="card shadow-lg my-3 py-2">
               <div className="card-body">
-                <h4 className='text-center'>No. of Login's (Past 7 days)</h4>
+                <h4 className='text-center'>No. of Login's ({loginData.loginData.length} days)</h4>
                 <div className='d-flex align-items-center justify-content-end'>
                     <div>
                         <p className='m-0'>From</p>
@@ -169,7 +168,7 @@ export default function Analytics(props) {
       <div className='col-md-6'>
           <div className="card shadow-lg my-3 py-2">
               <div className="card-body">
-                <h4 className='text-center'>No. Notes of created (Past 7 days)</h4>
+                <h4 className='text-center'>No. Notes of created ({notesData.notesData.length} days)</h4>
                 <div className='d-flex align-items-center justify-content-end'>
                     <div>
                         <p className='m-0'>From</p>

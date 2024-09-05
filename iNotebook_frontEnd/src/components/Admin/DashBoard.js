@@ -37,7 +37,7 @@ export default function DashBoard(props) {
             id="controlled-tabs"
             className="mb-4"
             selectedTabClassName="rounded-top bg-info-subtle text-dark border border-dark" 
-            onSelect={(selectedKey) => {props.showAlert(`Showing ${tabKeyMaps[selectedKey]} Data`, 'info')}}
+            // onSelect={(selectedKey) => {props.showAlert(`Showing ${tabKeyMaps[selectedKey]} Data`, 'info')}}
             >
             <TabList>
                 <Tab eventKey="users" title="Users" style={{width: '200px'}}>

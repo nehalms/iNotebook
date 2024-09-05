@@ -82,14 +82,14 @@ function App() {
       setMode('dark');
       document.body.style.backgroundColor = '#042743';
       document.body.style.color = 'white';
-      showAlert("Dark Mode has been Enabled", 'info');
+      // showAlert("Dark Mode has been Enabled", 'info');
       localStorage.setItem('theme', 'bg-dark');
     }
     else if('dark' && cls === null){
       setMode('light');
       document.body.style.backgroundColor = 'white';
       document.body.style.color = 'black';
-      showAlert("Light Mode has been Enabled", 'info');
+      // showAlert("Light Mode has been Enabled", 'info');
       localStorage.setItem('theme', 'bg-light');
     }
   }

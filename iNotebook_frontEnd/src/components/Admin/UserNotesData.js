@@ -22,7 +22,7 @@ export default function UserNotesData(props) {
 
     function CustomToolbar() {
         return (
-          <GridToolbarContainer className='ps-4 me-3 bg-light d-flex align-items-center justify-content-end'>
+          <GridToolbarContainer className='ps-4 bg-light d-flex align-items-center justify-content-end'>
             <GridToolbarExport />
           </GridToolbarContainer>
         );
@@ -160,7 +160,7 @@ export default function UserNotesData(props) {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 5,
+                pageSize: 10,
               },
             },
           }}
