@@ -19,7 +19,6 @@ import Confirmation from './components/Utils/Confirmation';
 import { history } from '../src/components/History';
 import Notes from  './components/Notes/Notes'
 import ImageEditor from './components/Images/ImageEditor';
-import TrainInfo from './components/Train/TrainInfo';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -149,7 +148,6 @@ function App() {
               <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/traininfo' element={<TrainInfo showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>
           </div>
         </Router>

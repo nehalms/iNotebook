@@ -16,13 +16,15 @@ const Home = (props) => {
       if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
         props.showAlert("Session expired Login again", 'danger');
         history.navigate("/login");
+        return;
       }
+      fetchHistory();
     }
     else {
       props.showAlert("Login please", 'warning');
       history.navigate("/login");
+      return;
     }
-    fetchHistory();
   }, [])
 
   const fetchHistory = async () => {
