@@ -18,14 +18,14 @@ function Verification(props) {
     if(!event) {return;}
     let id = Number(event.target.id);
     if(event.key !== 'Backspace') {
-      if(id < 6)
-        document.getElementById(id+1).focus();
-    }
-     else if(event.key === 'Backspace') {
-      if(id > 1){
-        document.getElementById(id-1).focus();
+      if(document.getElementById(id).nextElementSibling) {
+        document.getElementById(id).nextElementSibling.focus();
+      }
+    } else if(event.key === 'Backspace') {
+      if(document.getElementById(id).previousElementSibling) {
+        document.getElementById(id).previousElementSibling.focus();
         return;
-      } 
+      }
     }
   }
 

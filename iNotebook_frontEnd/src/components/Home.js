@@ -36,7 +36,6 @@ const Home = (props) => {
         }
       });
       const data = await response.json();
-      console.log(data);
       if(data.error) {
         props.showAlert(data.error, 'danger');
         return;
@@ -62,6 +61,13 @@ const Home = (props) => {
         <div className="card shadow-lg my-3 ImagesEdit__left-right" onClick={() => {history.navigate('/imEdit')}}>
           <div className="card-body">
             <h5 className='text-center'>Image Editor</h5>
+          </div>
+        </div>
+      </div>
+      <div className='col-lg-3'>
+        <div className="card shadow-lg my-3 Games__left-right" onClick={() => {history.navigate('/games')}}>
+          <div className="card-body">
+            <h5 className='text-center'>Games</h5>
           </div>
         </div>
       </div>

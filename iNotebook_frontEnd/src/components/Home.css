@@ -28,15 +28,15 @@
     transform: scale(1.1);
 }
 
-.TrainInfo__left-right {
+.Games__left-right {
     border: 1px solid rgb(0, 0, 0);
-    background: linear-gradient(to right, #ff6565 50%, #fff 50%);
+    background: linear-gradient(to right, #65b5ff 50%, #fff 50%);
     background-size: 200% 100%;
     background-position: bottom right;
     transition: all .5s ease-out;
 }
   
-.TrainInfo__left-right:hover {
+.Games__left-right:hover {
     background-position: bottom left;
     color: #fff;
     cursor: pointer;

@@ -161,7 +161,7 @@ const Forgot_ = (props)=> {
             <div className="card my-3 bg-primary" style={{height: window.innerWidth > 992 ? height : 'auto'}}>
                 <div className="card-body d-flex flex-column align-items-center justify-content-center">
                     <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
-                    <h6 className='m-0 p-1 text-center text-white'>Reset your password. Please note that we cannot recover your original password because we store it using hashing and salting techniques</h6>
+                    <h6 className='m-0 p-1 text-center text-white'>Please note that we cannot recover your original password because we store it using hashing and salting techniques</h6>
                 </div>
             </div>
         </div>
@@ -188,7 +188,7 @@ const Forgot_ = (props)=> {
                             <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
                           </div>
                         </div>}
-                        { Verified && <button type="submit" className="btn btn-primary mt-4">Update</button>}
+                        { Verified && <button type="submit" className="btn btn-primary mt-4" style={{width: '100%'}}>Update</button>}
                     </form>
                 </div>
             </div>

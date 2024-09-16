@@ -170,7 +170,7 @@ const Signup = (props) => {
               <div className="card my-3" style={{backgroundColor: '#ffc107', height: window.innerWidth > 992 ? height : 'auto'}}>
                   <div className="card-body d-flex flex-column align-items-center justify-content-center">
                       <h2 className='m-0 p-1 text-center'>iNotebook</h2>
-                      <h6 className='m-0 p-1 text-center'>Welcome! Create an account and enjoy the features</h6>
+                      <h6 className='m-0 p-1 text-center'>Welcome! Sign up now to explore </h6>
                   </div>
               </div>
           </div>

@@ -53,6 +53,7 @@ const Login = (props) => {
                 const adminData = await response.json();
                 if(adminData && adminData.isAdmin) {
                     sessionStorage.setItem('adminToken', json.authToken);
+                    sessionStorage.setItem('token', json.authToken);
                     var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
                     setCode(val);
                     setIsAdminUser(true);
@@ -149,7 +150,7 @@ const Login = (props) => {
                     <div className="card my-3" style={{backgroundColor: '#198754', height: window.innerWidth > 992 ? height : 'auto'}}>
                         <div className="card-body d-flex flex-column align-items-center justify-content-center">
                             <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
-                            <h6 className='m-0 p-1 text-center text-white'>Log in and save from one place, access it from anywhere</h6>
+                            <h6 className='m-0 p-1 text-center text-white'>Save from one place, access from anywhere</h6>
                         </div>
                     </div>
                 </div>

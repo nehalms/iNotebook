@@ -17,8 +17,10 @@ import Spinner from './components/Utils/Spinner';
 import DashBoard from './components/Admin/DashBoard';
 import Confirmation from './components/Utils/Confirmation';
 import { history } from '../src/components/History';
-import Notes from  './components/Notes/Notes'
+import Notes from  './components/Notes/Notes';
 import ImageEditor from './components/Images/ImageEditor';
+import Menu from './components/Games/Menu'
+import Tic_tac_toe from './components/Games/Tic_tac_toe';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -148,6 +150,8 @@ function App() {
               <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>
           </div>
         </Router>
