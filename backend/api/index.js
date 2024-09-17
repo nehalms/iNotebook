@@ -17,6 +17,8 @@ let corsOptions = {
 };
 const io = socketIO(server, {
   cors: corsOptions,
+  pingTimeout: 6000000, 
+  pingInterval: 25000,
 });
 
 app.use(cors())
