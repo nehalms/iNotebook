@@ -29,11 +29,15 @@ router.post('/tictactoe', fetchuser, async (req, res) => {
 router.post('/tttsave', fetchuser, async (req, res) => {
     try {
         let userStats = await GameDetails.findOne({userId: req.user.id});
-        if(req.query.won == undefined || !userStats) {
-            res.send("send the query parameter");
+        if(!userStats) {
+            res.send({success: false, msg: "No User stats found"});
             return;
         }
-        let [won, lost] = req.query.won == 'true' ? [1, 0] : [0, 1];
+        if(req.query.won == undefined || req.query.draw == undefined) {
+            res.send({success: false, msg: "send the query parameter"});
+            return;
+        }
+        let [won, lost] = req.query.draw == 'true' ? [0, 0] : req.query.won == 'true'  ? [1, 0] : [0, 1];
         userStats.tttStats.set('played', userStats.tttStats.get('played') + 1);
         userStats.tttStats.set('won', userStats.tttStats.get('won') + won);
         userStats.tttStats.set('lost', userStats.tttStats.get('lost') + lost);
