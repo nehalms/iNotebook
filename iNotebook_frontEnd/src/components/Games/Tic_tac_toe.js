@@ -123,6 +123,7 @@ export default function Tic_tac_toe(props) {
 
   const handleCreateRoom = async () => {
     try {
+      props.setLoader({ showLoader: true, msg: "Creating room"});
       let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/start`, {
         method: "POST", 
         headers: {
@@ -154,6 +155,7 @@ export default function Tic_tac_toe(props) {
 
   const handleJoinRoom = async () => {
     try {
+      props.setLoader({ showLoader: true, msg: "Joining room"});
       let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/connect?gameId=${roomId}`, {
         method: "POST", 
         headers: {
@@ -438,7 +440,7 @@ export default function Tic_tac_toe(props) {
               </div>
             </> : 
               <div className='p-3 m-0 bg-white rounded border'>
-                <button className="btn btn-success p-1 px-3 ms-1" style={{width: '80%'}} onClick={handleCreateRoom}>Create Room</button>
+                <button className="btn btn-success py-2 m-1" style={{width: '80%'}} onClick={handleCreateRoom}>Create Room</button>
               </div>}
           </div>
         </div>

@@ -71,6 +71,13 @@ const Home = (props) => {
           </div>
         </div>
       </div>
+      <div className='col-lg-3'>
+        <div className="card shadow-lg my-3 Msg__left-right" onClick={() => {history.navigate('/msg')}}>
+          <div className="card-body">
+            <h5 className='text-center'>Hide Messages</h5>
+          </div>
+        </div>
+      </div>
       <div className='col-lg-12'>
         <div className="card shadow-lg my-3">
           <div className="card-body text-center">

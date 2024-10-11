@@ -42,3 +42,18 @@
     cursor: pointer;
     transform: scale(1.1);
 }
+
+.Msg__left-right {
+    border: 1px solid rgb(0, 0, 0);
+    background: linear-gradient(to right, #ff6565 50%, #fff 50%);
+    background-size: 200% 100%;
+    background-position: bottom right;
+    transition: all .5s ease-out;
+}
+  
+.Msg__left-right:hover {
+    background-position: bottom left;
+    color: #fff;
+    cursor: pointer;
+    transform: scale(1.1);
+}

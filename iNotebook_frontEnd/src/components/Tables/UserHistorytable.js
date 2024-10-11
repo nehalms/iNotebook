@@ -24,7 +24,7 @@ export default function UserHistorytable(props) {
           { data && 
             data.map((row, idx) => {
               return (<tr>
-                <th scope="row">{idx + 1}</th>
+                <th scope="row">{data.length-idx}</th>
                 <td>{row.action}</td>
                 <td>{moment(new Date(row.date)).format('DD-MM-YYYY')}</td>
                 <td>{moment(new Date(row.date)).format('h:mm a')}</td>
