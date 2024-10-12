@@ -29,6 +29,10 @@ export default function Encrypt_Decrypt_Msg(props) {
 
   const handleEncrypt = async (e) => {
     e.preventDefault();
+    if(encrypt.password.length < 4) {
+      props.showAlert("Password should be atleast 4 characters", 'info');
+      return;
+    }
     try {
       props.setLoader({ showLoader: true, msg: "Encrypting message"});
       let response = await fetch(`${process.env.REACT_APP_BASE_URL}/msg/encrypt`, {
@@ -118,7 +122,7 @@ export default function Encrypt_Decrypt_Msg(props) {
                   <label htmlFor="password" className="form-label">Password</label>
                   <input type="password" className="form-control" onChange={onEncryptChange} value={encrypt.password} id="password" name="password" placeholder='password that encrypts the message' required/>
               </div>
-              <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Encrypt <i class="fa-solid fa-file-shield mx-2"></i></button>
+              <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Encrypt <i className="fa-solid fa-file-shield mx-2"></i></button>
               { 
                 encryptedMsg && encryptedMsg != "" &&
                 <>
@@ -145,7 +149,7 @@ export default function Encrypt_Decrypt_Msg(props) {
                   <label htmlFor="password" className="form-label">Password</label>
                   <input type="password" className="form-control" onChange={onDecryptChange} value={decrypt.secretMsg} id="password1" name="password" placeholder='password that encrypts the message' required/>
               </div>
-              <button type="submit" className="btn btn-warning mt-3 mb-4" style={{width: '100%'}}>Decrypt <i class="fa-solid fa-file-shield mx-2"></i></button>
+              <button type="submit" className="btn btn-warning mt-3 mb-4" style={{width: '100%'}}>Decrypt <i className="fa-solid fa-file-shield mx-2"></i></button>
               { 
                 decryptedMsg && decryptedMsg != "" &&
                 <div className='mb-2 rounded border p-3 text-center bg-secondary-subtle'>

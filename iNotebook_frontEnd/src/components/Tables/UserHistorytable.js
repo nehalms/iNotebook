@@ -11,7 +11,7 @@ export default function UserHistorytable(props) {
 
   return (
     <div>
-      <table class="table table-striped">
+      <table className="table table-striped">
         <thead>
           <tr className='table-primary'>
             <th scope="col">Sl. No</th>
@@ -23,7 +23,7 @@ export default function UserHistorytable(props) {
         <tbody>
           { data && 
             data.map((row, idx) => {
-              return (<tr>
+              return (<tr key={idx}>
                 <th scope="row">{data.length-idx}</th>
                 <td>{row.action}</td>
                 <td>{moment(new Date(row.date)).format('DD-MM-YYYY')}</td>

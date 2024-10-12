@@ -8,31 +8,31 @@ export default function Alert(props) {
       if (type === 'success') {
         toast.success(msg, {
           theme: "dark",
-          position: "top-center",
+          position: "bottom-left",
           toastId: id
         });
       } else if (type === 'danger') {
         toast.error(msg, {
           theme: "dark",
-          position: "top-center",
+          position: "bottom-left",
           toastId: id
         });
       } else if (type === 'warning') {
         toast.warning(msg, {
           theme: "dark",
-          position: "top-center",
+          position: "bottom-left",
           toastId: id
         });
       } else if (type === 'info') {
         toast.info(msg, {
           theme: "dark",
-          position: "top-center",
+          position: "bottom-left",
           toastId: id
         });
       } else {
         toast(msg, {
           theme: "dark",
-          position: "top-center",
+          position: "bottom-left",
           toastId: id
         })
       }
