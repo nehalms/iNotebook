@@ -74,8 +74,8 @@ const getAdminNotifyhtml = (name, email) => {
           A new user has just registered on the platform. Please review their account details and ensure everything is in order.  <br/>
         </p>
         <div style="font-family: Arial; font-weight: 500; color: #000; margin: 0px; background-color: #e0e0e0; text-align: center; padding: 1px; width: 500px">
-          <p style="text-align: left; margin-left: 25px; font-size: 15pt;">User name: ${name}</p>
-          <p style="text-align: left; margin-left: 25px; font-size: 15pt; text-decoration: none">User email: ${email}</p>
+          <p style="text-align: left; margin-left: 25px; font-size: 15pt;">Name: ${name}</p>
+          <p style="text-align: left; margin-left: 25px; font-size: 15pt; text-decoration: none">Email: ${email}</p>
         </div>
         <p style="font-size: 12pt; font-weight: normal; font-family:Arial; color: #000;">
           If any action is required on your part, please address it promptly. You can view the user's information in the admin dashboard.

@@ -143,7 +143,7 @@ const Login = (props) => {
     }
 
     return (
-        <div className='container my-5'>
+        <div className='container my-3'>
             <div className='row'>
                 <div className="col-md-2"></div>
                 <div className='col-lg-3 p-0'>
