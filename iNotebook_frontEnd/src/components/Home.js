@@ -19,6 +19,7 @@ const Home = (props) => {
         return;
       }
       fetchHistory();
+      getSecretKey();
     }
     else {
       props.showAlert("Login please", 'warning');
@@ -26,6 +27,29 @@ const Home = (props) => {
       return;
     }
   }, [])
+
+  const getSecretKey = async () =>{
+    try{
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/aes/secretKey`, {
+        method: "GET", 
+        headers: {
+            "Content-Type": "application/json",
+            "auth-token": localStorage.getItem('token')
+        }
+      });
+      const json = await response.json();
+      if(json.status === 'success') {
+        console.log(json);
+        let decryptKey = ''
+        Array.from(json.secretKey).forEach(char => {
+            decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
+        });
+        localStorage.setItem('AesKey', decryptKey);
+      }
+    } catch (err) {
+      console.log("Error**", err);
+    }
+  }
 
   const fetchHistory = async () => {
     try {

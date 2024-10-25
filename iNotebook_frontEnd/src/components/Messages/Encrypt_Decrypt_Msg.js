@@ -124,7 +124,7 @@ export default function Encrypt_Decrypt_Msg(props) {
               </div>
               <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Encrypt <i className="fa-solid fa-file-shield mx-2"></i></button>
               { 
-                encryptedMsg && encryptedMsg != "" &&
+                encryptedMsg && encryptedMsg !== "" &&
                 <>
                   <p className='text-danger p-1 m-0'>* Click on the text to copy</p>
                   <div className='mb-2 rounded border p-3 text-center bg-secondary-subtle' style={{WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', userSelect: 'none', cursor: 'pointer'}} onClick={() => {navigator.clipboard.writeText(encryptedMsg); props.showAlert("Text copied", 'success'); }}>
@@ -151,7 +151,7 @@ export default function Encrypt_Decrypt_Msg(props) {
               </div>
               <button type="submit" className="btn btn-warning mt-3 mb-4" style={{width: '100%'}}>Decrypt <i className="fa-solid fa-file-shield mx-2"></i></button>
               { 
-                decryptedMsg && decryptedMsg != "" &&
+                decryptedMsg && decryptedMsg !== "" &&
                 <div className='mb-2 rounded border p-3 text-center bg-secondary-subtle'>
                   <h4>{decryptedMsg}</h4>
                 </div>

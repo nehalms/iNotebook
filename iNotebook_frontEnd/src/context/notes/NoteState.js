@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import NoteContext from "./noteContext";
+import CryptoJS from 'crypto-js';
 
 const NoteState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL
     const notesInitital = []
-    const [notes, setNotes] = useState(notesInitital)
-
+    const [notes, setNotes] = useState(notesInitital);
+    const secretKey = localStorage.getItem('AesKey');
 
     //get all notes
     const fetchNotes = async ()=> {
@@ -24,8 +25,18 @@ const NoteState = (props)=> {
                 props.showAlert(json.error, 'danger');
                 return;
             }
-            console.log(json);
-            setNotes(json);
+            // console.log(json);
+            let decryptedNote = [];
+            json.map((note) => {
+                note = {
+                    ...note,
+                    title: CryptoJS.AES.decrypt(note.title, secretKey).toString(CryptoJS.enc.Utf8),
+                    description: CryptoJS.AES.decrypt(note.description, secretKey).toString(CryptoJS.enc.Utf8),
+                    tag: CryptoJS.AES.decrypt(note.tag, secretKey).toString(CryptoJS.enc.Utf8),
+                }
+                decryptedNote.push(note);
+            });
+            setNotes(decryptedNote);
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
@@ -37,6 +48,9 @@ const NoteState = (props)=> {
     //Add a note
     const addNote = async (title, description, tag)=> {
         try {
+            title = CryptoJS.AES.encrypt(title, secretKey).toString();
+            description = CryptoJS.AES.encrypt(description, secretKey).toString();
+            tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
             props.setLoader({ showLoader: true, msg: "Adding Notes"});
             const response = await fetch(`${host}/notes/addnote`, {
                 method: "POST", 
@@ -52,24 +66,13 @@ const NoteState = (props)=> {
                 props.showAlert(json.error, 'danger');
                 return;
             }
-            console.log(json);
+            // console.log(json);
             fetchNotes();
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
             props.showAlert("Some error Occured", 'danger');
         }
-
-        // const note = {
-        //     "_id": "655dc7c322037a12484024ef",
-        //     "user": "655c7e526b2e8dfff2fedd52",
-        //     "title": title,
-        //     "description": description,
-        //     "tag": tag,
-        //     "date": "2023-11-22T09:20:03.092Z",
-        //     "__v": 0
-        // }
-        // setNotes(notes.concat(note))
     }
 
 
@@ -91,7 +94,7 @@ const NoteState = (props)=> {
                 props.showAlert(json.error, 'danger');
                 return;
             }
-            console.log(json);
+            // console.log(json);
             fetchNotes();
         } catch (err) {
             props.setLoader({ showLoader: false });
@@ -106,6 +109,9 @@ const NoteState = (props)=> {
     //Edit a note
     const updateNote = async (id, title, description, tag)=> {
         try {
+            title = CryptoJS.AES.encrypt(title, secretKey).toString();
+            description = CryptoJS.AES.encrypt(description, secretKey).toString();
+            tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
             props.setLoader({ showLoader: true, msg: "Updating Notes"});
             const response = await fetch(`${host}/notes/updatenote/${id}`, {
                 method: "PUT", 
