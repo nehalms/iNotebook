@@ -47,7 +47,7 @@ export default function RoundCorners(props) {
     
     try {
       props.setLoader({ showLoader: true, msg: "Transforming..."});
-      const response = await fetch(`${process.env.BASE_URL}/image/enhance`, {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/enhance`, {
         method: "POST", 
         headers: {
             "auth-token": localStorage.getItem('token'),

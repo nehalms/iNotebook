@@ -28,7 +28,7 @@ const Login = (props) => {
         e.preventDefault(); // to prevent page from reloading
         try {
             props.setLoader({ showLoader: true, msg: "Logging in please wait"});
-            const response = await fetch(`${process.env.BASE_URL}/auth/login`, {
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
@@ -42,7 +42,7 @@ const Login = (props) => {
             if (json.success && checkForAdminUser) {
                 setCheckForAdminUser(false);
                 props.setLoader({ showLoader: true, msg: "Please wait"});
-                const response = await fetch(`${process.env.BASE_URL}/auth/getuser`, {
+                const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
                     method: "POST", 
                     headers: {
                         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const Login = (props) => {
             let html = getAdminhtml(val); 
             let email = [];
             props.setLoader({ showLoader: true, msg: "Sending otp..."});
-            await fetch(`${process.env.BASE_URL}/mail/send?toAdmin=true`, {
+            await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
               method: "POST", 
               headers: {
                 "Content-Type": "application/json",

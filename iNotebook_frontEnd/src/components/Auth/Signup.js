@@ -42,7 +42,7 @@ const Signup = (props) => {
             }
             e.preventDefault();
             props.setLoader({ showLoader: true, msg: "Signing in please wait"});
-            const response = await fetch(`${process.env.BASE_URL}/auth/createuser`, {
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/createuser`, {
                 method: "POST", 
                 headers: {
                 "Content-Type": "application/json",
@@ -58,7 +58,7 @@ const Signup = (props) => {
                 let html = getAdminNotifyhtml(credentials.name, credentials.email); 
                 let email = [];
                 props.setLoader({ showLoader: true, msg: "Saving user data"});
-                let response = await fetch(`${process.env.BASE_URL}/mail/send?toAdmin=true`, {
+                let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
                   method: "POST", 
                   headers: {
                     "Content-Type": "application/json",
@@ -109,7 +109,7 @@ const Signup = (props) => {
           let email = [];
           email.push(credentials.email);
           props.setLoader({ showLoader: true, msg: "Sending email"});
-          let response = await fetch(`${process.env.BASE_URL}/mail/send`, {
+          let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send`, {
             method: "POST", 
             headers: {
               "Content-Type": "application/json",

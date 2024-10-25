@@ -3,7 +3,7 @@ import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
 export default function Tic_tac_toe(props) {  
-  const socket = new SockJS(process.env.SOCKET_URL);
+  const socket = new SockJS(process.env.REACT_APP_SOCKET_URL);
   const detailsDiv = useRef();
   const [height, setHeight] = useState();
   const [copied, setCopied] = useState(false);
@@ -95,7 +95,7 @@ export default function Tic_tac_toe(props) {
 
   const getPlayerData = async () => {
     try { 
-      const response = await fetch(`${process.env.BASE_URL}/game/tictactoe`, {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/game/tictactoe`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -124,7 +124,7 @@ export default function Tic_tac_toe(props) {
   const handleCreateRoom = async () => {
     try {
       props.setLoader({ showLoader: true, msg: "Creating room"});
-      let response = await fetch(`${process.env.BOOTSTRAP_URL}/game/start`, {
+      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/start`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -156,7 +156,7 @@ export default function Tic_tac_toe(props) {
   const handleJoinRoom = async () => {
     try {
       props.setLoader({ showLoader: true, msg: "Joining room"});
-      let response = await fetch(`${process.env.BOOTSTRAP_URL}/game/connect?gameId=${roomId}`, {
+      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/connect?gameId=${roomId}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -207,7 +207,7 @@ export default function Tic_tac_toe(props) {
     let row = e.target.getAttribute('row');
     let col = e.target.getAttribute('col');
     try {
-      let response = await fetch(`${process.env.BOOTSTRAP_URL}/game/gameplay`, {
+      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/gameplay`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -247,7 +247,7 @@ export default function Tic_tac_toe(props) {
         document.getElementById(idxs[1]+1).style.backgroundColor = '#96fa7d';
         document.getElementById(idxs[2]+1).style.backgroundColor = '#96fa7d';
       }
-      let response = await fetch(`${process.env.BASE_URL}/game/tttsave?won=${data.winner == player}&draw=${data.winner == "DRAW"}`, {
+      let response = await fetch(`${process.env.REACT_APP_BASE_URL}/game/tttsave?won=${data.winner == player}&draw=${data.winner == "DRAW"}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -267,7 +267,7 @@ export default function Tic_tac_toe(props) {
           loss: stats.tttStats.lost,
         });
       }
-      const socket_ = new SockJS(process.env.SOCKET_URL);
+      const socket_ = new SockJS(process.env.REACT_APP_SOCKET_URL);
       const stompClient = Stomp.over(socket_);
       let userStats = {
         gameId: roomDetails.id,
@@ -291,7 +291,7 @@ export default function Tic_tac_toe(props) {
 
   const handleReset = async () => {
     try {
-      let response = await fetch(`${process.env.BOOTSTRAP_URL}/game/reset?gameId=${roomDetails.id}`, {
+      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/reset?gameId=${roomDetails.id}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",

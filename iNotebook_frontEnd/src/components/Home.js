@@ -30,7 +30,7 @@ const Home = (props) => {
   const fetchHistory = async () => {
     try {
       setLoading(true);
-      let response = await fetch(`${process.env.BASE_URL}/getdata/userhistory`, {
+      let response = await fetch(`${process.env.REACT_APP_BASE_URL}/getdata/userhistory`, {
         headers: {
           'auth-token': localStorage.getItem('token'),
         }
