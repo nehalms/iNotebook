@@ -39,7 +39,6 @@ const Home = (props) => {
       });
       const json = await response.json();
       if(json.status === 'success') {
-        console.log(json);
         let decryptKey = ''
         Array.from(json.secretKey).forEach(char => {
             decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
