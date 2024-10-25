@@ -66,7 +66,7 @@ export default function Analytics(props) {
         : reqType === 'user' 
             ? setShowUserLoader(true) 
             : setShowNoteLoader(true);
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/graphData?reqType=${reqType}&startDate=${dates.startDate}&endDate=${dates.endDate}`, {
+      const response = await fetch(`${process.env.BASE_URL}/getData/graphData?reqType=${reqType}&startDate=${dates.startDate}&endDate=${dates.endDate}`, {
           method: "GET", 
           headers: {
               "Content-Type": "application/json",

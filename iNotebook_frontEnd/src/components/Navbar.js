@@ -17,7 +17,7 @@ const Navbar = (props) => {
     const getUser = async ()=> {
         try {
             props.setLoader({ showLoader: true, msg: "Please wait"});
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
+            const response = await fetch(`${process.env.BASE_URL}/auth/getuser`, {
                 method: "POST", 
                 headers: {
                 "Content-Type": "application/json",
@@ -36,7 +36,7 @@ const Navbar = (props) => {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/logout`, {
+            const response = await fetch(`${process.env.BASE_URL}/auth/logout`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",

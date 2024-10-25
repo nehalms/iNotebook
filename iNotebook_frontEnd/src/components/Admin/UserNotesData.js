@@ -31,7 +31,7 @@ export default function UserNotesData(props) {
     const fetchData = async () => {
         try {
             props.setLoader({ showLoader: true, msg: "Loading..."});
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/users`, {
+            const response = await fetch(`${process.env.BASE_URL}/getData/users`, {
                 method: "GET", 
                 headers: {
                     "Content-Type": "application/json",

@@ -28,7 +28,7 @@ const Login = (props) => {
         e.preventDefault(); // to prevent page from reloading
         try {
             props.setLoader({ showLoader: true, msg: "Logging in please wait"});
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login`, {
+            const response = await fetch(`${process.env.BASE_URL}/auth/login`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
@@ -42,7 +42,7 @@ const Login = (props) => {
             if (json.success && checkForAdminUser) {
                 setCheckForAdminUser(false);
                 props.setLoader({ showLoader: true, msg: "Please wait"});
-                const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
+                const response = await fetch(`${process.env.BASE_URL}/auth/getuser`, {
                     method: "POST", 
                     headers: {
                         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const Login = (props) => {
             let html = getAdminhtml(val); 
             let email = [];
             props.setLoader({ showLoader: true, msg: "Sending otp..."});
-            let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
+            await fetch(`${process.env.BASE_URL}/mail/send?toAdmin=true`, {
               method: "POST", 
               headers: {
                 "Content-Type": "application/json",
@@ -112,7 +112,6 @@ const Login = (props) => {
             });
             props.setLoader({ showLoader: false });
             props.showAlert("Code send to your mail", "success");
-            const json = await response.json();
           } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**");
@@ -158,7 +157,7 @@ const Login = (props) => {
                     <div className="card my-3 p-2 border rounded-start" style={{borderTopLeftRadius: '0px'}} ref={divRef}>
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
-                                <h2 className='my-3 pb-3 text-center'>Login</h2>
+                                <h2 className='mb-3 p-3 text-center border rounded bg-secondary-subtle'>Login</h2>
                                 <div className="mb-3">
                                     <label htmlFor="email" className="form-label">Email address</label>
                                     <input type="email" className="form-control" onChange={onChange} value={credentials.email} required id="email" name="email" aria-describedby="emailHelp"/>
@@ -170,7 +169,7 @@ const Login = (props) => {
                                         <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
                                     </div>
                                 </div>
-                                { !isAdminUser && <><Link className='mx-0 my-0' to="/forgot" role='button'>Forgot password?</Link><br/></>}
+                                { !isAdminUser && <div className='text-end'><Link className='mx-0 my-0 link-underline-opacity-75-hover link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0' to="/forgot" role='button'>Forgot password?</Link><br/></div>}
                                 { isAdminUser && !Verified && <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey"/> }
                                 { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
                                 <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Login <i className="fa-solid fa-right-to-bracket mx-2"></i></button>

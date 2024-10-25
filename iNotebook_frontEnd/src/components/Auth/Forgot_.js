@@ -35,7 +35,7 @@ const Forgot_ = (props)=> {
         return;
       }
       props.setLoader({ showLoader: true, msg: "Updating password"});
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/updatePassword`, {
+      const response = await fetch(`${process.env.BASE_URL}/auth/updatePassword`, {
         method: "POST", 
         headers: {
         "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const Forgot_ = (props)=> {
   const sendEmail = async (e) => {    
     try {
       props.setLoader({ showLoader: true, msg: "Checking if user exists"});
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getPassword`, {
+      const response = await fetch(`${process.env.BASE_URL}/auth/getPassword`, {
         method: "POST", 
         headers: {
         "Content-Type": "application/json",
@@ -90,7 +90,7 @@ const Forgot_ = (props)=> {
           let email = [];
           email.push(credentials.email);
           props.setLoader({ showLoader: true, msg: "Sending email"});
-          let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send`, {
+          let response = await fetch(`${process.env.BASE_URL}/mail/send`, {
             method: "POST", 
             headers: {
               "Content-Type": "application/json",
@@ -169,7 +169,7 @@ const Forgot_ = (props)=> {
             <div className="card my-3 p-2 border rounded-start" style={{borderTopLeftRadius: '0px'}} ref={divRef}>
                 <div className="card-body">
                     <form onSubmit={handleSubmit}>
-                        <h2 className='my-3 text-center'>Reset Password</h2>
+                        <h2 className='mb-3 p-3 text-center border rounded bg-secondary-subtle'>Reset Password</h2>
                         <div className="mb-3">
                           <label htmlFor="email" className="form-label">Email</label>
                           <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>

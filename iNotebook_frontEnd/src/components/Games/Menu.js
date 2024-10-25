@@ -9,7 +9,7 @@ export default function Menu(props) {
     <div>
       <div className='row my-2'>
         <div className='col-lg-3'>
-          <div className="card shadow-lg my-3 SaveNotes__left-right" onClick={() => {history.navigate('/tictactoe')}}>
+          <div className="card shadow-lg my-3 SaveNotes__left-right" onClick={() => {history.navigate('/games/tictactoe')}}>
             <div className="card-body">
                 <h5 className='text-center'>Tic-Tac-Toe</h5>
             </div>

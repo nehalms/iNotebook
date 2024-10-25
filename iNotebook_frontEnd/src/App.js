@@ -99,7 +99,7 @@ function App() {
   const setUserInactive = async () => {
     try {
       setLoader({ showLoader: true, msg: "Please wait"});
-      await fetch(`${process.env.REACT_APP_BASE_URL}/auth/changestatus`, {
+      await fetch(`${process.env.BASE_URL}/auth/changestatus`, {
           method: "POST", 
           headers: {
             "Content-Type": "application/json",
@@ -152,7 +152,7 @@ function App() {
               <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/msg' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>
           </div>

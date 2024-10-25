@@ -52,7 +52,7 @@ export default function RoundCorners(props) {
     
     try {
         props.setLoader({ showLoader: true, msg: "Transforming..."});
-        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/roundcorners?setMax=${maxChecked}&tl=${cornerValues.topleft}&tr=${cornerValues.topright}&bl=${cornerValues.btmleft}&br=${cornerValues.btmright}`, {
+        const response = await fetch(`${process.env.BASE_URL}/image/roundcorners?setMax=${maxChecked}&tl=${cornerValues.topleft}&tr=${cornerValues.topright}&bl=${cornerValues.btmleft}&br=${cornerValues.btmright}`, {
         method: "POST", 
         headers: {
             "auth-token": localStorage.getItem('token'),

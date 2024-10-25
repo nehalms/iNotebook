@@ -24,7 +24,7 @@ export default function ImageEditor(props) {
   const handleDelete = async () => {
     try{  
       props.setLoader({ showLoader: true, msg: "Deleting images..."});
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/delete`, {
+      const response = await fetch(`${process.env.BASE_URL}/image/delete`, {
         method: "DELETE", 
         headers: {
             "auth-token": localStorage.getItem('token'),
