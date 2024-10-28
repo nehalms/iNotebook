@@ -18,12 +18,14 @@ export default function Tic_tac_toe(props) {
     joined: false,
   })
   const [userstats, setStats] = useState({
+    id: '',
     name: '',
     played: 0, 
     won: 0,
     lost: 0,
   });
   const [oppStats, setOppStats] = useState({
+    id: '',
     name: "Searching...",
     played: 0,
   });
@@ -37,12 +39,12 @@ export default function Tic_tac_toe(props) {
       stompClient.subscribe(`/topic/oppPlayerDetails/${roomDetails.id}`, (message) => {
         if (message.body) {
           const data = JSON.parse(message.body);
-          let name = player == 'X' ? data.player2.name : data.player1.name;
-          let gamesPlayed = player == 'X' ? data.player2.gamesPlayed : data.player1.gamesPlayed;
-          props.showAlert(`${name} joined the room`, 'info') 
+          let player = userstats.id === data.player1.userId ? data.player2 : data.player1
+          props.showAlert(`${player.name} joined the room`, 'info') 
           setOppStats({
-            name: name,
-            played: gamesPlayed,
+            id: player.userId,
+            name: player.name,
+            played: player.gamesPlayed,
           });
         }
       });
@@ -54,6 +56,7 @@ export default function Tic_tac_toe(props) {
           setTurn(data.turn);
           if(data.status === "FINISHED") {
             saveGameData(data);
+            getPlayerData();
           }
         }
       });
@@ -68,11 +71,13 @@ export default function Tic_tac_toe(props) {
             setBoardFunc(data.board);
             setTurn(data.turn);
             setComp(false);
-            let name = player == 'X' ? data.player2.name : data.player1.name;
-            let gamesPlayed = player == 'X' ? data.player2.gamesPlayed : data.player1.gamesPlayed;
+            setPlayer(userstats.id === data.userIdX ? 'X' : 'O');
+            console.log(data);
+            let player = userstats.id === data.player1.userId ? data.player2 : data.player1
             setOppStats({
-              name: name,
-              played: gamesPlayed,
+              id: player.userId,
+              name: player.name,
+              played: player.gamesPlayed,
             });
           }
         }
@@ -91,7 +96,7 @@ export default function Tic_tac_toe(props) {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [roomDetails.id]);
+  }, [roomDetails.id, player]);
 
   const getPlayerData = async () => {
     try { 
@@ -105,6 +110,7 @@ export default function Tic_tac_toe(props) {
       const data = await response.json();
       if(data && data.tttStats) {
         setStats({
+          id: data.userId,
           name: data.userName,
           played: data.tttStats.played,
           won: data.tttStats.won,
@@ -130,6 +136,7 @@ export default function Tic_tac_toe(props) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          userId: userstats.id,
           name: userstats.name,
           gamesPlayed: userstats.played,
         })
@@ -162,6 +169,7 @@ export default function Tic_tac_toe(props) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          userId: userstats.id,
           name: userstats.name,
           gamesPlayed: userstats.played,
         })
@@ -178,6 +186,7 @@ export default function Tic_tac_toe(props) {
         props.showAlert("Joined a room", 'success');
 
         setOppStats({
+          id: data.player1.userId,
           name: data.player1.name,
           played: data.player1.gamesPlayed,
         });
@@ -247,40 +256,6 @@ export default function Tic_tac_toe(props) {
         document.getElementById(idxs[1]+1).style.backgroundColor = '#96fa7d';
         document.getElementById(idxs[2]+1).style.backgroundColor = '#96fa7d';
       }
-      let response = await fetch(`${process.env.REACT_APP_BASE_URL}/game/tttsave?won=${data.winner == player}&draw=${data.winner == "DRAW"}`, {
-        method: "POST", 
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
-        },
-      });
-      let stats = await response.json();
-      if(stats.success == false) {
-        props.showAlert(stats.msg, 'info');
-        return;
-      }
-      if(stats) {
-        setStats({
-          name: stats.userName,
-          played: stats.tttStats.played,
-          won: stats.tttStats.won,
-          loss: stats.tttStats.lost,
-        });
-      }
-      const socket_ = new SockJS(process.env.REACT_APP_SOCKET_URL);
-      const stompClient = Stomp.over(socket_);
-      let userStats = {
-        gameId: roomDetails.id,
-        type: player,
-        player : {
-          name: userstats.name,
-          gamesPlayed: stats.tttStats.played,
-        }
-      }
-      stompClient.connect({}, () => {
-        stompClient.send('/app/sendMessage/stats', {}, JSON.stringify(userStats));
-      });
-    
     } catch (err) {
       console.log('Error***', err);
       props.showAlert("Internal server Error", 'danger');

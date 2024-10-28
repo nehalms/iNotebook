@@ -26,25 +26,32 @@ router.post('/tictactoe', fetchuser, async (req, res) => {
     }
 });
 
-router.post('/tttsave', fetchuser, async (req, res) => {
+router.get('/tttsave/:player1/:p1Stat/:player2/:p2Stat', async (req, res) => {
     try {
-        let userStats = await GameDetails.findOne({userId: req.user.id});
-        if(!userStats) {
+        if( !req.body ) {
+            res.status(400).send({status: 'Not found', message: 'No request body found'});
+        }
+        let p1Id = req.params.player1;
+        let p2Id = req.params.player2;
+        let userStats1 = await GameDetails.findOne({userId: p1Id});
+        let userStats2 = await GameDetails.findOne({userId: p2Id});
+        if(!userStats1 || ! userStats2) {
             res.send({success: false, msg: "No User stats found"});
             return;
         }
-        if(req.query.won == undefined || req.query.draw == undefined) {
-            res.send({success: false, msg: "send the query parameter"});
-            return;
-        }
-        let [won, lost] = req.query.draw == 'true' ? [0, 0] : req.query.won == 'true'  ? [1, 0] : [0, 1];
-        userStats.tttStats.set('played', userStats.tttStats.get('played') + 1);
-        userStats.tttStats.set('won', userStats.tttStats.get('won') + won);
-        userStats.tttStats.set('lost', userStats.tttStats.get('lost') + lost);
+        let [won_1, lost_1] = req.params.p1Stat == 1 ? [1, 0] : [0, 1];
+        userStats1.tttStats.set('played', userStats1.tttStats.get('played') + 1);
+        userStats1.tttStats.set('won', userStats1.tttStats.get('won') + won_1);
+        userStats1.tttStats.set('lost', userStats1.tttStats.get('lost') + lost_1);
 
-        let updatedStats = await userStats.save();
-        res.send(updatedStats);
-        
+        let [won_2, lost_2] = req.params.p2Stat == 1 ? [1, 0] : [0, 1];
+        userStats2.tttStats.set('played', userStats2.tttStats.get('played') + 1);
+        userStats2.tttStats.set('won', userStats2.tttStats.get('won') + won_2);
+        userStats2.tttStats.set('lost', userStats2.tttStats.get('lost') + lost_2);
+
+        let player1 = await userStats1.save();
+        let player2 = await userStats2.save();
+        res.send({success: true, message: 'Stats updated for both users', data: {player1: player1, player2: player2}});
     } catch (err) {
         console.log("Error**", err);
         res.status(500).send('Internal Server Error');

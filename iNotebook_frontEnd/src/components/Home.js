@@ -84,7 +84,7 @@ const Home = (props) => {
         </div>
       </div>
       <div className='col-lg-3'>
-        <div className="card shadow-lg my-3 Games__left-right" onClick={() => {history.navigate('/games')}}>
+        <div className="card shadow-lg my-3 Games__left-right" onClick={() => {history.navigate('/games/tictactoe')}}>
           <div className="card-body">
             <h5 className='text-center'>Games</h5>
           </div>
