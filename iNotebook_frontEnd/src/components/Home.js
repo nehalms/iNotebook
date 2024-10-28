@@ -39,11 +39,7 @@ const Home = (props) => {
       });
       const json = await response.json();
       if(json.status === 'success') {
-        let decryptKey = ''
-        Array.from(json.secretKey).forEach(char => {
-            decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
-        });
-        localStorage.setItem('AesKey', decryptKey);
+        localStorage.setItem('AesKey', json.secretKey);
       }
     } catch (err) {
       console.log("Error**", err);

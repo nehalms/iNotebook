@@ -176,7 +176,7 @@ const Navbar = (props) => {
                                     </>
                                     
                                 }
-                                <Link className='px-3 my-2 border-end' to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.removeItem('adminToken'); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
+                                <Link className='px-3 my-2 border-end' to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.clear(); sessionStorage.removeItem('adminToken'); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
                                 {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
                                 </> :
                                 <>

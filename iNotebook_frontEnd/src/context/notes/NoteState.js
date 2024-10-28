@@ -2,11 +2,22 @@ import React, { useState } from "react";
 import NoteContext from "./noteContext";
 import CryptoJS from 'crypto-js';
 
+function decrypt() {
+    if( !localStorage.getItem('AesKey') ) {
+        return;
+    }
+    let decryptKey = ''
+    Array.from(localStorage.getItem('AesKey')).forEach(char => {
+        decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
+    });
+    return decryptKey;
+}
+
 const NoteState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL
     const notesInitital = []
     const [notes, setNotes] = useState(notesInitital);
-    const secretKey = localStorage.getItem('AesKey');
+    const secretKey = decrypt();
 
     //get all notes
     const fetchNotes = async ()=> {
