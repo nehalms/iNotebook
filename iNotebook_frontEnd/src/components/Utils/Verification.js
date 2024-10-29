@@ -30,6 +30,7 @@ function Verification(props) {
 
   return (
     <div>
+      <label htmlFor="exampleInputEmail1" className="form-label">{props.msg ? props.msg : 'Enter the verification code'}</label> <br />
       <div style={{ display: 'flex', gap: '10px' }}>
         {otp.map((value, index) => (
           <input
@@ -50,8 +51,8 @@ function Verification(props) {
           />
         ))}
       </div>
-      <div className="buttons d-flex my-3">
-        <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2">Resend <i className="fa-solid fa-paper-plane mx-2"></i></button>
+      <div className="d-flex my-3">
+        <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2 ms-0">Resend <i className="fa-solid fa-paper-plane mx-2"></i></button>
         <button type="button" onClick={handleVerify} className="btn btn-success mx-2">Verify <i className="fa-solid fa-certificate mx-2"></i></button>
       </div>
     </div>
