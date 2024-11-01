@@ -40,6 +40,10 @@
     color: #ffffff;
     text-decoration: none;
   }
+
+  .nav-elements ul a:hover {
+    color: aquamarine;
+  }
   
   .nav-elements ul a.active {
     color: #92deff;

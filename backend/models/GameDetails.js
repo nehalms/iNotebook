@@ -13,7 +13,7 @@ const gameDetails = new Schema({
         type: Map,
         of: Number,
     },
-    data: {
+    date: {
         type: Date,
         default: new Date(),
     }

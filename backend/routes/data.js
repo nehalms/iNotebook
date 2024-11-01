@@ -4,6 +4,7 @@ const router = express.Router()
 const User = require("../models/User");
 const Notes = require('../models/Notes')
 const LoginHistory = require('../models/LoginHistory')
+const GameDetails = require('../models/GameDetails')
 const moment = require('moment');
 const UserHistory = require('../models/UserHistory');
 
@@ -110,6 +111,28 @@ router.get('/userhistory', fetchuser, async (req, res) => {
         )
         res.send(userHistory);
     } catch (err) {
+        console.log(err.message);
+        return res.status(500).send("Internal Server Error!!");
+    }
+});
+
+router.get('/gamestats', fetchuser, async (req, res) => {
+    try {
+        let stats = await GameDetails.find();
+        let data = [];
+        await Promise.all(
+            stats.map(async (stat, i) => {
+                let Stat = {
+                    id: i + 1,
+                    userId: stat.id,
+                    name: stat.userName,
+                    tttStats: stat.tttStats,
+                }
+                data.push(Stat);
+            })
+        );
+        res.send({status: 'success', stats: data});
+    } catch(err){
         console.log(err.message);
         return res.status(500).send("Internal Server Error!!");
     }

@@ -6,6 +6,7 @@ import UserNotesData from './UserNotesData';
 import Analytics_tab from './Analytics';
 import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
+import GameStats from './GameStats';
 
 export default function DashBoard(props) {
     
@@ -43,12 +44,18 @@ export default function DashBoard(props) {
                 <Tab eventKey="users" title="Users" style={{width: '200px'}}>
                     <div className="m-0 text-center my-3 rounded">Users <i className="fa-solid fa-users mx-2"></i></div>
                 </Tab>
+                <Tab eventKey="gameStats" title="Game Stats"  style={{width: '200px'}}>
+                    <div className="m-0 text-center my-3 rounded">Game Stats <i className="fa-solid fa-chart-simple mx-2"></i></div>
+                </Tab>
                 <Tab eventKey="analytics" title="Analytics"  style={{width: '200px'}}>
-                    <div className="m-0 text-center my-3 rounded">Analytics <i className="fa-solid fa-chart-simple mx-2"></i></div>
+                    <div className="m-0 text-center my-3 rounded">Analytics <i class="fa-solid fa-chart-line mx-2"></i></div>
                 </Tab>
             </TabList>
             <TabPanel>
                 <UserNotesData showAlert={props.showAlert} setLoader={props.setLoader}/>
+            </TabPanel>
+            <TabPanel>
+                <GameStats showAlert={props.showAlert} setLoader={props.setLoader}/>
             </TabPanel>
             <TabPanel>
                 <Analytics_tab showAlert={props.showAlert} setLoader={props.setLoader}/>

@@ -113,7 +113,7 @@ const Navbar = (props) => {
             <nav className="navbar">
                 <div className="container__">
                     <div className="logo">
-                        <Link className="navbar-brand text-white" to="/"><span><img src={img} alt="image" /></span> iNotebook - Home</Link>
+                        <Link className="navbar-brand text-white" to="/"><span><img src={img} alt="image" style={{width: '35px', height: '35px'}}/></span> iNotebook - Home</Link>
                     </div>
                     <div className="mx-5 my-2 outer-bg-colors">
                         <div className="bg-primary rounded my-1 mx-2" onClick={() => {props.toggleMode('primary')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
