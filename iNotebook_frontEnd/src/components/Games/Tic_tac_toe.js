@@ -134,6 +134,7 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "auth-token": localStorage.getItem('token'),
         },
         body: JSON.stringify({
           userId: userstats.id,
@@ -167,6 +168,7 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "auth-token": localStorage.getItem('token'),
         },
         body: JSON.stringify({
           userId: userstats.id,
@@ -220,6 +222,7 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "auth-token": localStorage.getItem('token'),
         },
         body: JSON.stringify({
           type: player,
@@ -270,6 +273,7 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "auth-token": localStorage.getItem('token'),
         },
       });
       let data = await response.json();

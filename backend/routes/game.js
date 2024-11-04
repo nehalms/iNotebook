@@ -3,6 +3,27 @@ const fetchuser = require('../middleware/fetchuser')
 const router = express.Router()
 const GameDetails = require('../models/GameDetails');
 const User = require('../models/User');
+var jwt = require('jsonwebtoken');
+const JWT_SCERET = process.env.JWT_SCERET;
+
+router.get("/authenticateUser/:token", async (req, res) => {
+    const token = req.params.token;
+    if(!token){
+        res.send(false);
+    }
+    try{
+        const data = jwt.verify(token, JWT_SCERET);
+        if(data && data.user) {
+            res.send(true);
+        } else {
+            res.send(false);
+        }
+    }
+    catch(err){
+        console.log("Error****", err.message);
+        res.send(false);
+    }
+});
 
 router.post('/tictactoe', fetchuser, async (req, res) => {
     try { 
