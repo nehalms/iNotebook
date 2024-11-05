@@ -1,15 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState, useRef, useEffect} from 'react'
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-import tictactoe from './images/tic-tac-toe.jpg'
+import './FrInRow.css'
+import connect4 from './images/connect4.png'
 
-export default function Tic_tac_toe(props) {  
-  const socket = new SockJS(process.env.REACT_APP_SOCKET_URL);
+const ROWS = 7;
+const COLS = 7;
+
+export default function FrInRow(props) {
+
+  const socket = new SockJS(process.env.REACT_APP_C4_SOCKET_URL);
+  const [board, setBoard] = useState(Array(ROWS).fill(null).map(() => Array(COLS).fill(null)));
   const detailsDiv = useRef();
   const [height, setHeight] = useState();
   const [copied, setCopied] = useState(false);
   const [connected, setconnect] = useState(false);
-  const [board, setBoard] = useState(Array(10).fill(null));
   const [player, setPlayer] = useState('');
   const [currTurn, setTurn] = useState('X')
   const [gameComp, setComp] = useState(false);
@@ -30,7 +35,7 @@ export default function Tic_tac_toe(props) {
     name: "Searching...",
     played: 0,
   });
-
+  
   useEffect(() => {
     const stompClient = Stomp.over(socket);
 
@@ -53,7 +58,7 @@ export default function Tic_tac_toe(props) {
       stompClient.subscribe(`/topic/updatedGame/${roomDetails.id}`, (message) => {
         if (message.body) {
           const data = JSON.parse(message.body);
-          setBoardFunc(data.board);
+          setBoard(data.board);
           setTurn(data.turn);
           if(data.status === "FINISHED") {
             saveGameData(data);
@@ -64,12 +69,9 @@ export default function Tic_tac_toe(props) {
 
       stompClient.subscribe(`/topic/resetGame/${roomDetails.id}`, (message) => {
         if (message.body) {
-          for(let i=1; i<=9; i++) {
-            document.getElementById(i).style.backgroundColor = 'white';
-          }
           const data = JSON.parse(message.body);
           if(data && data.board && data.player1 && data.player2){
-            setBoardFunc(data.board);
+            setBoard(data.board);
             setTurn(data.turn);
             setComp(false);
             setPlayer(userstats.id === data.userIdX ? 'X' : 'O');
@@ -82,7 +84,6 @@ export default function Tic_tac_toe(props) {
           }
         }
       });
-
     });
 
     if (!detailsDiv.current) return;
@@ -96,7 +97,7 @@ export default function Tic_tac_toe(props) {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [roomDetails.id, player]);
+  }, [roomDetails.id, player]); 
 
   const getPlayerData = async () => {
     try { 
@@ -108,13 +109,13 @@ export default function Tic_tac_toe(props) {
         },
       });
       const data = await response.json();
-      if(data && data.tttStats) {
+      if(data && data.frnRowStats) {
         setStats({
           id: data.userId,
           name: data.userName,
-          played: data.tttStats.played,
-          won: data.tttStats.won,
-          loss: data.tttStats.lost,
+          played: data.frnRowStats.played,
+          won: data.frnRowStats.won,
+          loss: data.frnRowStats.lost,
         });
       }
       if(!data.success){
@@ -126,11 +127,11 @@ export default function Tic_tac_toe(props) {
       props.showAlert("Some Error Occured", "danger");
     }
   }
-
+  
   const handleCreateRoom = async () => {
     try {
       props.setLoader({ showLoader: true, msg: "Creating room"});
-      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/start`, {
+      let response = await fetch(`${process.env.REACT_APP_C4_BOOTSTRAP_URL}/game/start`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -164,7 +165,7 @@ export default function Tic_tac_toe(props) {
   const handleJoinRoom = async () => {
     try {
       props.setLoader({ showLoader: true, msg: "Joining room"});
-      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/connect?gameId=${roomId}`, {
+      let response = await fetch(`${process.env.REACT_APP_C4_BOOTSTRAP_URL}/game/connect?gameId=${roomId}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -201,7 +202,7 @@ export default function Tic_tac_toe(props) {
     }
   }
 
-  const handleClick = async (e) => {
+  const handleClick = async (col) => {
     if(gameComp) {
       return;
     }
@@ -209,16 +210,21 @@ export default function Tic_tac_toe(props) {
       props.showAlert("Opponent player turn", 'warning');
       return;
     }
-    if(!e.target.id) {
-      return;
+
+    let row_;
+    let col_;
+    const newBoard = board.map(row => [...row]);
+    for (let row = ROWS - 1; row >= 0; row--) {
+      if (!newBoard[row][col]) {
+        newBoard[row][col] = currTurn === 'X' ? 1 : currTurn === 'O' ? 2 : 0;
+        row_ = row;
+        col_ = col;
+        break;
+      }
     }
-    if(board[e.target.id-1] != null) {
-      return;
-    }
-    let row = e.target.getAttribute('row');
-    let col = e.target.getAttribute('col');
+    
     try {
-      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/gameplay`, {
+      let response = await fetch(`${process.env.REACT_APP_C4_BOOTSTRAP_URL}/game/gameplay`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -227,8 +233,8 @@ export default function Tic_tac_toe(props) {
         body: JSON.stringify({
           type: player,
           gameId: roomDetails.id,
-          coordinateX: row,
-          coordinateY: col,
+          coordinateX: row_,
+          coordinateY: col_,
         })
       });
       let data = await response.json();
@@ -237,7 +243,7 @@ export default function Tic_tac_toe(props) {
         return;
       }
       if(data) {
-        setBoardFunc(data.board);
+        // setBoard(data.board);
         setTurn(data.turn);
       }
     } catch (err) {
@@ -247,17 +253,24 @@ export default function Tic_tac_toe(props) {
       props.setLoader({ showLoader: false });
     }
     return;
-  }
+  };
 
   const saveGameData = async (data) => {
     try { 
       setComp(true);
-      if(data.winner != 'DRAW')
-      {
+      if(data.winner != 'DRAW') {
         let idxs = data.winnerIdxs
-        document.getElementById(idxs[0]+1).style.backgroundColor = '#96fa7d';
-        document.getElementById(idxs[1]+1).style.backgroundColor = '#96fa7d';
-        document.getElementById(idxs[2]+1).style.backgroundColor = '#96fa7d';
+        const newBoard = data.board;
+        idxs.map((idx) => {
+          let val = idx.split(":");
+          newBoard[parseInt(val[0])][parseInt(val[1])] = data.board[parseInt(val[0])][parseInt(val[1])] === 1 ? 10 : 20;
+          setBoard(newBoard);
+        });
+        if((data.winner === 'X' && data.userIdX === userstats.id) || (data.winner === 'O' && data.userIdO === userstats.id)) {
+          props.showAlert("You won the game", 'success');
+        } else {
+          props.showAlert("You lost the game", 'danger');
+        }
       }
     } catch (err) {
       console.log('Error***', err);
@@ -269,7 +282,7 @@ export default function Tic_tac_toe(props) {
 
   const handleReset = async () => {
     try {
-      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/reset?gameId=${roomDetails.id}`, {
+      let response = await fetch(`${process.env.REACT_APP_C4_BOOTSTRAP_URL}/game/reset?gameId=${roomDetails.id}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -282,7 +295,7 @@ export default function Tic_tac_toe(props) {
         return;
       }
       if(data) {
-        setBoardFunc(data.board);
+        setBoard(data.board);
         setTurn(data.turn);
         setComp(false);
       }
@@ -294,25 +307,27 @@ export default function Tic_tac_toe(props) {
     }
   }
 
-  const setBoardFunc = (board) => {
-    let resBoard = [];
-    for(let i=0; i<3; i++) {
-      for(let j=0; j<3; j++) {
-        resBoard.push(
-          board[i][j] == 1 ? 'X'
-            :board[i][j] == 2 ? 'O' 
-            : null
-        );
-      }
-    }
-    setBoard(resBoard);
-  }
+  const renderSquare = (row, col) => {
+    return (
+      <div 
+        className={`_square_`} 
+        onClick={() => handleClick(col)} 
+        style={{background: board[row][col] 
+          ? board[row][col] === 1 ? 'red' 
+            : board[row][col] === 2 ? 'yellow' 
+              : board[row][col] === 10 ? 'repeating-linear-gradient(45deg, red, red 10px, #ccc 10px, #ccc 20px)'
+                : board[row][col] === 20 ? 'repeating-linear-gradient(45deg, yellow, yellow 10px, #ccc 10px, #ccc 20px)'
+                  : 'white'
+          : 'white' }}
+      />
+    );
+  };
 
   return (
     <div className="row">
       <div className="col-lg-5 my-1 p-3 text-center">
         <div className="card shadow-lg p-3 d-flex flex-column ">
-          <h3>Tic - Tac - Toe</h3>
+          <h3>Four in a Row (Connect 4)</h3>
         </div>
       </div>
       <div className="col-lg-7 my-1 p-3 text-center">
@@ -378,54 +393,27 @@ export default function Tic_tac_toe(props) {
         </div>
       </div>
       <div className="col-lg-7 my-1">
-        <div className="card shadow-lg p-3 bg-secondary-subtle" style={{height: roomDetails.id ? height : 'auto'}} >
-          <div className='border rounded text-center bg-secondary-subtle is-disabled'>
-            {player && player !== '' && <h4 className='m-0'>You are player {player}</h4>}
-            {player && player !== '' ? 
-            <>
-              <div className="pt-2 d-flex align-items-center justify-content-evenly" style={{height: height/3-(player && player !== '' ? 20 : 10)}}>
-                <div id='1' row={0} col={0} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(0)}</p>
-                </div>
-                <div id='2' row={0} col={1} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(1)}</p>
-                </div>
-                <div id='3' row={0} col={2} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(2)}</p>
-                </div>
-              </div>
-              <div className="pt-2 d-flex align-items-center justify-content-evenly" style={{height: height/3-(player && player !== '' ? 20 : 10)}}>
-                <div id='4' row={1} col={0} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(3)}</p>
-                </div>
-                <div id='5' row={1} col={1} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(4)}</p>
-                </div>
-                <div id='6' row={1} col={2} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(5)}</p>
-                </div>
-              </div>
-              <div className="pt-2 d-flex align-items-center justify-content-evenly" style={{height: height/3-(player && player !== '' ? 20 : 10)}}>
-                <div id='7' row={2} col={0} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(6)}</p>
-                </div>
-                <div id='8' row={2} col={1} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(7)}</p>
-                </div>
-                <div id='9' row={2} col={2} className="shadow-lg btn m-1 border rounded text-center d-flex align-items-center justify-content-center" onClick={handleClick} style={{width: ((height/3)-10), height: '100%', backgroundColor: 'white'}}>
-                  <p className='m-0' style={{fontSize: '80px'}}>{board.at(8)}</p>
-                </div>
-              </div>
-            </> : 
+        <div className="card shadow-lg p-3 bg-black" style={{height: 'auto'}} >
+          <div className='text-center bg-black'>
+            { player && player != '' ? 
+             <>
+              <div className="_board_">
+                {board.map((row, rowIndex) => (
+                  <div key={rowIndex} className="_row_">
+                    {row.map((_, colIndex) => renderSquare(rowIndex, colIndex))}
+                  </div>
+                ))}
+              </div> 
+             </> :
               <div className='p-3 m-0 bg-white rounded border'>
-                <img src={tictactoe} alt="Connnect 4" style={{ width: '50%', height: '50%'}}/>
-                <h5 className='m-0 my-5'>The objective of the game of tic-tac-toe is to be the first player to get three of their marks in a row, either horizontally, vertically, or diagonally</h5>
+                <img src={connect4} alt="Connnect 4" style={{ width: '50%', height: '50%'}}/>
+                <h5 className='m-0 my-3'>The goal of the game Four in a Row, also known as Connect 4, is to be the first player to connect four of their colored discs in a row, either horizontally, vertically, or diagonally</h5>
                 <button className="btn btn-success py-2 m-1" style={{width: '80%'}} onClick={handleCreateRoom}>Create Room</button>
-              </div>}
+              </div>
+            }
           </div>
         </div>
       </div>
     </div>
   )
 }
-

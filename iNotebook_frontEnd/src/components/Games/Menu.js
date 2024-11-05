@@ -16,7 +16,7 @@ export default function Menu(props) {
           </div>
         </div>
         <div className='col-lg-3'>
-          <div className="card shadow-lg my-3 ImagesEdit__left-right" onClick={() => {props.showAlert("Under development", 'info')}}>
+          <div className="card shadow-lg my-3 ImagesEdit__left-right" onClick={() => {history.navigate('/games/frinrow')}}>
             <div className="card-body">
                 <h5 className='text-center'>4 in a row</h5>
             </div>

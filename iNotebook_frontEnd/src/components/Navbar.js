@@ -8,10 +8,11 @@ const Navbar = (props) => {
     const [userinfo, setUserinfo] = useState({name: "", email: "", createdOn: ""})
     const [showNavBar, setShowNavbar] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
+    const [modeEnabled, setEnabled] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') === 'bg-dark' : false);
 
     let location = useLocation(); //helps to get the exact location i,e the path where exactly the we are(url)
     useEffect(() => {       
-        console.log(location.pathname)
+        console.log(location.pathname);
       }, [location]);
     
     const getUser = async ()=> {
@@ -145,19 +146,18 @@ const Navbar = (props) => {
                                 <div className="bg-info-subtle rounded my-1 mx-2" onClick={() => {props.toggleMode('info-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
                             </div>
                             <li className='mx-2 my-1'>
-                                <div className={`form-check form-switch mx-2 my-1 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
-                                    { props.mode === 'light' ? 
-                                        <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault"/> : 
-                                        <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault" checked/>
-                                    }
-                                    <label className="form-check-label text-white" htmlFor="flexSwitchCheckDefault">Dark Mode</label>
+                                <div className={`mx-2 my-1 mode ${modeEnabled && 'active'}`} onClick={() => {props.toggleMode(null); setEnabled(!modeEnabled);}}>
+                                    <div>    
+                                        <p className='m-0'>Dark mode</p>
+                                        <i className="fa-solid fa-circle-half-stroke mx-2"></i>
+                                    </div>
                                 </div>
                             </li>
                             { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
                                 <>
                                 { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
                                     <>
-                                        <div className="my-2 p-0 border-end dropdown">
+                                        <div className="my-2 p-0 border-start border-end dropdown">
                                             <Link className={`mx-3 ${showProfile && 'active'}`} type="button" onClick={() => { setShowProfile(!showProfile); !showProfile && getUser();}} aria-expanded="false">Profile <i className="fa-solid fa-user mx-2"></i></Link>
                                             <ol className={`profile ${showProfile && 'active'}`}>
                                                 <p className="m-0 py-2 border-bottom">{userinfo.name}</p>
@@ -165,7 +165,7 @@ const Navbar = (props) => {
                                                 <p className="m-0 py-2"><strong>Created on: </strong>{moment(new Date (userinfo.createdOn)).format('MMMM Do YYYY, h:mm:ss a')}</p>
                                             </ol>
                                         </div>
-                                        <div className="my-2 p-0 border-end side-dropdown">
+                                        <div className="my-2 p-0 side-dropdown">
                                             <Link className={`mx-3 ${showProfile && 'active'}`} type="button" onClick={() => { setShowProfile(!showProfile); !showProfile && getUser();}} aria-expanded="false">Profile <i className="fa-solid fa-user mx-2"></i></Link>
                                             <ol className={`side-profile ${showProfile && 'active'}`}>
                                                 <li className='m-0 py-2 border-bottom'>{userinfo.name}</li>
@@ -176,11 +176,11 @@ const Navbar = (props) => {
                                     </>
                                     
                                 }
-                                <Link className='px-3 my-2 border-end' to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.clear(); sessionStorage.clear(); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
+                                <Link className='px-3 my-2 logout' to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.removeItem('token'); localStorage.removeItem('AesKey'); sessionStorage.clear(); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
                                 {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
                                 </> :
                                 <>
-                                    <div className='my-2 border-end'>
+                                    <div className='my-2 login'>
                                         <Link className={`mx-3 ${location.pathname === '/login' && 'active'}`} to="/login" role='button'>Login<i className="fa-solid fa-right-to-bracket mx-2"></i></Link>
                                     </div>
                                     <div className='my-2'>

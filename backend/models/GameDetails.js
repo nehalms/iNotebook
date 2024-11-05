@@ -13,6 +13,10 @@ const gameDetails = new Schema({
         type: Map,
         of: Number,
     },
+    frnRowStats: {
+        type: Map,
+        of: Number,
+    },
     date: {
         type: Date,
         default: new Date(),

@@ -22,6 +22,7 @@ import ImageEditor from './components/Images/ImageEditor';
 import Menu from './components/Games/Menu'
 import Tic_tac_toe from './components/Games/Tic_tac_toe';
 import Encrypt_Decrypt_Msg from './components/Messages/Encrypt_Decrypt_Msg';
+import FrInRow from './components/Games/FrInRow';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -153,6 +154,7 @@ function App() {
               <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/msg' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
             </Routes>
           </div>
