@@ -19,6 +19,7 @@ export default function FrInRow(props) {
   const [currTurn, setTurn] = useState('X')
   const [gameComp, setComp] = useState(false);
   const [roomId, setRoomId] = useState("");
+  const [secondClk, setSecondClk] = useState(false);
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -52,6 +53,7 @@ export default function FrInRow(props) {
             name: player.name,
             played: player.gamesPlayed,
           });
+          setBoard(data.board);
         }
       });
 
@@ -210,15 +212,20 @@ export default function FrInRow(props) {
       props.showAlert("Opponent player turn", 'warning');
       return;
     }
+    if(secondClk === true) {
+      return;
+    }
 
     let row_;
     let col_;
+    setSecondClk(true);
     const newBoard = board.map(row => [...row]);
     for (let row = ROWS - 1; row >= 0; row--) {
       if (!newBoard[row][col]) {
         newBoard[row][col] = currTurn === 'X' ? 1 : currTurn === 'O' ? 2 : 0;
         row_ = row;
         col_ = col;
+        setBoard(newBoard);
         break;
       }
     }
@@ -250,6 +257,7 @@ export default function FrInRow(props) {
       console.log('Error***', err);
       props.showAlert("Internal server Error", 'danger');
     } finally {
+      setSecondClk(false);
       props.setLoader({ showLoader: false });
     }
     return;

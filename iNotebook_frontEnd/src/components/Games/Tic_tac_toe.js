@@ -14,6 +14,7 @@ export default function Tic_tac_toe(props) {
   const [currTurn, setTurn] = useState('X')
   const [gameComp, setComp] = useState(false);
   const [roomId, setRoomId] = useState("");
+  const [secondClk, setSecondClk] = useState(false);
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -47,6 +48,7 @@ export default function Tic_tac_toe(props) {
             name: player.name,
             played: player.gamesPlayed,
           });
+          setBoardFunc(data.board);
         }
       });
 
@@ -209,14 +211,21 @@ export default function Tic_tac_toe(props) {
       props.showAlert("Opponent player turn", 'warning');
       return;
     }
+    if(secondClk === true) {
+      return;
+    }
     if(!e.target.id) {
       return;
     }
     if(board[e.target.id-1] != null) {
       return;
     }
+    setSecondClk(true);
     let row = e.target.getAttribute('row');
     let col = e.target.getAttribute('col');
+    let newBoard = board;
+    newBoard[3 * parseInt(row) + parseInt(col)] = currTurn;
+    setBoard(newBoard);
     try {
       let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/gameplay`, {
         method: "POST", 
@@ -237,7 +246,7 @@ export default function Tic_tac_toe(props) {
         return;
       }
       if(data) {
-        setBoardFunc(data.board);
+        // setBoardFunc(data.board);
         setTurn(data.turn);
       }
     } catch (err) {
@@ -245,6 +254,7 @@ export default function Tic_tac_toe(props) {
       props.showAlert("Internal server Error", 'danger');
     } finally {
       props.setLoader({ showLoader: false });
+      setSecondClk(false);
     }
     return;
   }
