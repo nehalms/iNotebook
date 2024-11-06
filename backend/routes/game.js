@@ -65,12 +65,16 @@ router.get('/tttsave/:player1/:p1Stat/:player2/:p2Stat', async (req, res) => {
             res.send({success: false, msg: "No User stats found"});
             return;
         }
-        let [won_1, lost_1] = req.params.p1Stat == 1 ? [1, 0] : [0, 1];
+        let [won_1, lost_1] = req.params.p1Stat == 1 
+            ? [1, 0] : req.params.p2Stat == 1 
+                ? [0, 1] : [0, 0];
         userStats1.tttStats.set('played', userStats1.tttStats.get('played') + 1);
         userStats1.tttStats.set('won', userStats1.tttStats.get('won') + won_1);
         userStats1.tttStats.set('lost', userStats1.tttStats.get('lost') + lost_1);
 
-        let [won_2, lost_2] = req.params.p2Stat == 1 ? [1, 0] : [0, 1];
+        let [won_2, lost_2] = req.params.p2Stat == 1 
+            ? [1, 0] : req.params.p1Stat == 1
+                ? [0, 1] : [0, 0];
         userStats2.tttStats.set('played', userStats2.tttStats.get('played') + 1);
         userStats2.tttStats.set('won', userStats2.tttStats.get('won') + won_2);
         userStats2.tttStats.set('lost', userStats2.tttStats.get('lost') + lost_2);
@@ -97,12 +101,16 @@ router.get('/frnrsave/:player1/:p1Stat/:player2/:p2Stat', async (req, res) => {
             res.send({success: false, msg: "No User stats found"});
             return;
         }
-        let [won_1, lost_1] = req.params.p1Stat == 1 ? [1, 0] : [0, 1];
+        let [won_1, lost_1] = req.params.p1Stat == 1 
+            ? [1, 0] : req.params.p2Stat == 1 
+                ? [0, 1] : [0, 0];
         userStats1.frnRowStats.set('played', userStats1.frnRowStats.get('played') + 1);
         userStats1.frnRowStats.set('won', userStats1.frnRowStats.get('won') + won_1);
         userStats1.frnRowStats.set('lost', userStats1.frnRowStats.get('lost') + lost_1);
 
-        let [won_2, lost_2] = req.params.p2Stat == 1 ? [1, 0] : [0, 1];
+        let [won_2, lost_2] = req.params.p2Stat == 1 
+            ? [1, 0] : req.params.p1Stat == 1
+                ? [0, 1] : [0, 0];
         userStats2.frnRowStats.set('played', userStats2.frnRowStats.get('played') + 1);
         userStats2.frnRowStats.set('won', userStats2.frnRowStats.get('won') + won_2);
         userStats2.frnRowStats.set('lost', userStats2.frnRowStats.get('lost') + lost_2);
