@@ -316,18 +316,31 @@ export default function FrInRow(props) {
   }
 
   const renderSquare = (row, col) => {
+    const isFilled = board[row][col];
+    const color =
+      isFilled === 1
+        ? 'red'
+        : isFilled === 2
+        ? 'yellow'
+        : isFilled === 10
+        ? 'repeating-linear-gradient(45deg, red, red 10px, #ccc 10px, #ccc 20px)'
+        : isFilled === 20
+        ? 'repeating-linear-gradient(45deg, yellow, yellow 10px, #ccc 10px, #ccc 20px)'
+        : 'white' ;
+  
     return (
-      <div 
-        className={`_square_`} 
-        onClick={() => handleClick(col)} 
-        style={{background: board[row][col] 
-          ? board[row][col] === 1 ? 'red' 
-            : board[row][col] === 2 ? 'yellow' 
-              : board[row][col] === 10 ? 'repeating-linear-gradient(45deg, red, red 10px, #ccc 10px, #ccc 20px)'
-                : board[row][col] === 20 ? 'repeating-linear-gradient(45deg, yellow, yellow 10px, #ccc 10px, #ccc 20px)'
-                  : 'white'
-          : 'white' }}
-      />
+      <div
+        className="_square_"
+        onClick={() => handleClick(col)}
+        style={{ background: 'white' }}
+      >
+        {isFilled ? (
+          <div
+            className="_pawn_"
+            style={{ background: color }}
+          ></div>
+        ) : ''}
+      </div>
     );
   };
 

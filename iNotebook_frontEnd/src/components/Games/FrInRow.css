@@ -22,6 +22,22 @@
     cursor: pointer;
 }
   
+._pawn_ {
+    width: 95%;
+    height: 95%;
+    border-radius: 50%;
+    overflow: hidden;
+    animation: slide 0.5s ease-out;
+}
+
+@keyframes slide {
+    0% {
+        transform: translateY(-650%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
 
 @media (max-width: 550px) {
     ._square_ {
