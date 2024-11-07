@@ -20,6 +20,7 @@ export default function FrInRow(props) {
   const [gameComp, setComp] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [secondClk, setSecondClk] = useState(false);
+  const [selectedColor, setSelectedColor] = useState('');
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -154,6 +155,7 @@ export default function FrInRow(props) {
         setconnect(true);
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('X');
+        setSelectedColor('red');
         props.showAlert("Room created", 'success');
       }
     } catch (err) {
@@ -188,6 +190,7 @@ export default function FrInRow(props) {
         setconnect(true);
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('O');
+        setSelectedColor('yellow');
         props.showAlert("Joined a room", 'success');
 
         setOppStats({
@@ -215,7 +218,7 @@ export default function FrInRow(props) {
     if(secondClk === true) {
       return;
     }
-
+    
     let row_;
     let col_;
     setSecondClk(true);
@@ -319,13 +322,13 @@ export default function FrInRow(props) {
     const isFilled = board[row][col];
     const color =
       isFilled === 1
-        ? 'red'
+        ? ( player === 'X' ? selectedColor : 'red')
         : isFilled === 2
-        ? 'yellow'
+        ? ( player === 'O' ? selectedColor : 'yellow')
         : isFilled === 10
-        ? 'repeating-linear-gradient(45deg, red, red 10px, #ccc 10px, #ccc 20px)'
+        ? `repeating-linear-gradient(45deg, ${( player === 'X' ? selectedColor : 'red')}, ${( player === 'X' ? selectedColor : 'red')} 10px, #ccc 10px, #ccc 20px)`
         : isFilled === 20
-        ? 'repeating-linear-gradient(45deg, yellow, yellow 10px, #ccc 10px, #ccc 20px)'
+        ? `repeating-linear-gradient(45deg, ${( player === 'O' ? selectedColor : 'yellow')}, ${( player === 'O' ? selectedColor : 'yellow')} 10px, #ccc 10px, #ccc 20px)`
         : 'white' ;
   
     return (
@@ -432,6 +435,26 @@ export default function FrInRow(props) {
                 <button className="btn btn-success py-2 m-1" style={{width: '80%'}} onClick={handleCreateRoom}>Create Room</button>
               </div>
             }
+          </div>
+        </div>
+      </div>
+      <div className="col-lg my-1">
+        <div className="card shadow-lg p-3" style={{height: 'auto'}} >
+          <div className='d-flex flex-wrap align-items-center justify-content-around'>
+            <h4 className='p-3 m-0 border rounded bg-warning-subtle'>Choose your color</h4>
+            <div className='m-3 mb-0 d-flex flex-wrap align-items-center justify-content-center'>
+              { player &&  
+                (
+                  player === 'X' ?
+                  <div className='m-1 _selColor_' style={{backgroundColor: 'red', borderRadius: '50%'}} onClick={() => {setSelectedColor('red');}}></div> :
+                  <div className='m-1 _selColor_' style={{backgroundColor: 'yellow', borderRadius: '50%'}} onClick={() => {setSelectedColor('yellow');}}></div>
+                )
+              }
+              <div className='m-1 _selColor_' style={{backgroundColor: 'green', borderRadius: '50%'}} onClick={() => {setSelectedColor('green');}}></div>
+              <div className='m-1 _selColor_' style={{backgroundColor: 'blue', borderRadius: '50%'}} onClick={() => {setSelectedColor('blue');}}></div>
+              <div className='m-1 _selColor_' style={{backgroundColor: 'orange', borderRadius: '50%'}} onClick={() => {setSelectedColor('orange');}}></div>
+              <div className='m-1 _selColor_' style={{backgroundColor: 'cyan', borderRadius: '50%'}} onClick={() => {setSelectedColor('cyan');}}></div>
+            </div>
           </div>
         </div>
       </div>
