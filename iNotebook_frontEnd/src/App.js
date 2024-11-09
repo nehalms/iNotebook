@@ -23,6 +23,7 @@ import Menu from './components/Games/Menu'
 import Tic_tac_toe from './components/Games/Tic_tac_toe';
 import Encrypt_Decrypt_Msg from './components/Messages/Encrypt_Decrypt_Msg';
 import FrInRow from './components/Games/FrInRow';
+import Profile from './components/Profile/Profile';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -150,6 +151,7 @@ function App() {
               <Route exact path='/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
+              <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
               <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   

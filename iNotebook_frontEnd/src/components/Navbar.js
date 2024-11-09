@@ -5,9 +5,7 @@ import moment from 'moment'
 import './Navbar.css'
 
 const Navbar = (props) => {
-    const [userinfo, setUserinfo] = useState({name: "", email: "", createdOn: ""})
     const [showNavBar, setShowNavbar] = useState(false);
-    const [showProfile, setShowProfile] = useState(false);
     const [modeEnabled, setEnabled] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') === 'bg-dark' : false);
 
     let location = useLocation(); //helps to get the exact location i,e the path where exactly the we are(url)
@@ -15,26 +13,6 @@ const Navbar = (props) => {
         console.log(location.pathname);
       }, [location]);
     
-    const getUser = async ()=> {
-        try {
-            props.setLoader({ showLoader: true, msg: "Please wait"});
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
-                method: "POST", 
-                headers: {
-                "Content-Type": "application/json",
-                "auth-token": localStorage.getItem('token')
-                }
-            });
-            props.setLoader({ showLoader: false });
-            const json = await response.json();
-            setUserinfo({name: json.name, email: json.email, createdOn: json.date});
-        } catch (err) {
-            props.setLoader({ showLoader: false });
-            console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger');
-        }
-    }
-
     const handleLogout = async () => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/logout`, {
@@ -156,25 +134,7 @@ const Navbar = (props) => {
                             { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
                                 <>
                                 { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
-                                    <>
-                                        <div className="my-2 p-0 border-start border-end dropdown">
-                                            <Link className={`mx-3 ${showProfile && 'active'}`} type="button" onClick={() => { setShowProfile(!showProfile); !showProfile && getUser();}} aria-expanded="false">Profile <i className="fa-solid fa-user mx-2"></i></Link>
-                                            <ol className={`profile ${showProfile && 'active'}`}>
-                                                <p className="m-0 py-2 border-bottom">{userinfo.name}</p>
-                                                <p className="m-0 py-2 border-bottom">{userinfo.email}</p>
-                                                <p className="m-0 py-2"><strong>Created on: </strong>{moment(new Date (userinfo.createdOn)).format('MMMM Do YYYY, h:mm:ss a')}</p>
-                                            </ol>
-                                        </div>
-                                        <div className="my-2 p-0 side-dropdown">
-                                            <Link className={`mx-3 ${showProfile && 'active'}`} type="button" onClick={() => { setShowProfile(!showProfile); !showProfile && getUser();}} aria-expanded="false">Profile <i className="fa-solid fa-user mx-2"></i></Link>
-                                            <ol className={`side-profile ${showProfile && 'active'}`}>
-                                                <li className='m-0 py-2 border-bottom'>{userinfo.name}</li>
-                                                <li className='m-0 py-2 border-bottom'>{userinfo.email}</li>
-                                                <li className='m-0 py-2'><strong>Created on: </strong>{moment(new Date (userinfo.createdOn)).format('MMMM Do YYYY, h:mm:ss a')}</li>
-                                            </ol>
-                                        </div>
-                                    </>
-                                    
+                                    <Link className={`px-3 my-2 profile ${location.pathname === '/profile' && 'active'}`} to="/profile" role='button'>Profile<i className="fa-solid fa-user mx-2"></i></Link>
                                 }
                                 <Link className='px-3 my-2 logout' to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.removeItem('token'); localStorage.removeItem('AesKey'); sessionStorage.clear(); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
                                 {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}

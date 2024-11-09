@@ -195,6 +195,16 @@ router.post("/updatePassword",
   }
 );
 
+router.post('/updateName', fetchuser, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.user.id, {name: req.body.name}, {new: true});
+    res.send({success: true, user: user});
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).send("Internal Server Error!!");
+  }
+});
+
 router.post("/changestatus", fetchuser,  async (req, res) => {
   try {
     const userEmail = await User.findById(req.user.id);
