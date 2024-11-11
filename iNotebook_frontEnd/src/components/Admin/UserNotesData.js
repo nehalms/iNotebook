@@ -79,7 +79,7 @@ export default function UserNotesData(props) {
         {
           field: 'email',
           headerName: 'Email',
-          minWidth: 280,
+          minWidth: 270,
           headerAlign: 'center',
           headerClassName: 'bg-primary text-light',
           cellClassName: 'ps-5',
@@ -89,11 +89,11 @@ export default function UserNotesData(props) {
         {
             field: 'date',
             headerName: 'Created On',
-            minWidth: 250,
+            minWidth: 210,
             headerAlign: 'center',
             headerClassName: 'bg-primary text-light',
             cellClassName: 'text-center',
-            valueGetter: (date) => {return moment(new Date(date)).format('LLL')},
+            valueGetter: (date) => {return moment(new Date(date)).format('lll')},
             sortComparator: (v1, v2) => moment(v1).diff(moment(v2)),
             flex: 1,
         },
@@ -109,7 +109,7 @@ export default function UserNotesData(props) {
         {
             field: 'isActive',
             headerName: 'Account Status',
-            minWidth: 150,
+            minWidth: 140,
             headerAlign: 'center',
             headerClassName: 'bg-primary text-light',
             cellClassName: 'text-center',
@@ -123,15 +123,72 @@ export default function UserNotesData(props) {
         {
           field: 'lastLoggedOn',
           headerName: 'Last Login',
-          minWidth: 250,
+          minWidth: 210,
           headerAlign: 'center',
           headerClassName: 'bg-primary text-light',
           cellClassName: 'text-center',
-          valueGetter: (date) => {return moment(new Date(date)).format('LLL')},
+          valueGetter: (date) => {return moment(new Date(date)).format('lll')},
           sortComparator: (v1, v2) => moment(v1).diff(moment(v2)),
           flex: 1,
-      },
+        },
+        {
+          field: 'delete',
+          headerName: 'Delete',
+          minWidth: 70,
+          headerAlign: 'center',
+          headerClassName: 'bg-primary text-light',
+          cellClassName: 'text-center',
+          renderCell: (params) => {
+            return (
+              <Tooltip title={'delete'}> 
+                <span><i className="fa-solid fa-trash-can mx-2 fa-lg" style={{color: '#ff0000'}} onClick={() => {handleDelete(params.row)}}></i></span>
+              </Tooltip>
+            )
+          },
+          flex: 1,
+        },
     ] 
+
+    
+    const onConfirm = async (row) => {
+      props.setDialog(false, '', () => {}, () => {});
+      if(!row.userId) {
+        return;
+      }
+      try {
+        props.setLoader({ showLoader: true, msg: "Deleting..."});
+        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/deluser/${row.userId}`, {
+            method: "GET", 
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": sessionStorage.getItem('adminToken')
+            }
+        });
+        const data = await response.json();
+        if(data.success === false) {
+          props.showAlert(data.msg, 'info');
+          return;
+        }
+        if(data) {
+          props.showAlert('User deleted successfully', 'success');
+          fetchData();
+        }
+      } catch (err) {
+        console.log('Error**', err);
+        props.showAlert("Some Error occured", 'danger');
+      } finally {
+        props.setLoader({ showLoader: false });
+      }
+    }
+    
+    const onClose = () => {
+      props.setDialog(false, '', () => {}, () => {});
+      return;
+    }
+    
+    const handleDelete = async (row) => {
+      props.setDialog(true, 'Delete User', () => {onConfirm(row);}, onClose);
+    }
 
   return (
     <>

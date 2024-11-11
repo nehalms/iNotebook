@@ -53,7 +53,7 @@ const Login = (props) => {
                 const adminData = await response.json();
                 if(adminData && adminData.isAdmin) {
                     sessionStorage.setItem('adminToken', json.authToken);
-                    sessionStorage.setItem('token', json.authToken);
+                    localStorage.setItem('token', json.authToken);
                     var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
                     setCode(val);
                     setIsAdminUser(true);
@@ -160,12 +160,12 @@ const Login = (props) => {
                                 <h2 className='mb-3 p-3 text-center border rounded bg-secondary-subtle'>Login</h2>
                                 <div className="mb-3">
                                     <label htmlFor="email" className="form-label">Email address</label>
-                                    <input type="email" className="form-control" onChange={onChange} value={credentials.email} required id="email" name="email" aria-describedby="emailHelp"/>
+                                    <input type="email" className="form-control" onChange={onChange} value={credentials.email} required id="email" name="email" aria-describedby="emailHelp" disabled={isAdminUser}/>
                                 </div>
                                 <div className="mb-2">
                                     <label htmlFor="password" className="form-label">Password</label>
                                     <div className='d-flex align-items-center justify-content-center'>
-                                        <input type={showPassword ? "text" : "password"} className="form-control" onChange={onChange} value={credentials.password} id="password" name="password" required/>
+                                        <input type={showPassword ? "text" : "password"} className="form-control" onChange={onChange} value={credentials.password} id="password" name="password" required disabled={isAdminUser}/>
                                         <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
                                     </div>
                                 </div>

@@ -19,6 +19,7 @@ router.get('/users', fetchuser, async (req, res)=> {
             Users.map(async (user, i) => {
                 let User = {
                     id: i + 1,
+                    userId: user.id,
                     name: user.name,
                     email: user.email,
                     date: user.date,
@@ -40,6 +41,22 @@ router.get('/users', fetchuser, async (req, res)=> {
         return res.status(500).send("Internal Server Error!!");
     }
 });
+
+router.get('/deluser/:userId', fetchuser, async (req, res) => {
+    try {
+        if(!req.params.userId) {
+            res.send({success: false, msg: 'Please send the user Id'});
+        }
+        let user = await User.findOneAndDelete({_id: req.params.userId});
+        if(!user) {
+            res.send({success: false, msg: 'No user found with the given Id'});
+        }
+        res.send(user);
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).send("Internal Server Error!!");
+    }
+})
 
 router.get('/graphData', fetchuser, async (req, res) => {
     try {
@@ -127,6 +144,7 @@ router.get('/gamestats', fetchuser, async (req, res) => {
                     userId: stat.id,
                     name: stat.userName,
                     tttStats: stat.tttStats,
+                    con4Stats: stat.frnRowStats,
                 }
                 data.push(Stat);
             })

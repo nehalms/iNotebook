@@ -185,7 +185,7 @@ const Signup = (props) => {
                         </div>
                         <div className="mb-3">
                           <label htmlFor="email" className="form-label">Email</label>
-                          <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required/>
+                          <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required disabled={show || Verified}/>
                           { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code <i className="fa-solid fa-paper-plane mx-2"></i></button> }
                         </div>
                         { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}

@@ -35,9 +35,12 @@ export default function GameStats(props) {
           data.stats.map((stat) => {
             let Stat = {
               ...stat,
-              played: stat.tttStats.played,
-              won: stat.tttStats.won,
-              lost: stat.tttStats.lost,
+              ttt_played: stat.tttStats.played,
+              ttt_won: stat.tttStats.won,
+              ttt_lost: stat.tttStats.lost,
+              con4_played: stat.con4Stats.played,
+              con4_won: stat.con4Stats.won,
+              con4_lost: stat.con4Stats.lost,
             }
             stats.push(Stat);
           })
@@ -81,33 +84,76 @@ export default function GameStats(props) {
       flex: 1,
     },
     {
-      field: 'played',
+      field: 'ttt_played',
       headerName: 'Games played',
-      minWidth: 280,
+      minWidth: 120,
       headerAlign: 'center',
-      headerClassName: 'bg-success bg-gradient text-light',
+      headerClassName: 'bg-danger bg-gradient',
       cellClassName: 'text-center',
       flex: 1,
     },
     {
-      field: 'won',
+      field: 'ttt_won',
       headerName: 'Games won',
-      minWidth: 250,
+      minWidth: 80,
       headerAlign: 'center',
-      headerClassName: 'bg-success bg-gradient text-light',
+      headerClassName: 'bg-danger bg-gradient',
       cellClassName: 'text-center',
       flex: 1,
     },
     {
-      field: 'lost',
+      field: 'ttt_lost',
       headerName: 'Games lost',
-      minWidth: 100,
+      minWidth: 80,
       headerAlign: 'center',
-      headerClassName: 'bg-success bg-gradient text-light',
+      headerClassName: 'bg-danger bg-gradient',
+      cellClassName: 'text-center',
+      flex: 1,
+    },{
+      field: 'con4_played',
+      headerName: 'Games played',
+      minWidth: 120,
+      headerAlign: 'center',
+      headerClassName: 'bg-info bg-gradient',
+      cellClassName: 'text-center',
+      flex: 1,
+    },
+    {
+      field: 'con4_won',
+      headerName: 'Games won',
+      minWidth: 80,
+      headerAlign: 'center',
+      headerClassName: 'bg-info bg-gradient',
+      cellClassName: 'text-center',
+      flex: 1,
+    },
+    {
+      field: 'con4_lost',
+      headerName: 'Games lost',
+      minWidth: 80,
+      headerAlign: 'center',
+      headerClassName: 'bg-info bg-gradient',
       cellClassName: 'text-center',
       flex: 1,
     }
   ]
+
+  const columnGroupingModel = [
+    {
+      groupId: 'tttStats',
+      headerName: 'Tic - Tac - Toe',
+      headerAlign: 'center',
+      headerClassName: 'bg-danger',
+      children: [{ field: 'ttt_played' }, { field: 'ttt_won' }, { field: 'ttt_lost' }],
+    },
+    {
+      groupId: 'connect4Stats',
+      headerName: 'Four in a row (Connect 4)',
+      headerAlign: 'center',
+      headerClassName: 'bg-info bg-gradient',
+      children: [{ field: 'con4_played' }, { field: 'con4_won' }, { field: 'con4_lost' }],
+    },
+  ];
 
   return (
     <div style={{ height: 'auto', width: '100%' }}>
@@ -128,6 +174,7 @@ export default function GameStats(props) {
         slots={{
             toolbar: CustomToolbar,
         }}
+        columnGroupingModel={columnGroupingModel}
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'bg-body-tertiary' : 'bg-body-secondary'
         }

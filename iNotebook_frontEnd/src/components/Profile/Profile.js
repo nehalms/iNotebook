@@ -134,7 +134,7 @@ export default function Profile(props) {
                 </div>              
               </div>
               <div className="text-center">
-                <button type="submit" className="btn btn-warning mt-3 mb-4" disabled={profile.name.trim() === updatedProfile.name.trim() || updatedProfile.name === '' || updatedProfile.name.trim().length < 5} style={{width: '50%'}}>Update Profile<i class="fa-solid fa-pen-to-square mx-2"></i></button>
+                <button type="submit" className="btn btn-warning mt-3 mb-4" disabled={profile.name.trim() === updatedProfile.name.trim() || updatedProfile.name === '' || updatedProfile.name.trim().length < 5} style={{width: '50%'}}>Update Profile<i className="fa-solid fa-pen-to-square mx-2"></i></button>
               </div>
             </form>
             <div className="m-2 p-2 border rounded">
@@ -154,7 +154,7 @@ export default function Profile(props) {
                   </div>
                 </div>
                 <div className="text-center">
-                  <button type='submit' className="btn btn-danger mt-3 mb-4" style={{width: '50%'}}>Update Password<i class="fa-solid fa-pen-to-square mx-2"></i></button>
+                  <button type='submit' className="btn btn-danger mt-3 mb-4" style={{width: '50%'}}>Update Password<i className="fa-solid fa-pen-to-square mx-2"></i></button>
                 </div>
               </form>
             </div>
