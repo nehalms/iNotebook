@@ -7,6 +7,7 @@ const bcrpyt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
 const UserHistory = require("../models/UserHistory");
+const GameDetails = require("../models/GameDetails");
 
 const JWT_SCERET = process.env.JWT_SCERET;
 
@@ -198,7 +199,8 @@ router.post("/updatePassword",
 router.post('/updateName', fetchuser, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.user.id, {name: req.body.name}, {new: true});
-    res.send({success: true, user: user});
+    const userStats = await GameDetails.findOneAndUpdate({userId: req.user.id}, {userName: req.body.name}, {new: true});
+    res.send({success: true, user: user, stats: userStats});
   } catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");

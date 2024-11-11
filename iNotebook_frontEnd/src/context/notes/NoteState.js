@@ -3,11 +3,11 @@ import NoteContext from "./noteContext";
 import CryptoJS from 'crypto-js';
 
 function decrypt() {
-    if( !localStorage.getItem('AesKey') ) {
+    if( !sessionStorage.getItem('AesKey') ) {
         return;
     }
     let decryptKey = ''
-    Array.from(localStorage.getItem('AesKey')).forEach(char => {
+    Array.from(sessionStorage.getItem('AesKey')).forEach(char => {
         decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
     });
     return decryptKey;

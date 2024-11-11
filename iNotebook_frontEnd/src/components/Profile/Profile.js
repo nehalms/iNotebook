@@ -67,7 +67,8 @@ export default function Profile(props) {
       props.setLoader({ showLoader: false });
       const json = await response.json();
       if(json.success === true) {
-        props.showAlert("Name updated successfully", 'success')
+        setProfile({...profile, name: json.user.name});
+        props.showAlert("Name updated successfully", 'success');
       } else{
         props.showAlert("Something went wrong", 'danger');
       }
@@ -97,6 +98,7 @@ export default function Profile(props) {
       const json = await response.json();
       if(json.success){
         props.showAlert("Password updated successfully", 'success');
+        setPass({password: '', cpassword: ''});
       }
       else{
         props.showAlert("Something went wrong", 'danger');
@@ -146,7 +148,7 @@ export default function Profile(props) {
                   <div className="my-3 mx-1" style={{width: '40%', minWidth: '250px'}}>
                     <label htmlFor="cpassword" className="form-label">Re-enter password</label>
                     <div className='d-flex align-item-center justify-content-start'>
-                      <input type={showPassword ? 'text' : 'password'} className="form-control" onChange={onChangePassword} value={pass.cpassword} id="cpassword" name="cpassword" placeholder='re-enter password' minLength={6} required style={{border: `${pass.password !== pass.cpassword && pass.cpassword !== "" ? '2px solid red' : pass.cpassword !== "" ? '2px solid green' : ''}`}}/>
+                      <input type={showPassword ? 'text' : 'password'} className="form-control" onChange={onChangePassword} value={pass.cpassword} id="cpassword" name="cpassword" placeholder='Re-enter password' minLength={6} required style={{border: `${pass.password !== pass.cpassword && pass.cpassword !== "" ? '2px solid red' : pass.cpassword !== "" ? '2px solid green' : ''}`}}/>
                       <i onClick={(e) => {e.preventDefault(); setShowPassword(!showPassword);}} className={showPassword ? "fa-solid p-2 py-2 mx-2 border rounded fa-eye d-flex align-items-center" : "fa-solid p-2 mx-2 border rounded fa-eye-slash d-flex align-items-center"}></i>
                     </div>
                   </div>

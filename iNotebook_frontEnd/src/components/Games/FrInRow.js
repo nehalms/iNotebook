@@ -78,6 +78,14 @@ export default function FrInRow(props) {
             setTurn(data.turn);
             setComp(false);
             setPlayer(userstats.id === data.userIdX ? 'X' : 'O');
+            if(userstats.id === data.userIdX && sessionStorage.getItem('color') === 'yellow') {  
+              setSelectedColor('red');
+              sessionStorage.setItem('color', 'red');
+            } else if(userstats.id === data.userIdO && sessionStorage.getItem('color') === 'red') {
+              setSelectedColor('yellow');
+              sessionStorage.setItem('color', 'yellow');
+            } 
+            sessionStorage.getItem('color') && setSelectedColor(sessionStorage.getItem('color'));
             let player = userstats.id === data.player1.userId ? data.player2 : data.player1
             setOppStats({
               id: player.userId,
@@ -156,6 +164,7 @@ export default function FrInRow(props) {
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('X');
         setSelectedColor('red');
+        sessionStorage.setItem('color', 'red');
         props.showAlert("Room created", 'success');
       }
     } catch (err) {
@@ -188,10 +197,12 @@ export default function FrInRow(props) {
       }
       if(data) {
         setconnect(true);
+        setBoard(data.board);
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('O');
         setSelectedColor('yellow');
-        props.showAlert("Joined a room", 'success');
+        sessionStorage.setItem('color', 'yellow');
+        props.showAlert(`Joined ${data.player1.name} 's room`, 'success');
 
         setOppStats({
           id: data.player1.userId,
@@ -326,9 +337,9 @@ export default function FrInRow(props) {
         : isFilled === 2
         ? ( player === 'O' ? selectedColor : 'yellow')
         : isFilled === 10
-        ? `repeating-linear-gradient(45deg, ${( player === 'X' ? selectedColor : 'red')}, ${( player === 'X' ? selectedColor : 'red')} 10px, #ccc 10px, #ccc 20px)`
+        ? `repeating-linear-gradient(45deg, ${( player === 'X' ? selectedColor : 'red')}, ${( player === 'X' ? selectedColor : 'red')} 10px, #ccc 5px, #fff 15px)`
         : isFilled === 20
-        ? `repeating-linear-gradient(45deg, ${( player === 'O' ? selectedColor : 'yellow')}, ${( player === 'O' ? selectedColor : 'yellow')} 10px, #ccc 10px, #ccc 20px)`
+        ? `repeating-linear-gradient(45deg, ${( player === 'O' ? selectedColor : 'yellow')}, ${( player === 'O' ? selectedColor : 'yellow')} 10px, #ccc 5px, #fff 15px)`
         : 'white' ;
   
     return (
@@ -446,14 +457,14 @@ export default function FrInRow(props) {
               { player &&  
                 (
                   player === 'X' ?
-                  <div className='m-1 _selColor_' style={{backgroundColor: 'red', borderRadius: '50%'}} onClick={() => {setSelectedColor('red');}}></div> :
-                  <div className='m-1 _selColor_' style={{backgroundColor: 'yellow', borderRadius: '50%'}} onClick={() => {setSelectedColor('yellow');}}></div>
+                  <div className='m-1 _selColor_' style={{backgroundColor: 'red', borderRadius: '50%'}} onClick={() => {setSelectedColor('red'); sessionStorage.setItem('color', 'red');}}></div> :
+                  <div className='m-1 _selColor_' style={{backgroundColor: 'yellow', borderRadius: '50%'}} onClick={() => {setSelectedColor('yellow'); sessionStorage.setItem('color', 'yellow');}}></div>
                 )
               }
-              <div className='m-1 _selColor_' style={{backgroundColor: 'green', borderRadius: '50%'}} onClick={() => {setSelectedColor('green');}}></div>
-              <div className='m-1 _selColor_' style={{backgroundColor: 'blue', borderRadius: '50%'}} onClick={() => {setSelectedColor('blue');}}></div>
-              <div className='m-1 _selColor_' style={{backgroundColor: 'orange', borderRadius: '50%'}} onClick={() => {setSelectedColor('orange');}}></div>
-              <div className='m-1 _selColor_' style={{backgroundColor: 'cyan', borderRadius: '50%'}} onClick={() => {setSelectedColor('cyan');}}></div>
+              <div className='m-1 _selColor_' style={{backgroundColor: 'green', borderRadius: '50%'}} onClick={() => {setSelectedColor('green'); sessionStorage.setItem('color', 'green');}}></div>
+              <div className='m-1 _selColor_' style={{backgroundColor: 'blue', borderRadius: '50%'}} onClick={() => {setSelectedColor('blue'); sessionStorage.setItem('color', 'blue');}}></div>
+              <div className='m-1 _selColor_' style={{backgroundColor: 'orange', borderRadius: '50%'}} onClick={() => {setSelectedColor('orange'); sessionStorage.setItem('color', 'orange');}}></div>
+              <div className='m-1 _selColor_' style={{backgroundColor: 'cyan', borderRadius: '50%'}} onClick={() => {setSelectedColor('cyan'); sessionStorage.setItem('color', 'cyan');}}></div>
             </div>
           </div>
         </div>

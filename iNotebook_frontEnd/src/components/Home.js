@@ -39,7 +39,7 @@ const Home = (props) => {
       });
       const json = await response.json();
       if(json.status === 'success') {
-        localStorage.setItem('AesKey', json.secretKey);
+        sessionStorage.setItem('AesKey', json.secretKey);
       }
     } catch (err) {
       console.log("Error**", err);

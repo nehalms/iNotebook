@@ -18,7 +18,7 @@ export default function Menu(props) {
         <div className='col-lg-3'>
           <div className="card shadow-lg my-3 ImagesEdit__left-right" onClick={() => {history.navigate('/games/frinrow')}}>
             <div className="card-body">
-                <h5 className='text-center'>4 in a row</h5>
+                <h5 className='text-center'>Four in a row (Connect4)</h5>
             </div>
           </div>
         </div>
