@@ -185,7 +185,7 @@ export default function Tic_tac_toe(props) {
       }
       if(data) {
         setconnect(true);
-        setBoard(data.board);
+        setBoardFunc(data.board);
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('O');
         props.showAlert(`Joined ${data.player1.name} 's room`, 'success');
