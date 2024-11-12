@@ -94,7 +94,7 @@ router.post(
         return res.status(400).json({success, error: "Sorry no user found with this email" });
       }
 
-      const passwordCompare = await bcrpyt.compareSync(password, user.password);
+      const passwordCompare = bcrpyt.compareSync(password, user.password);
       if (!passwordCompare) {
         success = false;
         return res.status(400).json({ success, error: "Please try to login with correct credentials: Incorrect password" });
@@ -107,12 +107,12 @@ router.post(
       };
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
-      await LoginHistory.create({
+      LoginHistory.create({
         userId: user.id,
         name: user.name,
         email: user.email,
       });
-      await UserHistory.create({
+      UserHistory.create({
         userId: user.id,
         action: "Logged In",
       });
