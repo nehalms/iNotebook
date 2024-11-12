@@ -24,6 +24,7 @@ import Tic_tac_toe from './components/Games/Tic_tac_toe';
 import Encrypt_Decrypt_Msg from './components/Messages/Encrypt_Decrypt_Msg';
 import FrInRow from './components/Games/FrInRow';
 import Profile from './components/Profile/Profile';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -142,9 +143,10 @@ function App() {
         <Router>
           <Navbar showAlert={showAlert} mode={mode} toggleMode={toggleMode} setLoader={setLoader} setDialog={setDialog} />
           <Alert alert={alert} setLoader={setLoader} />
+          <SpeedInsights/>
           {loader.showLoader && <Spinner msg={loader.msg}/>}
           {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
-          <div className="container">
+          <div className="container" style={{marginTop: '40px'}}>
             <Routes>
               <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
               <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
