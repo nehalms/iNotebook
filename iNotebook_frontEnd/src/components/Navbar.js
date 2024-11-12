@@ -133,7 +133,9 @@ const Navbar = (props) => {
                             { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
                                 <>
                                 { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
-                                    <Link className={`px-3 my-2 profile`} to="/profile" role='button'>Profile<i className="fa-solid fa-user mx-2"></i></Link>
+                                    <div className='my-2 profile'>
+                                        <Link className={`mx-3 my-2 ${location.pathname === '/profile' && 'active'}`} to="/profile" role='button'>Profile<i className="fa-solid fa-user mx-2"></i></Link>
+                                    </div>
                                 }
                                 <Link className='px-3 my-2 logout' to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.clear(); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
                                 {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
