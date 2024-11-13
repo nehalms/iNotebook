@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
+import { Tooltip } from '@mui/material';
 import { history } from '../History';
 import { jwtDecode } from 'jwt-decode';
 
@@ -46,7 +47,6 @@ export default function GameStats(props) {
           })
         );
         setRows(stats);
-        console.log(rows);
       }
       data.stats.sort((ob1, ob2) => {return ob1.id-ob2.id});
     } catch (err) {
@@ -88,7 +88,7 @@ export default function GameStats(props) {
       headerName: 'Games played',
       minWidth: 120,
       headerAlign: 'center',
-      headerClassName: 'bg-danger bg-gradient',
+      headerClassName: 'bg-danger bg-gradient text-light',
       cellClassName: 'text-center',
       flex: 1,
     },
@@ -97,7 +97,7 @@ export default function GameStats(props) {
       headerName: 'Games won',
       minWidth: 80,
       headerAlign: 'center',
-      headerClassName: 'bg-danger bg-gradient',
+      headerClassName: 'bg-danger bg-gradient text-light',
       cellClassName: 'text-center',
       flex: 1,
     },
@@ -106,7 +106,7 @@ export default function GameStats(props) {
       headerName: 'Games lost',
       minWidth: 80,
       headerAlign: 'center',
-      headerClassName: 'bg-danger bg-gradient',
+      headerClassName: 'bg-danger bg-gradient text-light',
       cellClassName: 'text-center',
       flex: 1,
     },{
@@ -135,6 +135,22 @@ export default function GameStats(props) {
       headerClassName: 'bg-info bg-gradient',
       cellClassName: 'text-center',
       flex: 1,
+    },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      minWidth: 70,
+      headerAlign: 'center',
+      headerClassName: 'bg-success bg-gradient text-light',
+      cellClassName: 'text-center',
+      renderCell: (params) => {
+        return (
+          <Tooltip title={'delete'}> 
+            <span><i className="fa-solid fa-trash-can mx-2 fa-lg" style={{color: '#ff0000'}} onClick={() => {handleDelete(params.row)}}></i></span>
+          </Tooltip>
+        )
+      },
+      flex: 1,
     }
   ]
 
@@ -143,7 +159,7 @@ export default function GameStats(props) {
       groupId: 'tttStats',
       headerName: 'Tic - Tac - Toe',
       headerAlign: 'center',
-      headerClassName: 'bg-danger',
+      headerClassName: 'bg-danger bg-gradient text-light',
       children: [{ field: 'ttt_played' }, { field: 'ttt_won' }, { field: 'ttt_lost' }],
     },
     {
@@ -154,6 +170,46 @@ export default function GameStats(props) {
       children: [{ field: 'con4_played' }, { field: 'con4_won' }, { field: 'con4_lost' }],
     },
   ];
+
+  const onConfirm = async (row) => {
+    props.setDialog(false, '', () => {}, () => {});
+    if(!row.userId) {
+      return;
+    }
+    try {
+      props.setLoader({ showLoader: true, msg: "Deleting..."});
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/delstats/${row.statsId}`, {
+          method: "GET", 
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": sessionStorage.getItem('adminToken')
+          }
+      });
+      const data = await response.json();
+      if(data.success === false) {
+        props.showAlert(data.msg, 'info');
+        return;
+      }
+      if(data) {
+        props.showAlert('User deleted successfully', 'success');
+        fetchData();
+      }
+    } catch (err) {
+      console.log('Error**', err);
+      props.showAlert("Some Error occured", 'danger');
+    } finally {
+      props.setLoader({ showLoader: false });
+    }
+  }
+  
+  const onClose = () => {
+    props.setDialog(false, '', () => {}, () => {});
+    return;
+  }
+  
+  const handleDelete = async (row) => {
+    props.setDialog(true, 'Delete Stats', () => {onConfirm(row);}, onClose);
+  }
 
   return (
     <div style={{ height: 'auto', width: '100%' }}>

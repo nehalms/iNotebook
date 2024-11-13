@@ -10,6 +10,11 @@ const UserHistory = require('../models/UserHistory');
 
 router.get('/users', fetchuser, async (req, res)=> {
     try{
+        let adminUser = await User.findById(req.user.id);
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+            return;
+        }
         const Users = await User.find({email: {$ne: 'inotebook002@gmail.com'}});
         const notes = await Notes.find();
         Users.sort((user1, user2) => {return user1.name.toLowerCase() > user2.name.toLowerCase() ? 1 : -1})
@@ -44,6 +49,11 @@ router.get('/users', fetchuser, async (req, res)=> {
 
 router.get('/deluser/:userId', fetchuser, async (req, res) => {
     try {
+        let adminUser = await User.findById(req.user.id);
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+            return;
+        }
         if(!req.params.userId) {
             res.send({success: false, msg: 'Please send the user Id'});
         }
@@ -60,6 +70,11 @@ router.get('/deluser/:userId', fetchuser, async (req, res) => {
 
 router.get('/graphData', fetchuser, async (req, res) => {
     try {
+        let adminUser = await User.findById(req.user.id);
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+            return;
+        }
         let response = {};
         let xAxisValues = [];
         let loginData = [];
@@ -135,13 +150,19 @@ router.get('/userhistory', fetchuser, async (req, res) => {
 
 router.get('/gamestats', fetchuser, async (req, res) => {
     try {
+        let adminUser = await User.findById(req.user.id);
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+            return;
+        }
         let stats = await GameDetails.find();
         let data = [];
         await Promise.all(
             stats.map(async (stat, i) => {
                 let Stat = {
                     id: i + 1,
-                    userId: stat.id,
+                    statsId: stat._id,
+                    userId: stat.userId,
                     name: stat.userName,
                     tttStats: stat.tttStats,
                     con4Stats: stat.frnRowStats,
@@ -150,6 +171,25 @@ router.get('/gamestats', fetchuser, async (req, res) => {
             })
         );
         res.send({status: 'success', stats: data});
+    } catch(err){
+        console.log(err.message);
+        return res.status(500).send("Internal Server Error!!");
+    }
+});
+
+router.get('/delstats/:statsId', fetchuser, async (req, res) => {
+    try {
+        let adminUser = await User.findById(req.user.id);
+        console.log(adminUser);
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+            return;
+        }
+        let stats = await GameDetails.findOneAndDelete({_id: req.params.statsId});
+        if(!stats) {
+            res.send({success: false, msg: 'No stats found with the given Id'});
+        }
+        res.send(stats);
     } catch(err){
         console.log(err.message);
         return res.status(500).send("Internal Server Error!!");

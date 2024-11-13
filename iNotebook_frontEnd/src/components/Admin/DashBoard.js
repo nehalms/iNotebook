@@ -21,7 +21,7 @@ export default function DashBoard(props) {
 
     useEffect(()=> {
         if(!sessionStorage.getItem('adminToken')) {
-            props.showAlert("Only admin can access the dashboard", 'info');
+            props.showAlert("User not Authorized to access dashboard", 'info');
             history.navigate('/login');
             return;
         }
@@ -44,7 +44,7 @@ export default function DashBoard(props) {
   return (
     <>
         {dialog.open && <Confirmation open={dialog.open} title={dialog.title} onConfirm={dialog.onConfirm} onClose={dialog.onClose} />}
-        <h2 className='text-center'><i className="fa-solid fa-gauge mx-3"></i>Information Dashboard</h2>
+        <h2 className='text-center'><i className="fa-solid fa-gauge mx-3 mb-3"></i>Information Dashboard</h2>
         <Tabs 
             defaultactivekey="users"
             id="controlled-tabs"
