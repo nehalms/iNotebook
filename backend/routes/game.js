@@ -52,10 +52,16 @@ router.post('/getStats', fetchuser, async (req, res) => {
     }
 });
 
-router.get('/tttsave/:player1/:p1Stat/:player2/:p2Stat', async (req, res) => {
+router.get('/tttsave/:player1/:p1Stat/:player2/:p2Stat/:apikey', async (req, res) => {
     try {
         if( !req.body ) {
             res.status(400).send({status: 'Not found', message: 'No request body found'});
+        }
+        const data = jwt.verify(req.params.apikey, JWT_SCERET);
+        let adminUser = await User.findById(data.user.id);
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+            return;
         }
         let p1Id = req.params.player1;
         let p2Id = req.params.player2;
