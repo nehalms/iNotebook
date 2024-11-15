@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { Suspense, useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Verification from '../Utils/Verification';
 import { history } from '../History';
 import { getSignUphtml, getAdminNotifyhtml } from './getEmailHtml';
+const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Signup = (props) => {
     const mail = useRef(null);
@@ -189,7 +189,10 @@ const Signup = (props) => {
                           { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code <i className="fa-solid fa-paper-plane mx-2"></i></button> }
                         </div>
                         { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
-                        {show && <Verification verify={verify} sendEmail={sendEmail}/>}
+                        {show && 
+                          <Suspense fallback={<div>Loading verification...</div>}>
+                            <Verification verify={verify} sendEmail={sendEmail}/>
+                          </Suspense>}
                         <div className="mb-3 my-3">
                           <label htmlFor="password" className="form-label">Password</label>
                           <input type={showPassword ? "text" : "password"} ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>

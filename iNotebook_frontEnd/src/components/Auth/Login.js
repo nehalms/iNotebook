@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Suspense, useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import Verification from '../Utils/Verification';
 import { history } from '../History';
 import { getAdminhtml } from './getEmailHtml';
+const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Login = (props) => {
     const[credentials, setCredentials] = useState({email: "", password: ""});
@@ -158,7 +158,10 @@ const Login = (props) => {
                                     </div>
                                 </div>
                                 { !isAdminUser && <div className='text-end'><Link className='mx-0 my-0 link-underline-opacity-75-hover link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0' to="/forgot" role='button'>Forgot password?</Link><br/></div>}
-                                { isAdminUser && !Verified && <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey"/> }
+                                { isAdminUser && !Verified && 
+                                    <Suspense fallback={<div>Loading verification...</div>}>
+                                        <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey" />
+                                    </Suspense>}
                                 { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
                                 <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Login <i className="fa-solid fa-right-to-bracket mx-2"></i></button>
                             </form>

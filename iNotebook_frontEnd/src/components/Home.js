@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { history } from './History';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 import './Home.css';
-import UserHistoryTable from './Tables/UserHistorytable';
 import loading_gif from './loading.gif'
+const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
   history.navigate = useNavigate();
@@ -101,7 +101,13 @@ const Home = (props) => {
         <div className="card shadow-lg my-3">
           <div className="card-body text-center">
             <h4 className='text-center p-2 border rounded'>User History</h4>
-            {loading ? <img src={loading_gif}/> : <UserHistoryTable data={userHistory}/>}
+            {loading ? (
+              <img src={loading_gif} alt="Loading..." />
+            ) : (
+              <Suspense fallback={<div>Loading...</div>}>
+                <UserHistoryTable data={userHistory} />
+              </Suspense>
+            )}
           </div>
         </div>
       </div>
