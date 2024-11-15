@@ -30,6 +30,9 @@ const Home = (props) => {
 
   const getSecretKey = async () =>{
     try{
+      if(sessionStorage.getItem('AesKey')) {
+        return;
+      }
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/aes/secretKey`, {
         method: "GET", 
         headers: {
