@@ -117,7 +117,7 @@ router.post(
         action: "Logged In",
       });
       await User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
-      res.json({ success, authToken });
+      res.json({ success, authToken, isAdminUser: user.isAdmin});
     } 
     catch (err) {
       console.log(err.message);

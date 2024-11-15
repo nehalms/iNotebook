@@ -39,28 +39,16 @@ const Login = (props) => {
             props.setLoader({ showLoader: false });
             const json = await response.json();
             // console.log(json);
-            if (json.success && checkForAdminUser) {
+            if (json.success && json.isAdminUser && json.isAdminUser === true && checkForAdminUser) {
                 setCheckForAdminUser(false);
-                props.setLoader({ showLoader: true, msg: "Please wait"});
-                const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
-                    method: "POST", 
-                    headers: {
-                        "Content-Type": "application/json",
-                        "auth-token": json.authToken,
-                    }
-                });
-                props.setLoader({ showLoader: false });
-                const adminData = await response.json();
-                if(adminData && adminData.isAdmin) {
-                    sessionStorage.setItem('adminToken', json.authToken);
-                    localStorage.setItem('token', json.authToken);
-                    var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
-                    setCode(val);
-                    setIsAdminUser(true);
-                    sendEmail(e, adminData.authEmail);
-                    e.preventDefault();
-                    return;
-                }
+                sessionStorage.setItem('adminToken', json.authToken);
+                localStorage.setItem('token', json.authToken);
+                var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+                setCode(val);
+                setIsAdminUser(true);
+                sendEmail();
+                e.preventDefault();
+                return;
             }
             if(isAdminUser) {
                 if(!Verified) {
