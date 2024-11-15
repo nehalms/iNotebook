@@ -107,17 +107,18 @@ router.post(
       };
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
-      LoginHistory.create({
+      res.json({ success, authToken, isAdminUser: user.isAdmin});
+      
+      await LoginHistory.create({
         userId: user.id,
         name: user.name,
         email: user.email,
       });
-      UserHistory.create({
+      await UserHistory.create({
         userId: user.id,
         action: "Logged In",
       });
       await User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
-      res.json({ success, authToken, isAdminUser: user.isAdmin});
     } 
     catch (err) {
       console.log(err.message);
