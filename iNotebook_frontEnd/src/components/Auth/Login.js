@@ -1,14 +1,13 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { history } from '../History';
-import { getAdminhtml } from './getEmailHtml';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Login = (props) => {
     const[credentials, setCredentials] = useState({email: "", password: ""});
     let [checkForAdminUser, setCheckForAdminUser] = useState(true);
     const [isAdminUser, setIsAdminUser] = useState(false);
-    const[code, setCode] = useState();
+    const [showGif, setShowGif] = useState(false);
     const divRef = useRef();
     const [height, setHeight] = useState(0);
     const[Verified, setVerified] = useState(false);
@@ -41,10 +40,6 @@ const Login = (props) => {
             // console.log(json);
             if (json.success && json.isAdminUser && json.isAdminUser === true && checkForAdminUser) {
                 setCheckForAdminUser(false);
-                sessionStorage.setItem('adminToken', json.authToken);
-                localStorage.setItem('token', json.authToken);
-                var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
-                setCode(val);
                 setIsAdminUser(true);
                 sendEmail();
                 e.preventDefault();
@@ -56,6 +51,8 @@ const Login = (props) => {
                     e.preventDefault();
                     return;
                 } else if(Verified) {
+                    sessionStorage.setItem('adminToken', json.authToken);
+                    localStorage.setItem('token', json.authToken);
                     history.navigate('/dashboard');
                     props.showAlert("Logged in as Admin", 'success');
                 }
@@ -79,10 +76,7 @@ const Login = (props) => {
     const sendEmail = async () => {
         if(credentials.email.toString().endsWith(".com")){
           setVerified(false);
-          var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
-          setCode(val);
           try {
-            let html = getAdminhtml(val); 
             let email = [];
             props.setLoader({ showLoader: true, msg: "Sending otp..."});
             await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
@@ -95,7 +89,6 @@ const Login = (props) => {
                 cc: [],
                 subject: 'Admin Login',
                 text: '',
-                html: html
               }),
             });
             props.setLoader({ showLoader: false });
@@ -110,13 +103,31 @@ const Login = (props) => {
         }
       };
 
-    const verify = (verCode)=> {
-        if(code === verCode){
-          setVerified(true);
-          props.showAlert("Verified", "success");
-        }
-        else {
-          props.showAlert("Invalid code", "danger")
+    const verify = async (code)=> {
+        try {
+            setShowGif(true);
+            let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/verify`, {
+                method: "POST", 
+                headers: {
+                "Content-Type": "application/json",
+                "email": credentials.email,
+                "code": code,
+                },
+            });
+            const res = await response.json();
+            if(res.success === true) {
+                if(res.verified === true) {
+                    setVerified(true);
+                    props.showAlert(res.msg, "success");
+                } else {
+                    props.showAlert(res.msg, "danger")
+                }
+            }
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Mail error: cannot verify code", 'danger');
+        } finally {
+            setShowGif(false);
         }
       };
 
@@ -160,7 +171,7 @@ const Login = (props) => {
                                 { !isAdminUser && <div className='text-end'><Link className='mx-0 my-0 link-underline-opacity-75-hover link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0' to="/forgot" role='button'>Forgot password?</Link><br/></div>}
                                 { isAdminUser && !Verified && 
                                     <Suspense fallback={<div>Loading verification...</div>}>
-                                        <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey" />
+                                        <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey" showGif={showGif}/>
                                     </Suspense>}
                                 { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
                                 <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Login <i className="fa-solid fa-right-to-bracket mx-2"></i></button>

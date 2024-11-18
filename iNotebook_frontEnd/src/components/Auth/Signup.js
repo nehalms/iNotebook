@@ -1,7 +1,6 @@
 import React, { Suspense, useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { history } from '../History';
-import { getSignUphtml, getAdminNotifyhtml } from './getEmailHtml';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Signup = (props) => {
@@ -11,7 +10,7 @@ const Signup = (props) => {
     const[credentials, setCredentials] = useState({name:"", email: "", password: "", cpassword: ""});
     const divRef = useRef();
     const [height, setHeight] = useState(0);
-    const[code_, setCode] = useState(0);
+    const [showGif, setShowGif] = useState(false);
     const[show, setShow] = useState(false);
     const[Verified, setVerified] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -53,30 +52,6 @@ const Signup = (props) => {
             const json = await response.json();
             // console.log(json); 
             if(json.success){
-              localStorage.setItem('token', json.authToken);
-              try {
-                let html = getAdminNotifyhtml(credentials.name, credentials.email); 
-                let email = [];
-                props.setLoader({ showLoader: true, msg: "Saving user data"});
-                let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
-                  method: "POST", 
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    email: email,
-                    cc: [],
-                    subject: 'New User Notification',
-                    text: '',
-                    html: html
-                  }),
-                });
-                props.setLoader({ showLoader: false });
-                const json = await response.json();
-              } catch (err) {
-                props.setLoader({ showLoader: false });
-                console.log("Error**");
-              }
               history.navigate("/login"); // to redirect the page to home page
               props.showAlert("Sign in successfull", "success");
             }
@@ -103,9 +78,7 @@ const Signup = (props) => {
 
     const sendEmail = async (e) => {
       if(credentials.email.toString().endsWith(".com")){
-        var val = Math.floor(Math.random()*(999999 - 100000 + 1)) + 100000;
         try {
-          let html = getSignUphtml(val); 
           let email = [];
           email.push(credentials.email);
           props.setLoader({ showLoader: true, msg: "Sending email"});
@@ -119,7 +92,6 @@ const Signup = (props) => {
               cc: [],
               subject: 'Create Account',
               text: '',
-              html: html
             }),
           });
           const res = await response.json();
@@ -137,23 +109,39 @@ const Signup = (props) => {
         setVerified(false);
         setShow(true);
         e.preventDefault();
-        setCode(val);
       }
       else{
         props.showAlert("Invalid Email", 'danger');
       }
     };
 
-    const verify = (code)=> {
-    //   console.log(code + " " + code_);
-      if(code === code_){
-        setVerified(true);
-        setShow(false);
-        mail.current.style.border = '3px solid #63E6BE';
-        props.showAlert("Verified", "success");
-      }
-      else {
-        props.showAlert("Invalid code", "danger")
+    const verify = async (code)=> {
+      try {
+        setShowGif(true);
+        let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/verify`, {
+          method: "POST", 
+          headers: {
+            "Content-Type": "application/json",
+            "email": credentials.email,
+            "code": code,
+          },
+        });
+        const res = await response.json();
+        if(res.success === true) {
+          if(res.verified === true) {
+            setVerified(true);
+            setShow(false);
+            mail.current.style.border = '3px solid #63E6BE';
+            props.showAlert(res.msg, "success");
+          } else {
+            props.showAlert(res.msg, "danger")
+          }
+        }
+      } catch (err) {
+        console.log("Error**", err);
+        props.showAlert("Mail error: cannot verify code", 'danger');
+      } finally {
+        setShowGif(false);
       }
     }
 
@@ -191,7 +179,7 @@ const Signup = (props) => {
                         { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
                         {show && 
                           <Suspense fallback={<div>Loading verification...</div>}>
-                            <Verification verify={verify} sendEmail={sendEmail}/>
+                            <Verification verify={verify} sendEmail={sendEmail} showGif={showGif}/>
                           </Suspense>}
                         <div className="mb-3 my-3">
                           <label htmlFor="password" className="form-label">Password</label>

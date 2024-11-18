@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
 const UserHistory = require("../models/UserHistory");
 const GameDetails = require("../models/GameDetails");
+const { Email } = require("../Services/Email");
+const { getAdminNotifyhtml } = require("../Services/getEmailHtml");
 
 const JWT_SCERET = process.env.JWT_SCERET;
 
@@ -62,6 +64,16 @@ router.post("/createuser",
       const authToken = jwt.sign(data, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
       res.json({success, authToken });
+
+      let html = getAdminNotifyhtml(user.name, user.email);
+      Email(
+        process.env.ADMIN_EMAIL,
+        [],
+        'New User Notification',
+        '',
+        html,
+        false,
+      )
     } 
     catch (err) {
       console.log(err.message);

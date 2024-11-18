@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Verification from '../Utils/Verification';
 import { history } from '../History';
-import { getForgotPasshtml } from './getEmailHtml';
 
 const Forgot_ = (props)=> {
   history.navigate = useNavigate();
@@ -12,7 +11,7 @@ const Forgot_ = (props)=> {
   const [show, setShow] = useState(false);
   const divRef = useRef();
   const [height, setHeight] = useState(0);
-  const [code_, setCode] = useState(0);
+  const [showGif, setShowGif] = useState(false);
   const[Verified, setVerified] = useState(false);
   const[id, setid] = useState("");
   const[credentials, setCredentials] = useState({email: "", password: "", cpassword: ""});
@@ -32,6 +31,10 @@ const Forgot_ = (props)=> {
       e.preventDefault();
       if(credentials.password !== credentials.cpassword) {
         props.showAlert("Password does not match", 'warning');
+        return;
+      }
+      if(!Verified) {
+        props.showAlert("Please verify the email", 'info');
         return;
       }
       props.setLoader({ showLoader: true, msg: "Updating password"});
@@ -84,9 +87,7 @@ const Forgot_ = (props)=> {
       props.setLoader({ showLoader: false });
       const json = await response.json();
       if(credentials.email.toString().endsWith(".com") && json.found){
-        var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
         try {
-          let html = getForgotPasshtml(val); 
           let email = [];
           email.push(credentials.email);
           props.setLoader({ showLoader: true, msg: "Sending email"});
@@ -100,7 +101,6 @@ const Forgot_ = (props)=> {
               cc: [],
               subject: 'Reset Password',
               text: '',
-              html: html
             }),
           });
           const res = await response.json();
@@ -119,7 +119,6 @@ const Forgot_ = (props)=> {
         setVerified(false);
         setShow(true);
         e.preventDefault();
-        setCode(val);
       } 
       else{
         if(!credentials.email.toString().endsWith(".com")){
@@ -135,16 +134,33 @@ const Forgot_ = (props)=> {
     }
   };
 
-  const verify = (code)=> {
-    // console.log(code + " " + code_);
-    if(code === code_){
-      setVerified(true);
-      setShow(false);
-      mail.current.style.border = '3px solid #63E6BE';
-      props.showAlert("Verified", "success");
-    }
-    else {
-      props.showAlert("Invalid code", "danger")
+  const verify = async (code)=> {
+    try {
+      setShowGif(true);
+      let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/verify`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+          "email": credentials.email,
+          "code": code,
+        },
+      });
+      const res = await response.json();
+      if(res.success === true) {
+        if(res.verified === true) {
+          setVerified(true);
+          setShow(false);
+          mail.current.style.border = '3px solid #63E6BE';
+          props.showAlert(res.msg, "success");
+        } else {
+          props.showAlert(res.msg, "danger")
+        }
+      }
+    } catch (err) {
+      console.log("Error**", err);
+      props.showAlert("Mail error: cannot verify code", 'danger');
+    } finally {
+      setShowGif(false);
     }
   };
 
@@ -176,7 +192,7 @@ const Forgot_ = (props)=> {
                           { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code <i className="fa-solid fa-paper-plane mx-2"></i></button> }
                         </div>
                         { Verified  && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
-                        { show && <Verification verify={verify} sendEmail={sendEmail}/>}
+                        { show && <Verification verify={verify} sendEmail={sendEmail} showGif={showGif}/>}
                         { Verified && <div className="mb-3 my-3">
                           <label htmlFor="password" className="form-label">Password</label>
                           <input type={showPassword ? "text" : "password"} ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
@@ -188,7 +204,7 @@ const Forgot_ = (props)=> {
                             <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
                           </div>
                         </div>}
-                        { Verified && <button type="submit" className="btn btn-primary mt-4" style={{width: '100%'}}>Update</button>}
+                        { Verified && <button type="submit" className="btn btn-primary mt-4" style={{width: '100%'}}>Update<i className="fa-solid fa-pen-to-square mx-2"></i></button>}
                     </form>
                 </div>
             </div>

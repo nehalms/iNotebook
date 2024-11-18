@@ -6,7 +6,7 @@ function Email(
         subject = '', 
         text, 
         html,
-        toAdmin,
+        toAdmin = false,
     ) {
     return new Promise(async (resolve, reject) => {
       let emails = Array.isArray(email)
@@ -45,7 +45,6 @@ function Email(
       } else {
         mailOptions.html = html;
       }
-      console.log(mailOptions);
       
       transporter.sendMail(mailOptions, function(error, info){
         if (error) {

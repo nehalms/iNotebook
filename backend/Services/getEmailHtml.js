@@ -127,7 +127,7 @@ const getAdminhtml = (otp) => {
     return html;
 }
 
-export {
+module.exports = {
   getForgotPasshtml,
   getSignUphtml,
   getAdminNotifyhtml,

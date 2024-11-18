@@ -1,5 +1,5 @@
 import { React, useState }  from 'react'
-// import './Verification.css'
+import otpLoading from './otpLoading.gif'
 
 function Verification(props) {
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -51,6 +51,9 @@ function Verification(props) {
           />
         ))}
       </div>
+      { props.showGif && 
+        <img src={otpLoading} alt="Loading..." style={{width: '126px', height: '40px', marginLeft: '80px'}}/>
+      }
       <div className="d-flex my-3">
         <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2 ms-0">Resend <i className="fa-solid fa-paper-plane mx-2"></i></button>
         <button type="button" onClick={handleVerify} className="btn btn-success mx-2">Verify <i className="fa-solid fa-certificate mx-2"></i></button>
