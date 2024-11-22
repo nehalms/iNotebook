@@ -29,7 +29,7 @@ function Verification(props) {
   }
 
   return (
-    <div>
+    <div className='mt-3'>
       <label htmlFor="exampleInputEmail1" className="form-label">{props.msg ? props.msg : 'Enter the verification code'}</label> <br />
       <div style={{ display: 'flex', gap: '10px' }}>
         {otp.map((value, index) => (

@@ -1,59 +1,62 @@
-.SaveNotes__left-right {
-    border: 1px solid rgb(0, 0, 0);
-    background: linear-gradient(to right, #65ffb7 50%, #fff 50%);
-    background-size: 200% 100%;
-    background-position: bottom right;
-    transition: all .5s ease-out;
-}
+.home-container {
+    padding: 5px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    background-color: transparent;
+  }
   
-.SaveNotes__left-right:hover {
-    background-position: bottom left;
-    color: #fff;
-    cursor: pointer;    
-    transform: scale(1.1);
-}
-
-.ImagesEdit__left-right {
-    border: 1px solid rgb(0, 0, 0);
-    background: linear-gradient(to right, #ffd465 50%, #fff 50%);
-    background-size: 200% 100%;
-    background-position: bottom right;
-    transition: all .5s ease-out;
-}
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
   
-.ImagesEdit__left-right:hover {
-    background-position: bottom left;
-    color: #fff;
+  .feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: white;
+    padding: 1.5rem;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transform: scale(1.1);
-}
-
-.Games__left-right {
-    border: 1px solid rgb(0, 0, 0);
-    background: linear-gradient(to right, #65b5ff 50%, #fff 50%);
-    background-size: 200% 100%;
-    background-position: bottom right;
-    transition: all .5s ease-out;
-}
+  }
   
-.Games__left-right:hover {
-    background-position: bottom left;
-    color: #fff;
-    cursor: pointer;
-    transform: scale(1.1);
-}
-
-.Msg__left-right {
-    border: 1px solid rgb(0, 0, 0);
-    background: linear-gradient(to right, #ff6565 50%, #fff 50%);
-    background-size: 200% 100%;
-    background-position: bottom right;
-    transition: all .5s ease-out;
-}
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
   
-.Msg__left-right:hover {
-    background-position: bottom left;
-    color: #fff;
-    cursor: pointer;
-    transform: scale(1.1);
-}
+  .feature-name {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  
+  .history-section {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 10px 14px 18px rgba(0, 0, 0, 0.1);
+  }
+  
+  .history-title {
+    font-size: 1.8rem;
+    text-align: center;
+    margin: 1.0rem;
+    color: #343a40;
+  }
+  
+  .loading-gif {
+    display: block;
+    margin: 1rem auto;
+    width: 80px;
+  }
+  

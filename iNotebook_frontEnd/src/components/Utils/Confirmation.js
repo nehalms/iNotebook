@@ -17,7 +17,7 @@ export default function Confirmation(props) {
         </DialogContent>
         <DialogActions>
             <Button className='border' onClick={props.onClose}>Cancel</Button>
-            <Button className='bg-primary text-light' onClick={props.onConfirm} >
+            <Button className='bg-danger text-light' onClick={props.onConfirm} >
                 Confirm
             </Button>
         </DialogActions>

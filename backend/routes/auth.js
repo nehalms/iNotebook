@@ -119,7 +119,15 @@ router.post(
       };
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
-      res.json({ success, authToken, isAdminUser: user.isAdmin});
+      if(user.isAdmin == true) {
+        if(req.query.verified == 'true') {
+          res.json({ success, authToken, isAdminUser: user.isAdmin});
+        } else {
+          res.json({ success, isAdminUser: user.isAdmin});
+        }
+      } else {
+        res.json({ success, authToken, isAdminUser: user.isAdmin});
+      }
       
       await LoginHistory.create({
         userId: user.id,
@@ -245,6 +253,7 @@ router.post('/logout', fetchuser, async (req, res) => {
       userId: req.user.id,
       action: "Logged out",
     });
+    res.send({success: true, msg: 'Logged out'});
   }  catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");

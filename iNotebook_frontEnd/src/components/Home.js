@@ -1,9 +1,9 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react';
 import { history } from './History';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import './Home.css';
-import loading_gif from './loading.gif'
+import loading_gif from './loading.gif';
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
@@ -12,110 +12,89 @@ const Home = (props) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if(localStorage.getItem('token')){
-      if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-        props.showAlert("Session expired Login again", 'danger');
-        history.navigate("/login");
+    if (localStorage.getItem('token')) {
+      if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
+        props.showAlert('Session expired, login again', 'danger');
+        history.navigate('/login');
         return;
       }
       fetchHistory();
       getSecretKey();
+    } else {
+      props.showAlert('Please log in', 'warning');
+      history.navigate('/login');
     }
-    else {
-      props.showAlert("Login please", 'warning');
-      history.navigate("/login");
-      return;
-    }
-  }, [])
+  }, []);
 
-  const getSecretKey = async () =>{
-    try{
-      if(sessionStorage.getItem('AesKey')) {
-        return;
-      }
+  const getSecretKey = async () => {
+    try {
+      if (sessionStorage.getItem('AesKey')) return;
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/aes/secretKey`, {
-        method: "GET", 
+        method: 'GET',
         headers: {
-            "Content-Type": "application/json",
-            "auth-token": localStorage.getItem('token')
-        }
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token'),
+        },
       });
       const json = await response.json();
-      if(json.status === 'success') {
-        sessionStorage.setItem('AesKey', json.secretKey);
-      }
+      if (json.status === 'success') sessionStorage.setItem('AesKey', json.secretKey);
     } catch (err) {
-      console.log("Error**", err);
+      console.error('Error fetching secret key:', err);
     }
-  }
+  };
 
   const fetchHistory = async () => {
     try {
       setLoading(true);
-      let response = await fetch(`${process.env.REACT_APP_BASE_URL}/getdata/userhistory`, {
-        headers: {
-          'auth-token': localStorage.getItem('token'),
-        }
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getdata/userhistory`, {
+        headers: { 'auth-token': localStorage.getItem('token') },
       });
       const data = await response.json();
-      if(data.error) {
+      if (data.error) {
         props.showAlert(data.error, 'danger');
         return;
       }
       setHistory(data);
       setLoading(false);
     } catch (error) {
-      props.showAlert("Error in fetching history", 'info');
-      console.log("Error***", error);
+      props.showAlert('Error fetching history', 'info');
+      console.error('Error fetching history:', error);
     }
-  }
+  };
 
   return (
-    <div className='row my-2'>
-      <div className='col-lg-3'>
-        <div className="card shadow-lg my-3 SaveNotes__left-right" onClick={() => {history.navigate('/notes')}}>
-          <div className="card-body">
-            <h5 className='text-center'>Save Notes</h5>
+    <div className="home-container">
+      <div className="feature-grid">
+        {[
+          { name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
+          // { name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#FF9800' },
+          { name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#2196F3' },
+          { name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#F44336' },
+        ].map((feature, index) => (
+          <div
+            key={index}
+            className="feature-card"
+            style={{ backgroundColor: feature.color }}
+            onClick={() => history.navigate(feature.route)}
+          >
+            <i className={`fa ${feature.icon} feature-icon`}></i>
+            <h5 className="feature-name">{feature.name}</h5>
           </div>
-        </div>
+        ))}
       </div>
-      <div className='col-lg-3'>
-        <div className="card shadow-lg my-3 ImagesEdit__left-right" onClick={() => {history.navigate('/imEdit')}}>
-          <div className="card-body">
-            <h5 className='text-center'>Image Editor</h5>
-          </div>
-        </div>
-      </div>
-      <div className='col-lg-3'>
-        <div className="card shadow-lg my-3 Games__left-right" onClick={() => {history.navigate('/games')}}>
-          <div className="card-body">
-            <h5 className='text-center'>Games</h5>
-          </div>
-        </div>
-      </div>
-      <div className='col-lg-3'>
-        <div className="card shadow-lg my-3 Msg__left-right" onClick={() => {history.navigate('/msg')}}>
-          <div className="card-body">
-            <h5 className='text-center'>Hide Messages</h5>
-          </div>
-        </div>
-      </div>
-      <div className='col-lg-12'>
-        <div className="card shadow-lg my-3">
-          <div className="card-body text-center">
-            <h4 className='text-center p-2 border rounded'>User History</h4>
-            {loading ? (
-              <img src={loading_gif} alt="Loading..." />
-            ) : (
-              <Suspense fallback={<div>Loading...</div>}>
-                <UserHistoryTable data={userHistory} />
-              </Suspense>
-            )}
-          </div>
-        </div>
+
+      <div className="history-section">
+        <h4 className="history-title">User History</h4>
+        {loading ? (
+          <img src={loading_gif} alt="Loading..." className="loading-gif" />
+        ) : (
+          <Suspense fallback={<div>Loading...</div>}>
+            <UserHistoryTable data={userHistory} />
+          </Suspense>
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Home;

@@ -1,188 +1,194 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import React, { Suspense, useEffect, useRef, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { history } from '../History';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Login = (props) => {
-    const[credentials, setCredentials] = useState({email: "", password: ""});
-    let [checkForAdminUser, setCheckForAdminUser] = useState(true);
+    const [credentials, setCredentials] = useState({ email: '', password: '' });
+    const [checkForAdminUser, setCheckForAdminUser] = useState(true);
     const [isAdminUser, setIsAdminUser] = useState(false);
     const [showGif, setShowGif] = useState(false);
+    const [Verified, setVerified] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const divRef = useRef();
     const [height, setHeight] = useState(0);
-    const[Verified, setVerified] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     history.navigate = useNavigate();
 
     useEffect(() => {
-        if( !divRef.current ) return;
+        if (!divRef.current) return;
         const resizeObserver = new ResizeObserver(() => {
             setHeight(divRef.current.clientHeight);
         });
         resizeObserver.observe(divRef.current);
         return () => resizeObserver.disconnect();
-    }, [])
+    }, []);
 
-    const handleSubmit = async (e)=> {
-        e.preventDefault(); // to prevent page from reloading
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            props.setLoader({ showLoader: true, msg: "Logging in please wait"});
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login`, {
-                method: "POST", 
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin" : "http://localhost:3000"
-                },
-                body: JSON.stringify({email: credentials.email, password: credentials.password}), // body data type must match "Content-Type" header
+            props.setLoader({ showLoader: true, msg: 'Logging in, please wait...' });
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login?verified=${Verified}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credentials),
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
-            // console.log(json);
-            if (json.success && json.isAdminUser && json.isAdminUser === true && checkForAdminUser) {
-                setCheckForAdminUser(false);
-                setIsAdminUser(true);
-                sendEmail();
-                e.preventDefault();
-                return;
-            }
-            if(isAdminUser) {
-                if(!Verified) {
-                    props.showAlert("Admin passkey not verified", 'danger');
-                    e.preventDefault();
+
+            if (json.success) {
+                if (json.isAdminUser && checkForAdminUser) {
+                    setCheckForAdminUser(false);
+                    setIsAdminUser(true);
+                    sendEmail();
                     return;
-                } else if(Verified) {
-                    sessionStorage.setItem('adminToken', json.authToken);
-                    localStorage.setItem('token', json.authToken);
-                    history.navigate('/dashboard');
-                    props.showAlert("Logged in as Admin", 'success');
                 }
-            }
-            else if(json.success){
-                sessionStorage.removeItem('adminToken');
-                localStorage.setItem('token', json.authToken);
-                history.navigate("/"); // to redirect the page to home page
-                props.showAlert("Logged in successfully", "success");
-            }
-            else {
-                props.showAlert(json.errors ? json.errors[0].msg : json.error, "danger");
+                if (isAdminUser && !Verified) {
+                    props.showAlert('Admin passkey not verified', 'danger');
+                    return;
+                }
+                if(isAdminUser) {
+                    sessionStorage.setItem('adminToken', json.authToken);
+                } else {
+                    localStorage.setItem('token', json.authToken);
+                }
+                history.navigate(isAdminUser ? '/dashboard' : '/');
+                props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success');
+            } else {
+                props.showAlert(json.errors ? json.errors[0].msg : json.error, 'danger');
             }
         } catch (err) {
             props.setLoader({ showLoader: false });
-            console.log('Error** ', err);
-            props.showAlert("Some Error Occured", "danger");
+            console.error(err);
+            props.showAlert('An error occurred during login', 'danger');
         }
-    }
+    };
 
     const sendEmail = async () => {
-        if(credentials.email.toString().endsWith(".com")){
-          setVerified(false);
-          try {
-            let email = [];
-            props.setLoader({ showLoader: true, msg: "Sending otp..."});
+        if (!credentials.email) {
+            props.showAlert('Email cannot be empty', 'danger');
+            return;
+        }
+        setVerified(false);
+        try {
+            props.setLoader({ showLoader: true, msg: 'Sending OTP...' });
             await fetch(`${process.env.REACT_APP_BASE_URL}/mail/send?toAdmin=true`, {
-              method: "POST", 
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: email,
-                cc: [],
-                subject: 'Admin Login',
-                text: '',
-              }),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({
+                    email: credentials.email,
+                    cc: [],
+                    subject: 'Admin Login',
+                    text: '',
+                }),
             });
             props.setLoader({ showLoader: false });
-            props.showAlert("Code send to your mail", "success");
-          } catch (err) {
+            props.showAlert('Code sent to your email', 'success');
+        } catch (err) {
             props.setLoader({ showLoader: false });
-            console.log("Error**");
-          }    
+            console.error(err);
+            props.showAlert('Failed to send OTP', 'danger');
         }
-        else{
-          props.showAlert("Email cannot be empty", 'danger');
-        }
-      };
+    };
 
-    const verify = async (code)=> {
+    const verify = async (code) => {
         try {
             setShowGif(true);
-            let response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/verify`, {
-                method: "POST", 
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/mail/verify`, {
+                method: 'POST',
                 headers: {
-                "Content-Type": "application/json",
-                "email": credentials.email,
-                "code": code,
+                    'Content-Type': 'application/json',
+                    email: credentials.email,
+                    code,
                 },
             });
             const res = await response.json();
-            if(res.success === true) {
-                if(res.verified === true) {
-                    setVerified(true);
-                    props.showAlert(res.msg, "success");
-                } else {
-                    props.showAlert(res.msg, "danger")
-                }
-            }
+            setVerified(res.success && res.verified);
+            props.showAlert(res.msg, res.success && res.verified ? 'success' : 'danger');
         } catch (err) {
-            console.log("Error**", err);
-            props.showAlert("Mail error: cannot verify code", 'danger');
+            console.error(err);
+            props.showAlert('Verification failed', 'danger');
         } finally {
             setShowGif(false);
         }
-      };
+    };
 
-    const onChange = (e)=> {
-        setCredentials({...credentials, [e.target.name]: e.target.value}) //helps to keep data in note as same and append the new values being typed
-    }
-
-    const handleShowPassword = (e) => {
-        e.preventDefault();
-        setShowPassword(!showPassword);
-    }
+    const onChange = (e) => setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    const handleShowPassword = () => setShowPassword(!showPassword);
 
     return (
-        <div className='container my-3'>
-            <div className='row'>
-                <div className="col-md-2"></div>
-                <div className='col-lg-3 p-0'>
-                    <div className="card my-3" style={{backgroundColor: '#198754', height: window.innerWidth > 992 ? height : 'auto'}}>
-                        <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                            <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
-                            <h6 className='m-0 p-1 text-center text-white'>Save from one place, access from anywhere</h6>
-                        </div>
-                    </div>
+        <div className="container d-flex align-items-center justify-content-center vh-80 my-2">
+            <div className="card shadow-lg" style={{ width: '35rem', borderRadius: '1rem' }}>
+                <div
+                    className="card-header text-center text-white fw-bold py-4"
+                    style={{ backgroundColor: '#198754', borderRadius: '1rem 1rem 0 0' }}
+                >
+                    <h2>iNotebook</h2>
+                    <p className='m-0'>Save your notes from one place, access anywhere</p>
                 </div>
-                <div className='col-lg p-0'>
-                    <div className="card my-3 p-2 border rounded-start" style={{borderTopLeftRadius: '0px'}} ref={divRef}>
-                        <div className="card-body">
-                            <form onSubmit={handleSubmit}>
-                                <h2 className='mb-3 p-3 text-center border rounded bg-secondary-subtle'>Login</h2>
-                                <div className="mb-3">
-                                    <label htmlFor="email" className="form-label">Email address</label>
-                                    <input type="email" className="form-control" onChange={onChange} value={credentials.email} required id="email" name="email" aria-describedby="emailHelp" disabled={isAdminUser}/>
-                                </div>
-                                <div className="mb-2">
-                                    <label htmlFor="password" className="form-label">Password</label>
-                                    <div className='d-flex align-items-center justify-content-center'>
-                                        <input type={showPassword ? "text" : "password"} className="form-control" onChange={onChange} value={credentials.password} id="password" name="password" required disabled={isAdminUser}/>
-                                        <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
-                                    </div>
-                                </div>
-                                { !isAdminUser && <div className='text-end'><Link className='mx-0 my-0 link-underline-opacity-75-hover link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0' to="/forgot" role='button'>Forgot password?</Link><br/></div>}
-                                { isAdminUser && !Verified && 
-                                    <Suspense fallback={<div>Loading verification...</div>}>
-                                        <Verification verify={verify} sendEmail={sendEmail} msg="Enter the Admin passkey" showGif={showGif}/>
-                                    </Suspense>}
-                                { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey Verified</div>}
-                                <button type="submit" className="btn btn-primary mt-3 mb-4" style={{width: '100%'}}>Login <i className="fa-solid fa-right-to-bracket mx-2"></i></button>
-                            </form>
+                <div className="card-body">
+                    <form onSubmit={handleSubmit}>
+                        <h4 className="text-center mb-4">Welcome Back!</h4>
+                        <div className="mb-3">
+                            <label htmlFor="email" className="form-label">
+                                Email address
+                            </label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                id="email"
+                                name="email"
+                                onChange={onChange}
+                                value={credentials.email}
+                                disabled={isAdminUser}
+                                required
+                            />
                         </div>
-                    </div>
+                        <label htmlFor="password" className="form-label">
+                            Password
+                        </label>
+                        <div className="mb-3 position-relative input-group">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                className="form-control"
+                                id="password"
+                                name="password"
+                                onChange={onChange}
+                                value={credentials.password}
+                                disabled={isAdminUser}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={handleShowPassword}
+                            >
+                                <i className={`fa-solid ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                            </button>
+                        </div>
+                        { Verified && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Admin passkey verified !!!</div>}
+                        { !isAdminUser && 
+                            <div className="text-end mt-3 me-1">
+                                <Link to="/forgot" className="text-decoration-none">
+                                    Forgot password?
+                                </Link>
+                            </div>
+                        }
+                        {isAdminUser && !Verified && (
+                            <Suspense fallback={<div>Loading verification...</div>}>
+                                <Verification verify={verify} sendEmail={sendEmail} msg="Enter Admin Passkey" showGif={showGif}/>
+                            </Suspense>
+                        )}
+                        <button type="submit" className="btn btn-primary w-100 mt-4">
+                            Login <i className="fa-solid fa-right-to-bracket ms-2"></i>
+                        </button>
+                        
+                    </form>
                 </div>
-                <div className="col-md-2"></div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;

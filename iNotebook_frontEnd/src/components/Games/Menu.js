@@ -5,24 +5,27 @@ import { useNavigate } from 'react-router-dom';
 export default function Menu(props) {
     history.navigate = useNavigate();
 
+    const features = [
+        { name: 'Tic-Tac-Toe', route: '/games/tictactoe', icon: 'fa-gamepad', color: '#4CAF50' },
+        { name: 'Four in a Row (Connect4)', route: '/games/frinrow', icon: 'fa-gamepad', color: '#FF9800' },
+    ];
+
     return (
-    <div>
-      <div className='row my-2'>
-        <div className='col-lg-3'>
-          <div className="card shadow-lg my-3 SaveNotes__left-right" onClick={() => {history.navigate('/games/tictactoe')}}>
-            <div className="card-body">
-                <h5 className='text-center'>Tic-Tac-Toe</h5>
-            </div>
+        <div className='container my-4'>
+          <div className="feature-grid">
+            {
+              features && features.map((feature, index) => (
+              <div
+                key={index}
+                className="feature-card"
+                style={{ backgroundColor: feature.color }}
+                onClick={() => history.navigate(feature.route)}
+              >
+                <i className={`fa ${feature.icon} feature-icon`}></i>
+                <h5 className="feature-name">{feature.name}</h5>
+              </div>
+            ))}
           </div>
         </div>
-        <div className='col-lg-3'>
-          <div className="card shadow-lg my-3 ImagesEdit__left-right" onClick={() => {history.navigate('/games/frinrow')}}>
-            <div className="card-body">
-                <h5 className='text-center'>Four in a row (Connect4)</h5>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+    );
 }

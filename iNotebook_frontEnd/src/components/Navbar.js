@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { Link, useLocation } from "react-router-dom";
+import { history } from './History';
 import img from './favicon-32x32.png'
 import './Navbar.css'
 
@@ -14,16 +15,26 @@ const Navbar = (props) => {
     
     const handleLogout = async () => {
         try {
+            props.setLoader({ showLoader: true, msg: "Logging out..."});
             const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/logout`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
+                    "auth-token": localStorage.getItem('token') ? localStorage.getItem('token') : sessionStorage.getItem('adminToken')
                 }
             });
+            const data = await response.json();
+            if(data.success === true) {
+                props.showAlert(data.msg, "success"); 
+                localStorage.removeItem('token'); 
+                sessionStorage.clear();
+                history.navigate('/login');
+            }
         } catch (err) {
-            props.setLoader({ showLoader: false });
+            props.showAlert("Unable to logout, check your internet connection", "danger"); 
             console.log("Error**", err);
+        } finally {
+            props.setLoader({ showLoader: false });
         }
     }
 
@@ -137,7 +148,7 @@ const Navbar = (props) => {
                                         <Link className={`mx-3 my-2 ${location.pathname === '/profile' && 'active'}`} to="/profile" role='button'>Profile<i className="fa-solid fa-user mx-2"></i></Link>
                                     </div>
                                 }
-                                <Link className={`px-3 my-2 logout ${sessionStorage.getItem('adminToken') && 'border-start'}`} to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.clear(); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
+                                <Link className={`px-3 my-2 logout ${sessionStorage.getItem('adminToken') && 'border-start'}`} role='button' onClick={handleLogout}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
                                 {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
                                 </> :
                                 <>

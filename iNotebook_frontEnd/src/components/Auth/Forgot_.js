@@ -170,47 +170,52 @@ const Forgot_ = (props)=> {
   }
 
   return (
-    <div className='container my-3'>
-      <div className='row'>
-        <div className="col-md-2"></div>
-        <div className='col-lg-3 p-0'>
-            <div className="card my-3 bg-primary" style={{height: window.innerWidth > 992 ? height : 'auto'}}>
-                <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                    <h2 className='m-0 p-1 text-center text-white'>iNotebook</h2>
-                    <h6 className='m-0 p-1 text-center text-white'>Please note that we cannot recover your original password because we store it using hashing and salting techniques</h6>
-                </div>
-            </div>
+    <div className='container d-flex align-items-center justify-content-center vh-80 my-2'>
+        <div className="card shadow-lg" style={{ width: '35rem', borderRadius: '1rem' }}>
+          <div
+              className="card-header text-center text-white fw-bold py-4"
+              style={{ backgroundColor: '#0d6efd', borderRadius: '1rem 1rem 0 0' }}
+          >
+            <h2>iNotebook</h2>
+            <h6 className='m-0'>Please note that we cannot recover your original password because we store it using hashing and salting techniques</h6>
+          </div>
+          <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                  <h2 className='text-center mb-4'>Reset Password</h2>
+                  <div className="mb-3">
+                    <label htmlFor="email" className="form-label">Email</label>
+                    <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required disabled={show || Verified}/>
+                    { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code <i className="fa-solid fa-paper-plane mx-2"></i></button> }
+                  </div>
+                  { Verified  && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
+                  { show && <Verification verify={verify} sendEmail={sendEmail} showGif={showGif}/>}
+                  { Verified && <div className="mb-3 my-3">
+                    <label htmlFor="password" className="form-label">Password</label>
+                    <input type={showPassword ? "text" : "password"} ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
+                  </div>}
+                  { Verified && <div className="mb-3">
+                    <label htmlFor="cpassword" className="form-label">Confirm Password</label>
+                    <div className="input-group">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        ref={cpass}
+                        className="form-control"
+                        id="cpassword"
+                        name="cpassword"
+                        value={credentials.cpassword}
+                        onChange={onChange}
+                        minLength={6}
+                        required
+                      />
+                      <button type="button" className="btn btn-outline-secondary" onClick={handleShowPassword}>
+                        <i className={`fa-solid ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                      </button>
+                    </div>
+                  </div>}
+                  { Verified && <button type="submit" className="btn btn-primary mt-4" style={{width: '100%'}}>Update<i className="fa-solid fa-pen-to-square mx-2"></i></button>}
+              </form>
+          </div>
         </div>
-        <div className='col-lg p-0'>
-            <div className="card my-3 p-2 border rounded-start" style={{borderTopLeftRadius: '0px'}} ref={divRef}>
-                <div className="card-body">
-                    <form onSubmit={handleSubmit}>
-                        <h2 className='mb-3 p-3 text-center border rounded bg-secondary-subtle'>Reset Password</h2>
-                        <div className="mb-3">
-                          <label htmlFor="email" className="form-label">Email</label>
-                          <input type="email" ref={mail} className="form-control" id="email" name="email" onChange={onChange} required disabled={show || Verified}/>
-                          { !show && !Verified && <button type="button" onClick={sendEmail} className="btn btn-warning mt-2">Send code <i className="fa-solid fa-paper-plane mx-2"></i></button> }
-                        </div>
-                        { Verified  && <div><i className="mx-2 fa-solid fa-check" style={{color: "#63E6BE"}}></i>Verified</div>}
-                        { show && <Verification verify={verify} sendEmail={sendEmail} showGif={showGif}/>}
-                        { Verified && <div className="mb-3 my-3">
-                          <label htmlFor="password" className="form-label">Password</label>
-                          <input type={showPassword ? "text" : "password"} ref={pass} className="form-control" id="password" name="password" onChange={onChange} minLength={6} required/>
-                        </div>}
-                        { Verified && <div className="mb-3">
-                          <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-                          <div className='d-flex align-items-center justify-content-center'>
-                            <input type={showPassword ? "text" : "password"} ref={cpass} className="form-control" id="cpassword" name="cpassword" onChange={onChange} minLength={6} required/>
-                            <i onClick={handleShowPassword} className={showPassword ? "fa-solid p-2 mx-2 border rounded fa-eye" : "fa-solid p-2 mx-2 border rounded fa-eye-slash"}></i>
-                          </div>
-                        </div>}
-                        { Verified && <button type="submit" className="btn btn-primary mt-4" style={{width: '100%'}}>Update<i className="fa-solid fa-pen-to-square mx-2"></i></button>}
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div className="col-md-2"></div>
-      </div>
     </div>
   )
 }
