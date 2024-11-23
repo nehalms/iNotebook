@@ -30,7 +30,7 @@ export default function Profile(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token')
+          "auth-token": localStorage.getItem('token') ? localStorage.getItem('token') : sessionStorage.getItem('adminToken')
         }
       });
       props.setLoader({ showLoader: false });
@@ -60,7 +60,7 @@ export default function Profile(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token')
+          "auth-token": localStorage.getItem('token') ? localStorage.getItem('token') : sessionStorage.getItem('adminToken')
         },
         body: JSON.stringify({ name: updatedProfile.name })
       });
@@ -115,20 +115,20 @@ export default function Profile(props) {
         <div style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.1)', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#fff', margin: '20px 0' }}>
           <div style={{ padding: '20px' }}>
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: '0', padding: '10px', backgroundColor: '#dff0d8', borderRadius: '10px', fontWeight: '600', fontSize: '1.5rem' }}>Profile</h2>
+              <h2 className='text-black' style={{ margin: '0', padding: '10px', backgroundColor: '#dff0d8', borderRadius: '10px', fontWeight: '600', fontSize: '1.5rem' }}>Profile</h2>
             </div>
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
                 <div style={{ flex: '1', minWidth: '250px' }}>
-                  <label style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Name</label>
+                  <label className='text-black' style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Name</label>
                   <input type="text" style={{ width: '100%', borderRadius: '8px', padding: '10px', border: '1px solid #ccc' }} onChange={onChange} value={updatedProfile.name} name="name" required />
                 </div>
                 <div style={{ flex: '1', minWidth: '250px' }}>
-                  <label style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Email</label>
+                  <label className='text-black' style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Email</label>
                   <input type="email" style={{ width: '100%', borderRadius: '8px', padding: '10px', border: '1px solid #ccc' }} value={profile.email} disabled />
                 </div>
                 <div style={{ flex: '1', minWidth: '250px' }}>
-                  <label style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Account Created On</label>
+                  <label className='text-black' style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Account Created On</label>
                   <input type="text" style={{ width: '100%', borderRadius: '8px', padding: '10px', border: '1px solid #ccc' }} value={moment(profile.createdOn).format('LLL')} disabled />
                 </div>
               </div>
@@ -141,11 +141,11 @@ export default function Profile(props) {
               <form onSubmit={handleUpdate}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
                   <div style={{ flex: '1', minWidth: '250px' }}>
-                    <label style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>New Password</label>
+                    <label className='text-black' style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>New Password</label>
                     <input type={showPassword ? 'text' : 'password'} style={{ width: '100%', borderRadius: '8px', padding: '10px', border: '1px solid #ccc' }} onChange={onChangePassword} value={pass.password} name="password" required minLength={6} />
                   </div>
                   <div style={{ flex: '1', minWidth: '250px' }}>
-                    <label style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Re-enter Password</label>
+                    <label className='text-black' style={{ display: 'block', fontWeight: '500', marginBottom: '5px' }}>Re-enter Password</label>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <input type={showPassword ? 'text' : 'password'} style={{ flex: '1', borderRadius: '8px', padding: '10px', border: `${pass.password !== pass.cpassword && pass.cpassword !== "" ? '2px solid red' : pass.cpassword !== "" ? '2px solid green' : '1px solid #ccc'}` }} onChange={onChangePassword} value={pass.cpassword} name="cpassword" required minLength={6} />
                       <i style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={() => setShowPassword(!showPassword)} className={showPassword ? "fa-solid fa-eye" : "fa-solid fa-eye-slash"}></i>

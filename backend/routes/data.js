@@ -135,12 +135,28 @@ router.get('/graphData', fetchuser, async (req, res) => {
 
 router.get('/userhistory', fetchuser, async (req, res) => {
     try{
-        let userHistory = await UserHistory.find({userId :req.user.id});
+        let userHistory = await UserHistory.find({userId: req.user.id});
         await Promise.all(
             userHistory.sort((ob1, ob2) => {
                 return new Date(ob1.date) > new Date(ob2.date) ? -1 : 1;
             })
         )
+        res.send(userHistory);
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).send("Internal Server Error!!");
+    }
+});
+
+router.delete('/userhistory', fetchuser, async (req, res) => {
+    try{
+        let userHistory = await UserHistory.deleteMany({userId: req.user.id});
+        if(userHistory) {
+            await UserHistory.create({
+                userId: req.user.id,
+                action: "User history deleted",
+            });
+        }
         res.send(userHistory);
     } catch (err) {
         console.log(err.message);

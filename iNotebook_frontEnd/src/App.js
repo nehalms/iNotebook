@@ -1,30 +1,30 @@
 //'use npm run both' command to run both front end backend server at a time
 import './App.css';
-import React, {useEffect, useState} from "react";
+import React, { Suspense, useEffect, useState} from "react";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
 } from "react-router-dom";
-import Home from './components/Home';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+import { history } from '../src/components/History';
 import Navbar from './components/Navbar'
 import NoteState from './context/notes/NoteState';
 import Alert from './components/Utils/Alert';
-import Login from './components/Auth/Login';
-import Signup from './components/Auth/Signup';
-import Forgot from './components/Auth/Forgot_';
 import Spinner from './components/Utils/Spinner';
-import DashBoard from './components/Admin/DashBoard';
 import Confirmation from './components/Utils/Confirmation';
-import { history } from '../src/components/History';
-import Notes from  './components/Notes/Notes';
-import ImageEditor from './components/Images/ImageEditor';
-import Menu from './components/Games/Menu'
-import Tic_tac_toe from './components/Games/Tic_tac_toe';
-import Encrypt_Decrypt_Msg from './components/Messages/Encrypt_Decrypt_Msg';
-import FrInRow from './components/Games/FrInRow';
-import Profile from './components/Profile/Profile';
-import { SpeedInsights } from '@vercel/speed-insights/react';
+const Home = React.lazy(() => import('./components/Home'));
+const Login = React.lazy(() => import('./components/Auth/Login'));
+const Signup = React.lazy(() => import('./components/Auth/Signup'));
+const Forgot = React.lazy(() => import('./components/Auth/Forgot_'));
+const DashBoard = React.lazy(() => import('./components/Admin/DashBoard'));
+const Notes = React.lazy(() => import('./components/Notes/Notes'));
+const ImageEditor = React.lazy(() => import('./components/Images/ImageEditor'));
+const Menu = React.lazy(() => import('./components/Games/Menu'));
+const Tic_tac_toe = React.lazy(() => import('./components/Games/Tic_tac_toe'));
+const Encrypt_Decrypt_Msg = React.lazy(() => import('./components/Messages/Encrypt_Decrypt_Msg'));
+const FrInRow = React.lazy(() => import('./components/Games/FrInRow'));
+const Profile = React.lazy(() => import('./components/Profile/Profile'));
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -80,21 +80,18 @@ function App() {
     removeBodyClasses();
     if(cls !== null) {
       document.body.classList.add('bg-' + cls);
-      // showAlert("Background color changed", 'info');
       localStorage.setItem('theme', `bg-${cls}`);
     }
     if(mode === 'light' && cls === null) {
       setMode('dark');
       document.body.style.backgroundColor = '#042743';
       document.body.style.color = 'white';
-      // showAlert("Dark Mode has been Enabled", 'info');
       localStorage.setItem('theme', 'bg-dark');
     }
     else if('dark' && cls === null){
       setMode('light');
       document.body.style.backgroundColor = 'white';
       document.body.style.color = 'black';
-      // showAlert("Light Mode has been Enabled", 'info');
       localStorage.setItem('theme', 'bg-light');
     }
   }
@@ -147,20 +144,22 @@ function App() {
           {loader.showLoader && <Spinner msg={loader.msg}/>}
           {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
           <div className="container" style={{marginTop: '40px'}}>
-            <Routes>
-              <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
-              <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
-              <Route exact path='/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
-              <Route exact path='/msg' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
-            </Routes>
+            <Suspense fallback={<div><Spinner msg={'Loading...'}/></div>}>
+              <Routes>
+                <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
+                <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
+                <Route exact path='/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
+                <Route exact path='/msg' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
+              </Routes>
+            </Suspense>
           </div>
         </Router>
       </NoteState>

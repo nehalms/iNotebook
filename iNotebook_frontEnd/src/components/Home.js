@@ -18,8 +18,8 @@ const Home = (props) => {
         history.navigate('/login');
         return;
       }
-      fetchHistory();
       getSecretKey();
+      fetchHistory();
     } else {
       props.showAlert('Please log in', 'warning');
       history.navigate('/login');
@@ -62,12 +62,29 @@ const Home = (props) => {
     }
   };
 
+  const handleDeleteHistory = async () => {
+    try {
+      props.setLoader({ showLoader: true, msg: 'Deleting history...' });
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getdata/userhistory`, {
+        method: 'DELETE',
+        headers: { 'auth-token': localStorage.getItem('token') },
+      });
+      const data = await response.json();
+      if(data) fetchHistory();
+    } catch (error) {
+      props.showAlert('Error deleting history', 'info');
+      console.error('Error deleting history:', error);
+    } finally {
+      props.setLoader({ showLoader: false });
+    }
+  }
+
   return (
     <div className="home-container">
       <div className="feature-grid">
         {[
           { name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
-          // { name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#FF9800' },
+          { name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#FF9800' },
           { name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#2196F3' },
           { name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#F44336' },
         ].map((feature, index) => (
@@ -84,6 +101,7 @@ const Home = (props) => {
       </div>
 
       <div className="history-section">
+        {userHistory && userHistory.length ? <i className="fa-solid fa-trash mx-2 text-danger"  style={{display: 'inline', float: 'right', marginTop: '10px'}} onClick={handleDeleteHistory}></i> : <></>}
         <h4 className="history-title">User History</h4>
         {loading ? (
           <img src={loading_gif} alt="Loading..." className="loading-gif" />

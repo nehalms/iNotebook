@@ -143,20 +143,18 @@ const Navbar = (props) => {
                             </li>
                             { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
                                 <>
-                                { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
                                     <div className='my-2 profile'>
-                                        <Link className={`mx-3 my-2 ${location.pathname === '/profile' && 'active'}`} to="/profile" role='button'>Profile<i className="fa-solid fa-user mx-2"></i></Link>
+                                        <Link className={`mx-3 my-2 ${location.pathname === '/profile' && 'active'}`} to="/profile" role='button' onClick={() => {setShowNavbar(!showNavBar)}}>Profile<i className="fa-solid fa-user mx-2"></i></Link>
                                     </div>
-                                }
-                                <Link className={`px-3 my-2 logout ${sessionStorage.getItem('adminToken') && 'border-start'}`} role='button' onClick={handleLogout}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
-                                {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
+                                    <Link className={`px-3 my-2 logout`} role='button' onClick={handleLogout}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
+                                    {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
                                 </> :
                                 <>
                                     <div className='my-2 login'>
-                                        <Link className={`mx-3 ${location.pathname === '/login' && 'active'}`} to="/login" role='button'>Login<i className="fa-solid fa-right-to-bracket mx-2"></i></Link>
+                                        <Link className={`mx-3 ${location.pathname === '/login' && 'active'}`} to="/login" role='button' onClick={() => {setShowNavbar(!showNavBar)}}>Login<i className="fa-solid fa-right-to-bracket mx-2"></i></Link>
                                     </div>
                                     <div className='my-2'>
-                                        <Link className={`mx-3 ${location.pathname === '/signup' && 'active'}`} to="/signup" role='button'>Signup <i className="fa-solid fa-user-plus mx-2"></i></Link>
+                                        <Link className={`mx-3 ${location.pathname === '/signup' && 'active'}`} to="/signup" role='button' onClick={() => {setShowNavbar(!showNavBar)}}>Signup <i className="fa-solid fa-user-plus mx-2"></i></Link>
                                     </div>
                                 </>
                             }
