@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Verification from '../Utils/Verification';
 import { history } from '../History';
+import { getEncryptKey } from '../Requests/getEncryptKey';
 import { encryptMessage } from '../Utils/Encryption';
 
 const Forgot_ = (props)=> {
@@ -23,6 +24,7 @@ const Forgot_ = (props)=> {
     const resizeObserver = new ResizeObserver(() => {
         setHeight(divRef.current.clientHeight);
     });
+    getEncryptKey();
     resizeObserver.observe(divRef.current);
     return () => resizeObserver.disconnect();
   }, [])
