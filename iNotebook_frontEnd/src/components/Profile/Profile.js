@@ -1,5 +1,6 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { encryptMessage } from '../Utils/Encryption';
 
 export default function Profile(props) {
   const [showPassword, setShowPassword] = useState(false);
@@ -62,7 +63,7 @@ export default function Profile(props) {
           "Content-Type": "application/json",
           "auth-token": localStorage.getItem('token') ? localStorage.getItem('token') : sessionStorage.getItem('adminToken')
         },
-        body: JSON.stringify({ name: updatedProfile.name })
+        body: JSON.stringify({ name: encryptMessage(updatedProfile.name) })
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();
@@ -92,7 +93,11 @@ export default function Profile(props) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: profile.id, email: profile.email, password: pass.password }),
+        body: JSON.stringify({ 
+          id: encryptMessage(profile.id), 
+          email: encryptMessage(profile.email), 
+          password: encryptMessage(pass.password)
+        }),
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();

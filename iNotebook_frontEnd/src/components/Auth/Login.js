@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { history } from '../History';
+import { encryptMessage } from '../Utils/Encryption';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Login = (props) => {
@@ -30,7 +31,10 @@ const Login = (props) => {
             const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login?verified=${Verified}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(credentials),
+                body: JSON.stringify({
+                    email: encryptMessage(credentials.email),
+                    password: encryptMessage(credentials.password)
+                }),
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Verification from '../Utils/Verification';
 import { history } from '../History';
+import { encryptMessage } from '../Utils/Encryption';
 
 const Forgot_ = (props)=> {
   history.navigate = useNavigate();
@@ -43,7 +44,11 @@ const Forgot_ = (props)=> {
         headers: {
         "Content-Type": "application/json",
         },
-        body: JSON.stringify({id: id, email: credentials.email, password: credentials.password}), // body data type must match "Content-Type" header
+        body: JSON.stringify({
+          id: encryptMessage(id), 
+          email: encryptMessage(credentials.email), 
+          password: encryptMessage(credentials.password)
+        }), // body data type must match "Content-Type" header
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();
@@ -76,13 +81,19 @@ const Forgot_ = (props)=> {
 
   const sendEmail = async (e) => {    
     try {
+      if(!credentials.email.toString().endsWith(".com")){
+        props.showAlert("Enter valid email", 'warning');
+        return
+      }
       props.setLoader({ showLoader: true, msg: "Checking if user exists"});
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getPassword`, {
         method: "POST", 
         headers: {
         "Content-Type": "application/json",
         },
-        body: JSON.stringify({email: credentials.email}), // body data type must match "Content-Type" header
+        body: JSON.stringify({
+          email: encryptMessage(credentials.email)
+        }), // body data type must match "Content-Type" header
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();
@@ -121,10 +132,6 @@ const Forgot_ = (props)=> {
         e.preventDefault();
       } 
       else{
-        if(!credentials.email.toString().endsWith(".com")){
-          props.showAlert("Enter valid email", 'warning');
-          return
-        }
         props.showAlert("Email not found", 'danger');
       }
     } catch (err) {
