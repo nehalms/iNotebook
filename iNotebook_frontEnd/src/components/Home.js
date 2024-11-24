@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { history } from './History';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { getSecretKey } from './Requests/getSecretKey';
 import './Home.css';
 import loading_gif from './loading.gif';
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
@@ -26,6 +25,23 @@ const Home = (props) => {
       history.navigate('/login');
     }
   }, []);
+
+  const getSecretKey = async () => {
+    try {
+      if (sessionStorage.getItem('AesKey')) return;
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/aes/secretKey`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token'),
+        },
+      });
+      const json = await response.json();
+      if (json.status === 'success') sessionStorage.setItem('AesKey', json.secretKey);
+    } catch (err) {
+      console.error('Error fetching secret key:', err);
+    }
+  };
 
   const fetchHistory = async () => {
     try {

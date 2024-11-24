@@ -1,6 +1,5 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { getEncryptKey } from '../Requests/getEncryptKey';
 import { encryptMessage } from '../Utils/Encryption';
 
 export default function Profile(props) {
@@ -23,7 +22,6 @@ export default function Profile(props) {
 
   useEffect(() => {
     getUserProfile();
-    getEncryptKey();
   }, []);
 
   const getUserProfile = async () => {

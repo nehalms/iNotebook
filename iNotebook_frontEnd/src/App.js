@@ -13,7 +13,6 @@ import NoteState from './context/notes/NoteState';
 import Alert from './components/Utils/Alert';
 import Spinner from './components/Utils/Spinner';
 import Confirmation from './components/Utils/Confirmation';
-import { getEncryptKey } from './components/Requests/getEncryptKey';
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
@@ -64,6 +63,19 @@ function App() {
     }
     getEncryptKey();
   }, []);
+
+
+  const getEncryptKey = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getpubKey`);
+      const data = await response.json();
+      if (data.success) {
+        sessionStorage.setItem('publicKey', data.key);
+      }
+    } catch (error) {
+      console.error('Error fetching key:', error);
+    }
+  };
 
   const removeBodyClasses = ()=> {
     document.body.classList.remove('bg-light');

@@ -4,7 +4,6 @@ import NoteItem from './NoteItem';
 import Addnote from './Addnote';
 import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
-import { getSecretKey } from '../Requests/getSecretKey';
 
 const Notes = (props) => {
     const context = useContext(noteContext);
@@ -63,7 +62,6 @@ const Notes = (props) => {
                 props.showAlert("Session expired Login again", 'danger');
                 history.navigate("/login");
             } else {
-                getSecretKey();
                 fetchNotes(props);
             }
         }

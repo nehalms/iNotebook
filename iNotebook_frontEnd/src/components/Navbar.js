@@ -29,7 +29,6 @@ const Navbar = (props) => {
                 localStorage.removeItem('token'); 
                 sessionStorage.clear();
                 history.navigate('/login');
-                setShowNavbar(!showNavBar);
             }
         } catch (err) {
             props.showAlert("Unable to logout, check your internet connection", "danger"); 

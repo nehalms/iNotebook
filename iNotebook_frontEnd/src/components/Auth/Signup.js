@@ -1,7 +1,6 @@
 import React, { Suspense, useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { history } from '../History';
-import { getEncryptKey } from '../Requests/getEncryptKey';
 import { encryptMessage } from '../Utils/Encryption';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
@@ -23,7 +22,6 @@ const Signup = (props) => {
       const resizeObserver = new ResizeObserver(() => {
           setHeight(divRef.current.clientHeight);
       });
-      getEncryptKey();
       resizeObserver.observe(divRef.current);
       return () => resizeObserver.disconnect();
     }, [])
