@@ -6,18 +6,16 @@ const { body, validationResult } = require("express-validator"); //to validate t
 const bcrpyt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
-const decrypt = require("../middleware/decrypt");
 const UserHistory = require("../models/UserHistory");
 const GameDetails = require("../models/GameDetails");
 const { Email } = require("../Services/Email");
 const { getAdminNotifyhtml } = require("../Services/getEmailHtml");
-const { publicKey } = require('../Services/Crypto');
 
 const JWT_SCERET = process.env.JWT_SCERET;
 
 //Route-1 : Create user using : POST "/api/auth/CreateUser => no login required
 
-router.post("/createuser", decrypt,
+router.post("/createuser",
   [
     body("name", "Enter a valid Name").isLength({ min: 5 }),
     body("email", "Enter valid email").isEmail(),
@@ -88,7 +86,7 @@ router.post("/createuser", decrypt,
 
 //Route-2 : Authenticating the user : POST "/api/auth/login => login required
 router.post(
-  "/login", decrypt,
+  "/login",
   [
     body("email", "Enter valid email").isEmail(),
     body("password", "Password cannot be blank").exists(),
@@ -163,7 +161,7 @@ router.post("/getuser", fetchuser,  async (req, res) => {
   }
 });
 
-router.post("/getPassword", decrypt,
+router.post("/getPassword", 
   [
     body("email", "Enter valid email").isEmail()
   ],
@@ -185,7 +183,7 @@ router.post("/getPassword", decrypt,
   }
 );
 
-router.post("/updatePassword", decrypt,
+router.post("/updatePassword",
   [
     body("id", "Enter a valid id"),
     body("email", "Enter a valid email").isEmail(),
@@ -219,7 +217,7 @@ router.post("/updatePassword", decrypt,
   }
 );
 
-router.post('/updateName', fetchuser, decrypt, async (req, res) => {
+router.post('/updateName', fetchuser, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.user.id, {name: req.body.name}, {new: true});
     const userStats = await GameDetails.findOneAndUpdate({userId: req.user.id}, {userName: req.body.name}, {new: true});
@@ -256,15 +254,6 @@ router.post('/logout', fetchuser, async (req, res) => {
       action: "Logged out",
     });
     res.send({success: true, msg: 'Logged out'});
-  }  catch (err) {
-    console.log(err.message);
-    return res.status(500).send("Internal Server Error!!");
-  }
-});
-
-router.get('/getpubKey', async (req, res) => {
-  try {
-    res.send({success: true, key: publicKey});
   }  catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");

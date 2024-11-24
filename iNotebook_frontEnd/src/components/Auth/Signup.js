@@ -1,7 +1,6 @@
 import React, { Suspense, useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { history } from '../History';
-import { encryptMessage } from '../Utils/Encryption';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Signup = (props) => {
@@ -47,11 +46,7 @@ const Signup = (props) => {
                 headers: {
                 "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                  name: encryptMessage(credentials.name), 
-                  email: encryptMessage(credentials.email), 
-                  password: encryptMessage(credentials.password)
-                }), // body data type must match "Content-Type" header
+                body: JSON.stringify({name: credentials.name, email: credentials.email, password: credentials.password}), // body data type must match "Content-Type" header
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
