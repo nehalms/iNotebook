@@ -25,14 +25,14 @@ const Navbar = (props) => {
             });
             const data = await response.json();
             if(data.success === true) {
-                props.showAlert(data.msg, "success"); 
+                props.showAlert(data.msg, "success", 10031); 
                 localStorage.removeItem('token'); 
                 sessionStorage.removeItem('AesKey');
                 sessionStorage.removeItem('adminToken');
                 history.navigate('/login');
             }
         } catch (err) {
-            props.showAlert("Unable to logout, check your internet connection", "danger"); 
+            props.showAlert("Error in logging out", "danger", 10032); 
             console.log("Error**", err);
         } finally {
             props.setLoader({ showLoader: false });

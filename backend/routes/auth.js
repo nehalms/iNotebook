@@ -174,7 +174,7 @@ router.post("/getPassword", decrypt,
       const user = await User.findOne({email: email});
       if (!user) {
         found = false;
-        return res.status(400).json({found, error: "Please try to login with correct credentials" });
+        return res.status(400).json({found, error: "No user found with the given mail" });
       }
       res.json({found, user})
     }

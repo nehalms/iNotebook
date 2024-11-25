@@ -32,11 +32,11 @@ function App() {
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
   const [dialogInfo, setDialogInfo] = useState({open: false});
 
-  const showAlert = (message, type, id=null)=> {
+  const showAlert = (message, type, id)=> {
     setAlert({
       msg: message,
       type: type,
-      id: Math.random(1000, 2000)
+      id: id,
     });
     setTimeout(() => {
         setAlert(null);
@@ -123,7 +123,7 @@ function App() {
       localStorage.removeItem('token');
     } catch (err) {
       console.log("Error**" ,err);
-      showAlert("Some Error Occured", 'danger')
+      showAlert("Error in deleting user", 'danger')
     }
   }
 

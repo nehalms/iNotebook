@@ -31,11 +31,11 @@ const Forgot_ = (props)=> {
     try {
       e.preventDefault();
       if(credentials.password !== credentials.cpassword) {
-        props.showAlert("Password does not match", 'warning');
+        props.showAlert("Password does not match", 'warning', 10039);
         return;
       }
       if(!Verified) {
-        props.showAlert("Please verify the email", 'info');
+        props.showAlert("Please verify the email", 'info', 10040);
         return;
       }
       props.setLoader({ showLoader: true, msg: "Updating password"});
@@ -54,16 +54,16 @@ const Forgot_ = (props)=> {
       const json = await response.json();
       // console.log(json);
       if(json.success){
-        props.showAlert("Password updated successfully", 'success');
+        props.showAlert("Password updated successfully", 'success', 10041);
       }
       else{
-        props.showAlert("Something went wrong", 'danger');
+        props.showAlert("Something went wrong", 'danger', 10042);
       }
       history.navigate('/login');
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log("Error**", err);
-      props.showAlert("Some error Occured", 'danger');
+      props.showAlert("Some error Occured", 'danger', 10043);
     }
   }
 
@@ -82,7 +82,7 @@ const Forgot_ = (props)=> {
   const sendEmail = async (e) => {    
     try {
       if(!credentials.email.toString().endsWith(".com")){
-        props.showAlert("Enter valid email", 'warning');
+        props.showAlert("Enter valid email", 'warning', 10044);
         return
       }
       props.setLoader({ showLoader: true, msg: "Checking if user exists"});
@@ -115,14 +115,14 @@ const Forgot_ = (props)=> {
           const res = await response.json();
           props.setLoader({ showLoader: false });
           if(!res.success) {
-            props.showAlert("Mail error: cannot send email", 'danger');
+            props.showAlert("Mail error: cannot send email", 'danger', 10045);
             return;
           }
-          props.showAlert("Code send to your mail", "success");    
+          props.showAlert("Code send to your mail", "success", 10046);    
         } catch (err) {
           props.setLoader({ showLoader: false });
           console.log("Error**", err);
-          props.showAlert("Mail error: cannot send email", 'danger');
+          props.showAlert("Mail error: cannot send email", 'danger', 10047);
         }
         setid(json.user._id);
         setVerified(false);
@@ -130,12 +130,12 @@ const Forgot_ = (props)=> {
         e.preventDefault();
       } 
       else{
-        props.showAlert("Email not found", 'danger');
+        props.showAlert("Email not found", 'danger', 10048);
       }
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log("Error**", err);
-      props.showAlert("Some error Occured", 'danger');
+      props.showAlert("Some error Occured", 'danger', 10049);
     }
   };
 
@@ -156,14 +156,14 @@ const Forgot_ = (props)=> {
           setVerified(true);
           setShow(false);
           mail.current.style.border = '3px solid #63E6BE';
-          props.showAlert(res.msg, "success");
+          props.showAlert(res.msg, "success", 10050);
         } else {
-          props.showAlert(res.msg, "danger")
+          props.showAlert(res.msg, "danger", 10051)
         }
       }
     } catch (err) {
       console.log("Error**", err);
-      props.showAlert("Mail error: cannot verify code", 'danger');
+      props.showAlert("Mail error: cannot verify code", 'danger', 10052);
     } finally {
       setShowGif(false);
     }

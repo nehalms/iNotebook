@@ -11,7 +11,7 @@ export default function UserNotesData(props) {
 
   useEffect(() => {
     if (sessionStorage.getItem('adminToken') && jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
-      props.showAlert('Session expired. Login again', 'danger');
+      props.showAlert('Session expired. Login again', 'danger', 10012);
       history.navigate('/login');
       return;
     }
@@ -39,7 +39,7 @@ export default function UserNotesData(props) {
       props.setLoader({ showLoader: false });
       const data = await response.json();
       if (data.error) {
-        props.showAlert(data.error, 'danger');
+        props.showAlert(data.error, 'danger', 10038);
         return;
       }
       setRows(data.users);
@@ -51,7 +51,7 @@ export default function UserNotesData(props) {
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log('Error**', err);
-      props.showAlert('Some error occurred', 'danger');
+      props.showAlert('Some error occurred', 'danger', 10013);
     }
   };
 
@@ -178,12 +178,12 @@ export default function UserNotesData(props) {
         return;
       }
       if (data) {
-        props.showAlert('User deleted successfully', 'success');
+        props.showAlert('User deleted successfully', 'success', 10014);
         fetchData();
       }
     } catch (err) {
       console.log('Error**', err);
-      props.showAlert('Some error occurred', 'danger');
+      props.showAlert('Some error occurred', 'danger', 10015);
     } finally {
       props.setLoader({ showLoader: false });
     }

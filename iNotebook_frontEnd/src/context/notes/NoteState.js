@@ -33,7 +33,7 @@ const NoteState = (props)=> {
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'danger');
+                props.showAlert(json.error, 'danger', 10120);
                 return;
             }
             // console.log(json);
@@ -51,7 +51,7 @@ const NoteState = (props)=> {
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger');
+            props.showAlert("Some error Occured", 'danger', 10121);
         }
     }
 
@@ -74,7 +74,7 @@ const NoteState = (props)=> {
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'danger');
+                props.showAlert(json.error, 'danger', 10122);
                 return;
             }
             // console.log(json);
@@ -82,7 +82,7 @@ const NoteState = (props)=> {
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger');
+            props.showAlert("Some error Occured", 'danger', 10123);
         }
     }
 
@@ -102,7 +102,7 @@ const NoteState = (props)=> {
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'danger');
+                props.showAlert(json.error, 'danger', 10124);
                 return;
             }
             // console.log(json);
@@ -110,7 +110,7 @@ const NoteState = (props)=> {
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger');
+            props.showAlert("Some error Occured", 'danger', 10125);
         }
         // const newNotes = notes.filter((note) => {return note._id !== id});
         // setNotes(newNotes);
@@ -135,14 +135,14 @@ const NoteState = (props)=> {
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'danger');
+                props.showAlert(json.error, 'danger', 10126);
                 return;
             }
             fetchNotes();
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger');
+            props.showAlert("Some error Occured", 'danger', 10127);
         }
     }
 

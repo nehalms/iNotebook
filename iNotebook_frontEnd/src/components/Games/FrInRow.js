@@ -48,7 +48,7 @@ export default function FrInRow(props) {
         if (message.body) {
           const data = JSON.parse(message.body);
           let player = userstats.id === data.player1.userId ? data.player2 : data.player1
-          props.showAlert(`${player.name} joined the game`, 'info') 
+          props.showAlert(`${player.name} joined the game`, 'info', 10068) 
           setOppStats({
             id: player.userId,
             name: player.name,
@@ -130,12 +130,12 @@ export default function FrInRow(props) {
         });
       }
       if(!data.success){
-        props.showAlert(data.error, 'danger');
+        props.showAlert(data.error, 'danger', 10069);
       }
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log('Error** ', err);
-      props.showAlert("Some Error Occured", "danger");
+      props.showAlert("Some Error Occured", "danger", 10070);
     }
   }
   
@@ -156,7 +156,7 @@ export default function FrInRow(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10071);
         return;
       }
       if(data) {
@@ -165,11 +165,11 @@ export default function FrInRow(props) {
         setPlayer('X');
         setSelectedColor('red');
         sessionStorage.setItem('color', 'red');
-        props.showAlert("Room created", 'success');
+        props.showAlert("Room created", 'success', 10072);
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10073);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -192,7 +192,7 @@ export default function FrInRow(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10074);
         return;
       }
       if(data) {
@@ -202,7 +202,7 @@ export default function FrInRow(props) {
         setPlayer('O');
         setSelectedColor('yellow');
         sessionStorage.setItem('color', 'yellow');
-        props.showAlert(`Joined ${data.player1.name} 's room`, 'success');
+        props.showAlert(`Joined ${data.player1.name} 's room`, 'success', 10075);
 
         setOppStats({
           id: data.player1.userId,
@@ -212,7 +212,7 @@ export default function FrInRow(props) {
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10076);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -223,7 +223,7 @@ export default function FrInRow(props) {
       return;
     }
     if(player != currTurn) {
-      props.showAlert("Opponent player turn", 'warning');
+      props.showAlert("Opponent player turn", 'warning', 10077);
       return;
     }
     if(secondClk === true) {
@@ -260,7 +260,7 @@ export default function FrInRow(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10078);
         return;
       }
       if(data) {
@@ -269,7 +269,7 @@ export default function FrInRow(props) {
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10079);
     } finally {
       setSecondClk(false);
       props.setLoader({ showLoader: false });
@@ -289,14 +289,14 @@ export default function FrInRow(props) {
           setBoard(newBoard);
         });
         if((data.winner === 'X' && data.userIdX === userstats.id) || (data.winner === 'O' && data.userIdO === userstats.id)) {
-          props.showAlert("You won the game", 'success');
+          props.showAlert("You won the game", 'success', 10080);
         } else {
-          props.showAlert("You lost the game", 'danger');
+          props.showAlert("You lost the game", 'danger', 10081);
         }
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10082);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -313,7 +313,7 @@ export default function FrInRow(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10083);
         return;
       }
       if(data) {
@@ -323,7 +323,7 @@ export default function FrInRow(props) {
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10084);
     } finally {
       props.setLoader({ showLoader: false });
     }

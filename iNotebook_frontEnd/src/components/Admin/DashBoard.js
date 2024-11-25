@@ -21,12 +21,12 @@ export default function DashBoard(props) {
 
     useEffect(()=> {
         if(!sessionStorage.getItem('adminToken')) {
-            props.showAlert("User not Authorized to access dashboard", 'info');
+            props.showAlert("User not Authorized to access dashboard", 'info', 10036);
             history.navigate('/login');
             return;
         }
         if(sessionStorage.getItem('adminToken') && jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger');
+            props.showAlert("Session expired Login again", 'danger', 10037);
             history.navigate("/login");
             return;
         }

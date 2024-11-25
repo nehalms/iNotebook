@@ -12,7 +12,7 @@ export default function GameStats(props) {
       sessionStorage.getItem('adminToken') &&
       jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000
     ) {
-      props.showAlert('Session expired. Login again', 'danger');
+      props.showAlert('Session expired. Login again', 'danger', 10008);
       history.navigate('/login');
       return;
     }
@@ -53,7 +53,7 @@ export default function GameStats(props) {
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log('Error**', err);
-      props.showAlert('Some error occurred', 'danger');
+      props.showAlert('Some error occurred', 'danger', 10009);
     }
   };
 
@@ -198,12 +198,12 @@ export default function GameStats(props) {
         return;
       }
       if (data) {
-        props.showAlert('Stats deleted successfully', 'success');
+        props.showAlert('Stats deleted successfully', 'success', 10010);
         fetchData();
       }
     } catch (err) {
       console.log('Error**', err);
-      props.showAlert('Some error occurred', 'danger');
+      props.showAlert('Some error occurred', 'danger', 10011);
     } finally {
       props.setLoader({ showLoader: false });
     }

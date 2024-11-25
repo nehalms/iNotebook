@@ -42,7 +42,7 @@ export default function Tic_tac_toe(props) {
         if (message.body) {
           const data = JSON.parse(message.body);
           let player = userstats.id === data.player1.userId ? data.player2 : data.player1
-          props.showAlert(`${player.name} joined the game`, 'info') 
+          props.showAlert(`${player.name} joined the game`, 'info', 10085) 
           setOppStats({
             id: player.userId,
             name: player.name,
@@ -120,12 +120,12 @@ export default function Tic_tac_toe(props) {
         });
       }
       if(!data.success){
-        props.showAlert(data.error, 'danger');
+        props.showAlert(data.error, 'danger', 10086);
       }
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log('Error** ', err);
-      props.showAlert("Some Error Occured", "danger");
+      props.showAlert("Some Error Occured", "danger", 10087);
     }
   }
 
@@ -146,18 +146,18 @@ export default function Tic_tac_toe(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10088);
         return;
       }
       if(data) {
         setconnect(true);
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('X');
-        props.showAlert("Room created", 'success');
+        props.showAlert("Room created", 'success', 10089);
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10090);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -180,7 +180,7 @@ export default function Tic_tac_toe(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10091);
         return;
       }
       if(data) {
@@ -188,7 +188,7 @@ export default function Tic_tac_toe(props) {
         setBoardFunc(data.board);
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('O');
-        props.showAlert(`Joined ${data.player1.name} 's room`, 'success');
+        props.showAlert(`Joined ${data.player1.name} 's room`, 'success', 10092);
 
         setOppStats({
           id: data.player1.userId,
@@ -198,7 +198,7 @@ export default function Tic_tac_toe(props) {
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10093);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -209,7 +209,7 @@ export default function Tic_tac_toe(props) {
       return;
     }
     if(player != currTurn) {
-      props.showAlert("Opponent player turn", 'warning');
+      props.showAlert("Opponent player turn", 'warning', 10094);
       return;
     }
     if(secondClk === true) {
@@ -243,7 +243,7 @@ export default function Tic_tac_toe(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10095);
         return;
       }
       if(data) {
@@ -252,7 +252,7 @@ export default function Tic_tac_toe(props) {
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10096);
     } finally {
       props.setLoader({ showLoader: false });
       setSecondClk(false);
@@ -272,7 +272,7 @@ export default function Tic_tac_toe(props) {
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10097);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -289,7 +289,7 @@ export default function Tic_tac_toe(props) {
       });
       let data = await response.json();
       if(data.statusCode == 400) {
-        props.showAlert(data.message, 'info');
+        props.showAlert(data.message, 'info', 10098);
         return;
       }
       if(data) {
@@ -299,7 +299,7 @@ export default function Tic_tac_toe(props) {
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10099);
     } finally {
       props.setLoader({ showLoader: false });
     }

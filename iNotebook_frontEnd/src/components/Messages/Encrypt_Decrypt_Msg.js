@@ -30,7 +30,7 @@ export default function Encrypt_Decrypt_Msg(props) {
   const handleEncrypt = async (e) => {
     e.preventDefault();
     if (encrypt.password.length < 4) {
-      props.showAlert("Password should be atleast 4 characters", 'info');
+      props.showAlert("Password should be atleast 4 characters", 'info', 10100);
       return;
     }
     try {
@@ -52,12 +52,12 @@ export default function Encrypt_Decrypt_Msg(props) {
         if (data.success == true) {
           setEnMsg(data.msg);
         } else {
-          props.showAlert(data.msg, 'warning');
+          props.showAlert(data.msg, 'warning', 10101);
         }
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("Internal server Error", 'danger');
+      props.showAlert("Internal server Error", 'danger', 10102);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -85,12 +85,12 @@ export default function Encrypt_Decrypt_Msg(props) {
         } else {
           if (data.msg === 'Invisible stream not detected! Please copy and paste the StegCloak text sent by the sender.')
             data.msg = "No hidden message found";
-          props.showAlert(data.msg, 'warning');
+          props.showAlert(data.msg, 'warning', 10103);
         }
       }
     } catch (err) {
       console.log('Error***', err);
-      props.showAlert("No Hidden message found", 'danger');
+      props.showAlert("No Hidden message found", 'danger', 10104);
     } finally {
       props.setLoader({ showLoader: false });
     }

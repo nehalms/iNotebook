@@ -59,7 +59,7 @@ const Notes = (props) => {
     useEffect(() => {
         if (localStorage.getItem('token')) {
             if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-                props.showAlert("Session expired Login again", 'danger');
+                props.showAlert("Session expired Login again", 'danger', 10109);
                 history.navigate("/login");
             } else {
                 fetchNotes(props);
@@ -81,12 +81,12 @@ const Notes = (props) => {
     const handleClick = async (e) => {
         e.preventDefault();
         if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger');
+            props.showAlert("Session expired Login again", 'danger', 10110);
             history.navigate("/login");
             return;
         }
         await updateNote(note.id, note.etitle, note.edescription, note.etag);
-        props.showAlert("Notes updated successfully", "success");
+        props.showAlert("Notes updated successfully", "success", 10111);
         refClose.current.click();
     }
 

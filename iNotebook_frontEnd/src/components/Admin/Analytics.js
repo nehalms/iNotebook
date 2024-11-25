@@ -24,7 +24,7 @@ export default function Analytics(props) {
 
   useEffect(() => {
     if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
-      props.showAlert("Session expired Login again", 'danger');
+      props.showAlert("Session expired Login again", 'danger', 10033);
       history.navigate("/login");
       return;
     }
@@ -53,11 +53,11 @@ export default function Analytics(props) {
         ((moment(new Date(dates.endDate)).diff(moment(new Date(dates.startDate))))/(60*60*24*1000)) >= 20
       ) {
         if(dates.endDate > moment(new Date()).format('YYYY-MM-DD')) {
-            props.showAlert('End date cannot be in future', 'info');
+            props.showAlert('End date cannot be in future', 'info', 10005);
         } else if (dates.startDate > dates.endDate) {
-            props.showAlert('Start date cannot be greater than End date', 'info');
+            props.showAlert('Start date cannot be greater than End date', 'info', 10006);
         } else {
-            props.showAlert('Difference between the dates should be less than 20 days', 'info');
+            props.showAlert('Difference between the dates should be less than 20 days', 'info', 10007);
         }
         return;
       }
@@ -75,7 +75,7 @@ export default function Analytics(props) {
       });
       const data = await response.json();
       if(data.error) {
-        props.showAlert(data.error, 'danger');
+        props.showAlert(data.error, 'danger', 10034);
         return;
       }
       props.setLoader({ showLoader: false});
@@ -98,7 +98,7 @@ export default function Analytics(props) {
     } catch (err) {
         props.setLoader({ showLoader: false });
         console.log('Error**', err);
-        props.showAlert("Some Error occured", 'danger');
+        props.showAlert("Some Error occured", 'danger', 10035);
     }
   }
 

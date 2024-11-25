@@ -33,13 +33,13 @@ export default function RoundCorners(props) {
 
   const handleUpload = async () => {
     if(!file) {
-        props.showAlert('No Image uploaded', 'warning');
+        props.showAlert('No Image uploaded', 'warning', 10022);
         return;
     }
     let type = file.type.split('/')[1];
     let allowedTypes = ['jpg', 'jpeg', 'png']
     if(!allowedTypes.includes(type)) {
-        props.showAlert('Unsupported file type', 'warning');
+        props.showAlert('Unsupported file type', 'warning', 10023);
         return;
     }
     let formData = new FormData();
@@ -62,7 +62,7 @@ export default function RoundCorners(props) {
           return;
       }
       if(json.success) {
-          props.showAlert('Image transformed success', 'success');
+          props.showAlert('Image transformed success', 'success', 10024);
           setUrl(json.data.url);
       } else {
           props.showAlert(json.msg, 'info');
@@ -77,7 +77,7 @@ export default function RoundCorners(props) {
 
   const downloadImage = async () => {
     saveAs(url, file.name);
-    props.showAlert('Image Downloaded', 'success');
+    props.showAlert('Image Downloaded', 'success', 10025);
   }
 
   return (

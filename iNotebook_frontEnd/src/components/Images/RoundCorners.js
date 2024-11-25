@@ -34,17 +34,17 @@ export default function RoundCorners(props) {
 
   const handleUpload = async () => {
     if(!file) {
-        props.showAlert('No Image uploaded', 'warning');
+        props.showAlert('No Image uploaded', 'warning', 10026);
         return;
     }
     if((cornerValues.btmleft === 0 && cornerValues.btmright === 0 && cornerValues.topleft === 0 && cornerValues.topright === 0) && !maxChecked) {
-        props.showAlert('No change selected', 'warning');
+        props.showAlert('No change selected', 'warning', 10027);
         return;
     }
     let type = file.type.split('/')[1];
     let allowedTypes = ['jpg', 'jpeg', 'png']
     if(!allowedTypes.includes(type)) {
-        props.showAlert('Unsupported file type', 'warning');
+        props.showAlert('Unsupported file type', 'warning', 10028);
         return;
     }
     let formData = new FormData();
@@ -67,13 +67,13 @@ export default function RoundCorners(props) {
             return;
         }
         if(json.success) {
-            props.showAlert('Image transformed success', 'success');
+            props.showAlert('Image transformed success', 'success', 10029);
             setUrl(json.data.url);
         }
     } catch(err) {
         props.setLoader({ showLoader: false });
         console.log("Error**", err);
-        props.showAlert("Some error Occured", 'danger');
+        props.showAlert("Some error Occured", 'danger', 10030);
     }
     return;
   }

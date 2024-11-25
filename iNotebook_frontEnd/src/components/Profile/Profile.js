@@ -41,7 +41,7 @@ export default function Profile(props) {
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log("Error**", err);
-      props.showAlert("Some error Occured", 'danger');
+      props.showAlert("Some error Occured", 'danger', 10112);
     }
   };
 
@@ -69,14 +69,14 @@ export default function Profile(props) {
       const json = await response.json();
       if (json.success === true) {
         setProfile({ ...profile, name: json.user.name });
-        props.showAlert("Name updated successfully", 'success');
+        props.showAlert("Name updated successfully", 'success', 10113);
       } else {
-        props.showAlert("Something went wrong", 'danger');
+        props.showAlert("Something went wrong", 'danger', 10114);
       }
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log("Error**", err);
-      props.showAlert("Some error Occured", 'danger');
+      props.showAlert("Some error Occured", 'danger', 10115);
     }
   };
 
@@ -84,7 +84,7 @@ export default function Profile(props) {
     try {
       e.preventDefault();
       if (pass.password !== pass.cpassword) {
-        props.showAlert("Password does not match", 'warning');
+        props.showAlert("Password does not match", 'warning', 10116);
         return;
       }
       props.setLoader({ showLoader: true, msg: "Updating password" });
@@ -102,15 +102,15 @@ export default function Profile(props) {
       props.setLoader({ showLoader: false });
       const json = await response.json();
       if (json.success) {
-        props.showAlert("Password updated successfully", 'success');
+        props.showAlert("Password updated successfully", 'success', 10117);
         setPass({ password: '', cpassword: '' });
       } else {
-        props.showAlert("Something went wrong", 'danger');
+        props.showAlert("Something went wrong", 'danger', 10118);
       }
     } catch (err) {
       props.setLoader({ showLoader: false });
       console.log("Error**", err);
-      props.showAlert("Some error Occured", 'danger');
+      props.showAlert("Some error Occured", 'danger', 10119);
     }
   };
 

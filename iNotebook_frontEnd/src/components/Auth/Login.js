@@ -47,7 +47,7 @@ const Login = (props) => {
                     return;
                 }
                 if (isAdminUser && !Verified) {
-                    props.showAlert('Admin passkey not verified', 'danger');
+                    props.showAlert('Admin passkey not verified', 'danger', 10016);
                     return;
                 }
                 if(isAdminUser) {
@@ -56,20 +56,20 @@ const Login = (props) => {
                     localStorage.setItem('token', json.authToken);
                 }
                 history.navigate(isAdminUser ? '/dashboard' : '/');
-                props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success');
+                props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success', 10053);
             } else {
-                props.showAlert(json.errors ? json.errors[0].msg : json.error, 'danger');
+                props.showAlert(json.errors ? json.errors[0].msg : json.error, 'danger', 10054);
             }
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.error(err);
-            props.showAlert('An error occurred during login', 'danger');
+            props.showAlert('An error occurred during login', 'danger', 10017);
         }
     };
 
     const sendEmail = async () => {
         if (!credentials.email) {
-            props.showAlert('Email cannot be empty', 'danger');
+            props.showAlert('Email cannot be empty', 'danger', 10018);
             return;
         }
         setVerified(false);
@@ -88,11 +88,11 @@ const Login = (props) => {
                 }),
             });
             props.setLoader({ showLoader: false });
-            props.showAlert('Code sent to your email', 'success');
+            props.showAlert('Code sent to your email', 'success', 10019);
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.error(err);
-            props.showAlert('Failed to send OTP', 'danger');
+            props.showAlert('Failed to send OTP', 'danger', 10020);
         }
     };
 
@@ -112,7 +112,7 @@ const Login = (props) => {
             props.showAlert(res.msg, res.success && res.verified ? 'success' : 'danger');
         } catch (err) {
             console.error(err);
-            props.showAlert('Verification failed', 'danger');
+            props.showAlert('Error in otp Verification', 'danger', 10021);
         } finally {
             setShowGif(false);
         }

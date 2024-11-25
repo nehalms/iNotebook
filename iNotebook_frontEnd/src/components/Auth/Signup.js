@@ -29,13 +29,13 @@ const Signup = (props) => {
     const handleSubmit = async (e)=> {
         try {
             if(credentials.password !== credentials.cpassword) {
-              props.showAlert("Password didn't match",'warning');
+              props.showAlert("Password didn't match",'warning', 10055);
               e.preventDefault();
               return;
             }
             console.log(Verified);
             if(!Verified) {
-              props.showAlert("Email not verified", 'danger');
+              props.showAlert("Email not verified", 'danger', 10056);
               mail.current.style.border = '2px solid red';  
               e.preventDefault();
               return;
@@ -58,15 +58,15 @@ const Signup = (props) => {
             // console.log(json); 
             if(json.success){
               history.navigate("/login"); // to redirect the page to home page
-              props.showAlert("Sign in successfull", "success");
+              props.showAlert("Sign in successfull", "success", 10057);
             }
             else {
-                props.showAlert(json.error, "danger");
+                props.showAlert(json.error, "danger", 10058);
             }
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger');
+            props.showAlert("Some error Occured", 'danger', 10059);
         }
     }
 
@@ -83,7 +83,7 @@ const Signup = (props) => {
 
     const sendEmail = async (e) => {
       if( !credentials.email ) {
-        props.showAlert("Please enter the email", 'info');
+        props.showAlert("Please enter the email", 'info', 10060);
         return;
       }
       if(credentials.email.toString().endsWith(".com")){
@@ -106,21 +106,21 @@ const Signup = (props) => {
           const res = await response.json();
           props.setLoader({ showLoader: false });
           if(!res.success) {
-            props.showAlert("Mail error: cannot send email", 'danger');
+            props.showAlert("Mail error: cannot send email", 'danger', 10061);
             return;
           }
-          props.showAlert("Code send to your mail", "success");    
+          props.showAlert("Code send to your mail", "success", 10062);    
         } catch (err) {
           props.setLoader({ showLoader: false });
           console.log("Error**", err);
-          props.showAlert("Mail error: cannot send email", 'danger');
+          props.showAlert("Mail error: cannot send email", 'danger', 10063);
         }
         setVerified(false);
         setShow(true);
         e.preventDefault();
       }
       else{
-        props.showAlert("Invalid Email", 'danger');
+        props.showAlert("Invalid Email", 'danger', 10064);
       }
     };
 
@@ -141,14 +141,14 @@ const Signup = (props) => {
             setVerified(true);
             setShow(false);
             mail.current.style.border = '3px solid #63E6BE';
-            props.showAlert(res.msg, "success");
+            props.showAlert(res.msg, "success", 10065);
           } else {
-            props.showAlert(res.msg, "danger")
+            props.showAlert(res.msg, "danger", 10066)
           }
         }
       } catch (err) {
         console.log("Error**", err);
-        props.showAlert("Mail error: cannot verify code", 'danger');
+        props.showAlert("Mail error: cannot verify code", 'danger', 10067);
       } finally {
         setShowGif(false);
       }

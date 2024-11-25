@@ -14,14 +14,14 @@ const Home = (props) => {
   useEffect(() => {
     if (localStorage.getItem('token')) {
       if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-        props.showAlert('Session expired, login again', 'danger');
+        props.showAlert('Session expired, login again', 'danger', 10001);
         history.navigate('/login');
         return;
       }
       getSecretKey();
       fetchHistory();
     } else {
-      props.showAlert('Please log in', 'warning');
+      props.showAlert('Please log in', 'warning', 10002);
       history.navigate('/login');
     }
   }, []);
@@ -57,7 +57,7 @@ const Home = (props) => {
       setHistory(data);
       setLoading(false);
     } catch (error) {
-      props.showAlert('Error fetching history', 'info');
+      props.showAlert('Error fetching history', 'info', 10003);
       console.error('Error fetching history:', error);
     }
   };
@@ -72,7 +72,7 @@ const Home = (props) => {
       const data = await response.json();
       if(data) fetchHistory();
     } catch (error) {
-      props.showAlert('Error deleting history', 'info');
+      props.showAlert('Error deleting history', 'info', 10004);
       console.error('Error deleting history:', error);
     } finally {
       props.setLoader({ showLoader: false });
