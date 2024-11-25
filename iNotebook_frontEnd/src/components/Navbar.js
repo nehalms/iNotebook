@@ -27,7 +27,8 @@ const Navbar = (props) => {
             if(data.success === true) {
                 props.showAlert(data.msg, "success"); 
                 localStorage.removeItem('token'); 
-                sessionStorage.clear();
+                sessionStorage.removeItem('AesKey');
+                sessionStorage.removeItem('adminToken');
                 history.navigate('/login');
             }
         } catch (err) {

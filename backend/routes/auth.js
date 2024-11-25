@@ -10,12 +10,14 @@ const UserHistory = require("../models/UserHistory");
 const GameDetails = require("../models/GameDetails");
 const { Email } = require("../Services/Email");
 const { getAdminNotifyhtml } = require("../Services/getEmailHtml");
+const Keys = require("../models/Keys");
+const decrypt = require("../middleware/decrypt");
 
 const JWT_SCERET = process.env.JWT_SCERET;
 
 //Route-1 : Create user using : POST "/api/auth/CreateUser => no login required
 
-router.post("/createuser",
+router.post("/createuser", decrypt,
   [
     body("name", "Enter a valid Name").isLength({ min: 5 }),
     body("email", "Enter valid email").isEmail(),
@@ -86,7 +88,7 @@ router.post("/createuser",
 
 //Route-2 : Authenticating the user : POST "/api/auth/login => login required
 router.post(
-  "/login",
+  "/login", decrypt,
   [
     body("email", "Enter valid email").isEmail(),
     body("password", "Password cannot be blank").exists(),
@@ -161,7 +163,7 @@ router.post("/getuser", fetchuser,  async (req, res) => {
   }
 });
 
-router.post("/getPassword", 
+router.post("/getPassword", decrypt,
   [
     body("email", "Enter valid email").isEmail()
   ],
@@ -183,7 +185,7 @@ router.post("/getPassword",
   }
 );
 
-router.post("/updatePassword",
+router.post("/updatePassword", decrypt,
   [
     body("id", "Enter a valid id"),
     body("email", "Enter a valid email").isEmail(),
@@ -217,7 +219,7 @@ router.post("/updatePassword",
   }
 );
 
-router.post('/updateName', fetchuser, async (req, res) => {
+router.post('/updateName', fetchuser, decrypt, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.user.id, {name: req.body.name}, {new: true});
     const userStats = await GameDetails.findOneAndUpdate({userId: req.user.id}, {userName: req.body.name}, {new: true});
@@ -259,6 +261,17 @@ router.post('/logout', fetchuser, async (req, res) => {
     return res.status(500).send("Internal Server Error!!");
   }
 });
+
+router.get('/getpubKey', async (req, res) => {
+  try {
+    let key = await Keys.findOne();
+    res.send({success: true, key: key.publicKey});
+  }  catch (err) {
+    console.log(err.message);
+    return res.status(500).send("Internal Server Error!!");
+  }
+});
+
 
 module.exports = router;
 
