@@ -33,19 +33,19 @@ export default function ImageEditor(props) {
       props.setLoader({ showLoader: false });
       const json = await response.json();
       if(json.error) {
-        props.showAlert(json.error, 'danger')
+        props.showAlert(json.error, 'danger', 10131)
         return;
       }
       if(json.success) {
-        props.showAlert(json.data.msg, 'success');
+        props.showAlert(json.data.msg, 'success', 10132);
       } else {
-        props.showAlert(json.msg, 'info');
+        props.showAlert(json.msg, 'info', 10133);
       }
       return;
     } catch(err) {
       props.setLoader({ showLoader: false });
       console.log("Error**", err);
-      props.showAlert("Some error Occured", 'danger');
+      props.showAlert("Some error Occured", 'danger', 10134);
     }
   }
 

@@ -223,6 +223,10 @@ router.post('/updateName', fetchuser, decrypt, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.user.id, {name: req.body.name}, {new: true});
     const userStats = await GameDetails.findOneAndUpdate({userId: req.user.id}, {userName: req.body.name}, {new: true});
+    await UserHistory.create({
+      userId: user.id,
+      action: "Username updated",
+    });
     res.send({success: true, user: user, stats: userStats});
   } catch (err) {
     console.log(err.message);

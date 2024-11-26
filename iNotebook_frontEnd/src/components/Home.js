@@ -4,12 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import './Home.css';
 import loading_gif from './loading.gif';
+import Confirmation from '../components/Utils/Confirmation';
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
   history.navigate = useNavigate();
   const [userHistory, setHistory] = useState();
   const [loading, setLoading] = useState(false);
+  const [dialog, setDialog] = useState({
+    open: false,
+    title: '',
+    onConfirm: () => {},
+    onClose: () => {},
+  });
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
@@ -62,7 +69,7 @@ const Home = (props) => {
     }
   };
 
-  const handleDeleteHistory = async () => {
+  const deleteHistory = async () => {
     try {
       props.setLoader({ showLoader: true, msg: 'Deleting history...' });
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getdata/userhistory`, {
@@ -71,6 +78,9 @@ const Home = (props) => {
       });
       const data = await response.json();
       if(data) fetchHistory();
+      setDialog({
+        open: false,
+      });
     } catch (error) {
       props.showAlert('Error deleting history', 'info', 10004);
       console.error('Error deleting history:', error);
@@ -78,9 +88,27 @@ const Home = (props) => {
       props.setLoader({ showLoader: false });
     }
   }
+  
+  const onClose = () => {
+    setDialog({
+      open: false, 
+    });
+    return;
+  }
+
+  const handleDeleteHistory = () => {
+    setDialog({
+      open: true, 
+      title: 'Delete History',
+      onConfirm: deleteHistory,
+      onClose: onClose,
+    });
+  }
+  
 
   return (
     <div className="home-container">
+      {dialog.open && <Confirmation open={dialog.open} title={dialog.title} onConfirm={dialog.onConfirm} onClose={dialog.onClose} />}
       <div className="feature-grid">
         {[
           { name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },

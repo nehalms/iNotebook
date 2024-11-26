@@ -63,7 +63,7 @@ export default function RoundCorners(props) {
         const json = await response.json();
         // console.log(json);
         if(json.error) {
-            props.showAlert(json.error, 'danger')
+            props.showAlert(json.error, 'danger', 10135)
             return;
         }
         if(json.success) {
@@ -84,7 +84,7 @@ export default function RoundCorners(props) {
 
   const downloadImage = async () => {
     saveAs(url, file.name);
-    props.showAlert('Image Downloaded', 'success');
+    props.showAlert('Image Downloaded', 'success', 10136);
   }
 
   return (
