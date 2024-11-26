@@ -30,9 +30,6 @@ const ComponentLoader = ({ message }) => {
                 <div className="board infinite-zoom box-3 delay-2"></div>
                 <div className="board infinite-zoom box-4 delay-3"></div>
             </div>
-            <div className="loading-bar-container">
-                <div className="loading-bar" style={{ width: `${progress}%` }}></div>
-            </div>
             <h5 className='component-loader-container-h5'>{message || `Loading component${ellipsis}`}</h5>
         </div>
     );
