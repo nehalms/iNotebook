@@ -11,7 +11,8 @@ import { history } from '../src/components/History';
 import Navbar from './components/Navbar'
 import NoteState from './context/notes/NoteState';
 import Alert from './components/Utils/Alert';
-import Spinner from './components/Utils/Spinner';
+import Spinner from './components/LoadingScreens/Spinner';
+import ComponentLoader from './components/LoadingScreens/ComponentLoader';
 import Confirmation from './components/Utils/Confirmation';
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
@@ -157,7 +158,7 @@ function App() {
           {loader.showLoader && <Spinner msg={loader.msg}/>}
           {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
           <div className="container" style={{marginTop: '40px'}}>
-            <Suspense fallback={<div><Spinner msg={'Loading...'}/></div>}>
+            <Suspense fallback={<div><ComponentLoader msg={'Loading...'}/></div>}>
               <Routes>
                 <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
                 <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
