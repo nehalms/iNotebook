@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import NoteContext from "./noteContext";
 import CryptoJS from 'crypto-js';
+import { getSecretKey } from "../../components/Requests/getSecretKey";
 
 function decrypt() {
     if( !sessionStorage.getItem('AesKey') ) {
+        getSecretKey();
         return;
     }
     let decryptKey = ''
@@ -17,11 +19,12 @@ const NoteState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL
     const notesInitital = []
     const [notes, setNotes] = useState(notesInitital);
-    const secretKey = decrypt();
+    let secretKey = decrypt();
 
     //get all notes
     const fetchNotes = async ()=> {
         try {
+            secretKey = decrypt();
             props.setLoader({ showLoader: true, msg: "Fetching Notes"});
             const response = await fetch(`${host}/notes/fetchallnotes`, {
                 method: "GET", 
@@ -51,7 +54,7 @@ const NoteState = (props)=> {
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger', 10121);
+            props.showAlert("Error in fetching notes", 'danger', 10121);
         }
     }
 
@@ -59,6 +62,7 @@ const NoteState = (props)=> {
     //Add a note
     const addNote = async (title, description, tag)=> {
         try {
+            secretKey = decrypt();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
@@ -120,6 +124,7 @@ const NoteState = (props)=> {
     //Edit a note
     const updateNote = async (id, title, description, tag)=> {
         try {
+            secretKey = decrypt();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();

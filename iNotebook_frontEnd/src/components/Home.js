@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import './Home.css';
 import loading_gif from './loading.gif';
 import Confirmation from '../components/Utils/Confirmation';
+import { getSecretKey } from '../components/Requests/getSecretKey'
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
@@ -33,22 +34,6 @@ const Home = (props) => {
     }
   }, []);
 
-  const getSecretKey = async () => {
-    try {
-      if (sessionStorage.getItem('AesKey')) return;
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/aes/secretKey`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token'),
-        },
-      });
-      const json = await response.json();
-      if (json.status === 'success') sessionStorage.setItem('AesKey', json.secretKey);
-    } catch (err) {
-      console.error('Error fetching secret key:', err);
-    }
-  };
 
   const fetchHistory = async () => {
     try {
