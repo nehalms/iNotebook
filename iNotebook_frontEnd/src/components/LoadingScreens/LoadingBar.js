@@ -23,8 +23,8 @@ export default function LoadingBar(props) {
   return (
     <div className='loading-bar'>
         <div className="circle-bar" id='circle'>
-            <h4 className="number-bar" id='num'>{degree < 100 ? degree : 'Wait'}<span>{degree < 100 ? '%' : '...'}</span></h4>
-            <h6 className="number-bar">{props.msg}</h6>
+            <h4 className="number-bar" id='num'>{degree < 100 ? degree : 'Wait'}<span>{degree < 100 ? '%' : ''}</span></h4>
+            <h6 className="number-bar">{props.msg || 'Loading...'}</h6>
         </div>
     </div>
   )

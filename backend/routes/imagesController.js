@@ -19,7 +19,7 @@ router.delete('/delete', fetchuser, async (req, res) => {
 router.post('/roundcorners', fetchuser, upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
-            res.send({msg: 'File size is too large'});
+            res.send({error: 'File size is too large'});
         }
         await roundCorners(req)
             .then(async (data) => {
@@ -35,7 +35,7 @@ router.post('/roundcorners', fetchuser, upload.single('image'), async (req, res)
 router.post('/enhance', fetchuser, upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
-            res.send({msg: 'File size is too large'});
+            res.send({error: 'File size is too large'});
         }
         await enhance(req)
             .then(async (data) => {

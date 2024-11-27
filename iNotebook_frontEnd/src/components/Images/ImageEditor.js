@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import OptionsMenu from '../Utils/OptionsMenu'
 import RoundCorners from './RoundCorners';
 import Enhance from './Enhance';
-import LoadingBar from './LoadingBar';
+import LoadingBar from '../LoadingScreens/LoadingBar';
 
 export default function ImageEditor(props) {
   const [isOpen, setIsOpen] = useState(false);
