@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { saveAs } from 'file-saver'
+import Enhance from './StaticImages/Enhance.jpg'
+import TryIt from './TryIt';
 
 export default function RoundCorners(props) {
 
@@ -12,6 +14,7 @@ export default function RoundCorners(props) {
   const [preview, setPreview] = useState();
   const [dimsns, setDimsns] = useState({width:0, height: 0, spcWidth: 0});
   const [loadingImg, setLoading] = useState(true);
+  const [tryIt, setTryIt] = useState(true);
 
   useEffect(() => {
     if (!divRef.current || !imgDivRef.current) return;
@@ -93,30 +96,36 @@ export default function RoundCorners(props) {
             </div>
         </div>
 
-        <div className='col-lg-6 my-1'>
-            <div className="card shadow-lg p-3 d-flex flex-column" ref={divRef}>
-                <div className='p-4 border border-black rounded-4 text-center mt-5' onClick={handleClick}>
-                    <i className="fa-solid fa-upload fa-3x"></i>
-                    <input type="file" name="file" ref={imgRef} style={{display: 'none'}} onChange={handleChange}/>
+        { tryIt ?
+          <TryIt img={Enhance} setTryIt={setTryIt} width={'40%'}/>
+           :
+          <>
+            <div className='col-lg-6 my-1'>
+                <div className="card shadow-lg p-3 d-flex flex-column" ref={divRef}>
+                  <h3 className='text-center'>Enhance Image</h3>
+                    <div className='p-4 border border-black rounded-4 text-center mt-3' onClick={handleClick}>
+                        <i className="fa-solid fa-upload fa-3x"></i>
+                        <input type="file" name="file" ref={imgRef} style={{display: 'none'}} onChange={handleChange}/>
+                    </div>
+                    <h5 className='m-0 text-center pt-3 mb-4'>{uploaded ? file.name : 'Upload (.png / .jpg / .jpeg)'}</h5>
+                    <div className="text-center" >
+                        {preview && <img src={preview} style={{maxHeight: '600px', maxWidth: dimsns.spcWidth ? dimsns.spcWidth : '80%'}} alt="Upload the image" />}
+                    </div>
+                    <button type="submit" className="btn btn-primary mt-3" onClick={handleUpload}>Enhance <i className="mx-2 fa-solid fa-money-bill-transfer"></i></button>
                 </div>
-                <h5 className='m-0 text-center pt-3 mb-4'>{uploaded ? file.name : 'Upload (.png / .jpg / .jpeg)'}</h5>
-                <div className="text-center" >
-                    {preview && <img src={preview} style={{maxHeight: '600px', maxWidth: dimsns.spcWidth}} alt="Upload the image" />}
-                </div>
-                <button type="submit" className="btn btn-primary mt-3" onClick={handleUpload}>Enhance <i className="mx-2 fa-solid fa-money-bill-transfer"></i></button>
             </div>
-        </div>
-        <div className="col-lg-6 my-1">
-        <div className="card shadow-lg p-3" ref={imgDivRef}>
-                <div className="text-center">
-                  {url !== null ? 
-                    <img src={url} alt="Failed to load image Click on translate again" width={dimsns.width} height={dimsns.height} onLoad={handleImageLoading}/> 
-                    : 'No image'}
+            <div className="col-lg-6 my-1">
+            <div className="card shadow-lg p-3" ref={imgDivRef}>
+                    <div className="text-center">
+                      {url !== null ? 
+                        <img src={url} alt="Failed to load image Click on translate again" width={dimsns.width} height={dimsns.height} onLoad={handleImageLoading}/> 
+                        : 'No image'}
+                    </div>
+                    {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage} disabled={loadingImg} >{loadingImg && url ? 'Loading image, Please wait...' : 'Download Image'}<i className="mx-2 fa-solid fa-download"></i></button>}
                 </div>
-                {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage} disabled={loadingImg} >{loadingImg && url ? 'Loading image, Please wait...' : 'Download Image'}<i className="mx-2 fa-solid fa-download"></i></button>}
             </div>
-        </div>
+          </>
+        }
     </div>
-    
   )
 }

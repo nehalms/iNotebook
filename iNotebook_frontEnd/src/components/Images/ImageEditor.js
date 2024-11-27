@@ -3,6 +3,9 @@ import OptionsMenu from '../Utils/OptionsMenu'
 import RoundCorners from './RoundCorners';
 import Enhance from './Enhance';
 import LoadingBar from '../LoadingScreens/LoadingBar';
+import GenerativeBackground from './GenerativeBackground';
+import RotateImage from './RotateImage';
+import Shapen from './Shapen';
 
 export default function ImageEditor(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +13,10 @@ export default function ImageEditor(props) {
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
   const options =  {
     'Round Corners': 'roundcorners',
-    'Enhance image': 'enhance'
+    'Enhance image': 'enhance',
+    'Generative Background': 'generativebackground',
+    'Rotate Image': 'rotateimage',
+    'Sharpen': 'sharpen'
   };
   
   const toggleNav = () => {
@@ -63,6 +69,9 @@ export default function ImageEditor(props) {
       <div>
         {compStr === 'roundcorners' && <RoundCorners showAlert={props.showAlert} setLoader={setLoader}/>}
         {compStr === 'enhance' && <Enhance showAlert={props.showAlert} setLoader={setLoader}/>}
+        {compStr === 'generativebackground' && <GenerativeBackground showAlert={props.showAlert} setLoader={setLoader}/>}
+        {compStr === 'rotateimage' && <RotateImage showAlert={props.showAlert} setLoader={setLoader}/>}
+        {compStr === 'sharpen' && <Shapen showAlert={props.showAlert} setLoader={setLoader}/>}
       </div>
     </div>
   )
