@@ -14,6 +14,7 @@ export default function RoundCorners(props) {
   const [url, setUrl] = useState(null);
   const [dimsns, setDimsns] = useState({width:0});
   const [selectedOption, setOption] = useState();
+  const [loadingImg, setLoading] = useState(true);
 
   useEffect(() => {
     if (!divRef.current) return;
@@ -52,7 +53,7 @@ export default function RoundCorners(props) {
     }
     let formData = new FormData();
     formData.append('image', file);
-
+    setLoading(true);
     try {
         props.setLoader({ showLoader: true, msg: "Transforming..."});
         const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/roundcorners?setMax=${maxChecked}&tl=${cornerValues.topleft}&tr=${cornerValues.topright}&bl=${cornerValues.btmleft}&br=${cornerValues.btmright}`, {
@@ -107,6 +108,10 @@ export default function RoundCorners(props) {
     }
     setOption(event.target.value);
   }
+
+   const handleImageLoading = () => {
+      setLoading(false);
+   }
 
   return (
     <div className="row">
@@ -176,13 +181,13 @@ export default function RoundCorners(props) {
             <div className="card shadow-lg p-3">
                 <div className="text-center">
                     { url !== null ? 
-                        <img src={url} alt="Failed to load image Click on translate again" width={dimsns.width} style={{maxHeight: '800px'}} loading='lazy'/> 
+                        <img src={url} alt="Failed to load image Click on translate again" width={dimsns.width} style={{maxHeight: '800px'}} loading='lazy' onLoad={handleImageLoading}/> 
                         : preview ? 
                         <img src={preview} alt="Failed to load preview" width={dimsns.width} style={{maxHeight: '800px'}} loading='lazy'/> 
                         : 'No image'
                     }
                 </div>
-                {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage}>Download Image<i className="mx-2 fa-solid fa-download"></i></button>}
+                {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage} disabled={loadingImg} >{loadingImg && url ? 'Loading image, Please wait...' : 'Download Image'}<i className="mx-2 fa-solid fa-download"></i></button>}
             </div>
         </div>
     </div>

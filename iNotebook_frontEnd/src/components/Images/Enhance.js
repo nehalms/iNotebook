@@ -11,6 +11,7 @@ export default function RoundCorners(props) {
   const [url, setUrl] = useState(null);
   const [preview, setPreview] = useState();
   const [dimsns, setDimsns] = useState({width:0, height: 0, spcWidth: 0});
+  const [loadingImg, setLoading] = useState(true);
 
   useEffect(() => {
     if (!divRef.current || !imgDivRef.current) return;
@@ -44,7 +45,7 @@ export default function RoundCorners(props) {
     }
     let formData = new FormData();
     formData.append('image', file);
-    
+    setLoading(true);
     try {
       props.setLoader({ showLoader: true, msg: "Transforming..."});
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/enhance`, {
@@ -80,6 +81,10 @@ export default function RoundCorners(props) {
     props.showAlert('Image Downloaded', 'success', 10025);
   }
 
+  const handleImageLoading = () => {
+    setLoading(false);
+  }
+
   return (
     <div className="row">
         <div className="col-lg-12 my-1 p-3 text-center">
@@ -88,7 +93,7 @@ export default function RoundCorners(props) {
             </div>
         </div>
 
-        <div className='col-lg my-1'>
+        <div className='col-lg-6 my-1'>
             <div className="card shadow-lg p-3 d-flex flex-column" ref={divRef}>
                 <div className='p-4 border border-black rounded-4 text-center mt-5' onClick={handleClick}>
                     <i className="fa-solid fa-upload fa-3x"></i>
@@ -101,12 +106,14 @@ export default function RoundCorners(props) {
                 <button type="submit" className="btn btn-primary mt-3" onClick={handleUpload}>Enhance <i className="mx-2 fa-solid fa-money-bill-transfer"></i></button>
             </div>
         </div>
-        <div className="col-lg my-1">
-            <div className="card shadow-lg p-3" ref={imgDivRef}>
+        <div className="col-lg-6 my-1">
+        <div className="card shadow-lg p-3" ref={imgDivRef}>
                 <div className="text-center">
-                    {url !== null ? <img src={url} alt="Failed to load image Click on translate again" width={dimsns.width} height={dimsns.height}/> : 'No image'}
+                  {url !== null ? 
+                    <img src={url} alt="Failed to load image Click on translate again" width={dimsns.width} height={dimsns.height} onLoad={handleImageLoading}/> 
+                    : 'No image'}
                 </div>
-                {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage}>Download Image<i className="mx-2 fa-solid fa-download"></i></button>}
+                {url !== null && <button type="submit" className="btn btn-success mt-3 p-3" onClick={downloadImage} disabled={loadingImg} >{loadingImg && url ? 'Loading image, Please wait...' : 'Download Image'}<i className="mx-2 fa-solid fa-download"></i></button>}
             </div>
         </div>
     </div>
