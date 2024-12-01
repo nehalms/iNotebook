@@ -15,6 +15,7 @@ export default function Tic_tac_toe(props) {
   const [gameComp, setComp] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [secondClk, setSecondClk] = useState(false);
+  const [vsBot, setVsBot] = useState(false);
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -130,6 +131,7 @@ export default function Tic_tac_toe(props) {
   }
 
   const handleCreateRoom = async () => {
+    setVsBot(false);
     try {
       props.setLoader({ showLoader: true, msg: "Creating room"});
       let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/start`, {
@@ -164,6 +166,7 @@ export default function Tic_tac_toe(props) {
   }
 
   const handleJoinRoom = async () => {
+    setVsBot(false);
     try {
       props.setLoader({ showLoader: true, msg: "Joining room"});
       let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/connect?gameId=${roomId}`, {
@@ -228,7 +231,7 @@ export default function Tic_tac_toe(props) {
     newBoard[3 * parseInt(row) + parseInt(col)] = currTurn;
     setBoard(newBoard);
     try {
-      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/gameplay`, {
+      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/gameplay${vsBot ? '/bot' : ''}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
@@ -300,6 +303,44 @@ export default function Tic_tac_toe(props) {
     } catch (err) {
       console.log('Error***', err);
       props.showAlert("Internal server Error", 'danger', 10099);
+    } finally {
+      props.setLoader({ showLoader: false });
+    }
+  }
+
+  const handlePlayvsBot = async () => {
+    setVsBot(true);
+    try {
+      props.setLoader({ showLoader: true, msg: "Creating room"});
+      let response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/create/bot`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem('token'),
+        },
+        body: JSON.stringify({
+          userId: userstats.id,
+          name: userstats.name,
+          gamesPlayed: userstats.played,
+        })
+      });
+      let data = await response.json();
+      console.log(data);
+      if(data.statusCode == 400) {
+        props.showAlert(data.message, 'info', 10088);
+        return;
+      }
+      if(data) {
+        setPlayer('O');
+        setconnect(true);
+        setRoomDetails({id: data.gameId, joined: true});
+        setTurn(data.turn);
+        setBoardFunc(data.board);
+        props.showAlert("Room created", 'success', 10089);
+      }
+    } catch (err) {
+      console.log('Error***', err);
+      props.showAlert("Internal server Error", 'danger', 10090);
     } finally {
       props.setLoader({ showLoader: false });
     }
@@ -431,7 +472,10 @@ export default function Tic_tac_toe(props) {
               <div className='p-3 m-0 bg-white rounded border'>
                 <img src={tictactoe} alt="Connnect 4" style={{ width: '50%', height: '50%'}}/>
                 <h5 className='m-0 my-5'>The objective of the game of tic-tac-toe is to be the first player to get three of their marks in a row, either horizontally, vertically, or diagonally</h5>
-                <button className="btn btn-success py-2 m-1" style={{width: '80%'}} onClick={handleCreateRoom}>Create Room</button>
+                <div className="d-flex align-items-center justify-content-around">
+                  <button className="btn btn-success py-2 m-1" style={{width: '50%'}} onClick={handleCreateRoom}>Create Room</button>
+                  <button className="btn btn-danger py-2 m-1" style={{width: '50%'}} onClick={handlePlayvsBot}>vs Computer</button>
+                </div>
               </div>}
           </div>
         </div>
