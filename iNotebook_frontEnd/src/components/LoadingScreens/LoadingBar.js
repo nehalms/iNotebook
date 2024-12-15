@@ -17,7 +17,7 @@ export default function LoadingBar(props) {
                 clearInterval(interval);
                 return;
             }
-        }, 1000);
+        }, 500);
     }, [])
 
   return (

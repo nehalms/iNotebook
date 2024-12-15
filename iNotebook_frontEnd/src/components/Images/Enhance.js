@@ -30,6 +30,9 @@ export default function RoundCorners(props) {
   }
 
   const handleChange = (e) => {
+    if(!e.target.files[0]) {
+      return;
+  }
     setFile(e.target.files[0]);
     setUploaded(true);
     setPreview(URL.createObjectURL(e.target.files[0]));

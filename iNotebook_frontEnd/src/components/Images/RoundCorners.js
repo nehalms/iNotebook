@@ -33,6 +33,9 @@ export default function RoundCorners(props) {
   }
 
   const handleChange = (e) => {
+    if(!e.target.files[0]) {
+        return;
+    }
     setUrl(null);
     setFile(e.target.files[0]);
     setUploaded(true);
@@ -141,7 +144,7 @@ export default function RoundCorners(props) {
                         <div>
                             <div className="form-check">
                                 <input className="form-check-input" value="single" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onClick={handleOptionselection}/>
-                                <label className="form-check-label" for="flexRadioDefault1">Single radius {selectedOption === 'single' && '(Max value: 200)'} </label>
+                                <label className="form-check-label" htmlFor="flexRadioDefault1">Single radius {selectedOption === 'single' && '(Max value: 200)'} </label>
                             </div>
                             { selectedOption === 'single' && 
                                 <div className='d-flex align-items-center my-1 ms-4'>
@@ -154,7 +157,7 @@ export default function RoundCorners(props) {
                             <div className='d-flex align-items-center my-1'>
                                 <div className="form-check">
                                     <input className="form-check-input" value="custom" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onClick={handleOptionselection}/>
-                                    <label className="form-check-label" for="flexRadioDefault">Custom radius {selectedOption === 'custom' && '(Max value: 200)'} </label>
+                                    <label className="form-check-label" htmlFor="flexRadioDefault">Custom radius {selectedOption === 'custom' && '(Max value: 200)'} </label>
                                 </div>
                             </div>
                             { selectedOption === 'custom' &&
@@ -178,7 +181,7 @@ export default function RoundCorners(props) {
                         <div>
                             <div className="form-check">
                                 <input className="form-check-input" value="maximum" type="radio" name="flexRadioDefault" id="flexRadioDefault3" onClick={handleOptionselection}/>
-                                <label className="form-check-label" for="flexRadioDefault">Maximum radius</label>
+                                <label className="form-check-label" htmlFor="flexRadioDefault">Maximum radius</label>
                             </div>
                         </div>
                     </div>

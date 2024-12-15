@@ -30,6 +30,9 @@ export default function Shapen(props) {
     }
   
     const handleChange = (e) => {
+      if(!e.target.files[0]) {
+        return;
+      }
       setUrl(null);
       setFile(e.target.files[0]);
       setUploaded(true);
@@ -116,7 +119,7 @@ export default function Shapen(props) {
                       <h5 className='m-0 text-center pt-3 mb-4'>{uploaded ? file.name : 'Upload (.png / .jpg / .jpeg)'}</h5>
                       
                       <div className="mb-3">
-                        <label className="form-check-label p-2" for="value">Value</label>
+                        <label className="form-check-label p-2" htmlFor="value">Value</label>
                         <div className="form-check p-0">
                             <div className="d-flex align-items-center justify-content-center">
                                 <input className="mx-1" name='value' type="range" min="0" max="2000" value={value} onChange={onChange} style={{width: '150%'}}/>

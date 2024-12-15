@@ -30,6 +30,9 @@ export default function GenerativeBackground(props) {
   }
 
   const handleChange = (e) => {
+    if(!e.target.files[0]) {
+      return;
+    }
     setUrl(null);
     setFile(e.target.files[0]);
     setUploaded(true);

@@ -58,8 +58,8 @@ export default function ImageEditor(props) {
   return (
     <div>
       <div className='mb-2'>
-        <button className='btn btn-warning my-2' type='button' role='button' onClick={toggleNav} style={{position: 'relative', left: '0px', top: '0px'}}><i className="me-2 fa-solid fa-bars"></i>Menu</button>
-        <button className='btn btn-danger my-2 mx-3' type='button' role='button' onClick={handleDelete} style={{position: 'relative', left: '0px', top: '0px'}}>Delete Images<i className="fa-solid fa-trash-can ms-2"></i></button>
+        <button className='btn btn-warning my-2 mx-2' type='button' role='button' onClick={toggleNav} style={{position: 'relative', left: '0px', top: '0px'}}><i className="me-2 fa-solid fa-bars"></i>Menu</button>
+        <button className='btn btn-danger my-2 mx-2' type='button' role='button' onClick={handleDelete} style={{position: 'relative', left: '0px', top: '0px'}}>Delete Images<i className="fa-solid fa-trash-can ms-2"></i></button>
         <h6 id="emailHelp" className="d-inline m-0 text-danger p-1 text-center">(Use this <strong>Delete Images</strong> button to delete images in server)</h6>
         <OptionsMenu isOpen={isOpen} toggleNav={toggleNav} changeCompStr={changeCompStr} optionList={options}/>
         <h6 className='text-danger'>* Please note Images uploaded are not saved with us</h6>

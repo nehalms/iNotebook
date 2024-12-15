@@ -33,6 +33,9 @@ export default function RotateImage(props) {
     }
   
     const handleChange = (e) => {
+      if(!e.target.files[0]) {
+        return;
+      }
       setUrl(null);
       setFile(e.target.files[0]);
       setUploaded(true);
@@ -140,11 +143,11 @@ export default function RotateImage(props) {
                         <div className="mb-3 d-flex align-items-center justify-content-around">
                           <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="hflip" id="flexCheckDefault" onChange={handleFlip}/>
-                            <label className="form-check-label" for="flexCheckDefault">Horizantal flip</label>
+                            <label className="form-check-label" htmlFor="flexCheckDefault">Horizantal flip</label>
                           </div>
                           <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="vflip" id="flexCheckDefault1" onChange={handleFlip}/>
-                            <label className="form-check-label" for="flexCheckDefault">Vertical flip</label>
+                            <label className="form-check-label" htmlFor="flexCheckDefault">Vertical flip</label>
                           </div>
                         </div>
                       </div>
