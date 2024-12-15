@@ -1,5 +1,10 @@
+import { jwtDecode } from 'jwt-decode';
+
 export const getSecretKey = async () => {
     try {
+      if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
+        return;
+      }
       if (sessionStorage.getItem('AesKey') || !localStorage.getItem('token')) return;
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/aes/secretKey`, {
         method: 'GET',

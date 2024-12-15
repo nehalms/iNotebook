@@ -3,28 +3,26 @@ import NoteContext from "./noteContext";
 import CryptoJS from 'crypto-js';
 import { getSecretKey } from "../../components/Requests/getSecretKey";
 
-function decrypt() {
-    if( !sessionStorage.getItem('AesKey') ) {
-        getSecretKey();
-        return;
-    }
-    let decryptKey = ''
-    Array.from(sessionStorage.getItem('AesKey')).forEach(char => {
-        decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
-    });
-    return decryptKey;
-}
-
 const NoteState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL
     const notesInitital = []
     const [notes, setNotes] = useState(notesInitital);
-    let secretKey = decrypt();
+    
+    async function decrypt() {
+        if( !sessionStorage.getItem('AesKey') ) {
+            await getSecretKey();
+        }
+        let decryptKey = ''
+        Array.from(sessionStorage.getItem('AesKey')).forEach(char => {
+            decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
+        });
+        return decryptKey;
+    }
 
     //get all notes
     const fetchNotes = async ()=> {
         try {
-            secretKey = decrypt();
+            let secretKey = await decrypt();
             props.setLoader({ showLoader: true, msg: "Fetching Notes"});
             const response = await fetch(`${host}/notes/fetchallnotes`, {
                 method: "GET", 
@@ -62,7 +60,7 @@ const NoteState = (props)=> {
     //Add a note
     const addNote = async (title, description, tag)=> {
         try {
-            secretKey = decrypt();
+            let secretKey = await decrypt();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
@@ -124,7 +122,7 @@ const NoteState = (props)=> {
     //Edit a note
     const updateNote = async (id, title, description, tag)=> {
         try {
-            secretKey = decrypt();
+            let secretKey = await decrypt();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
