@@ -119,9 +119,58 @@ export default function Tic_tac_toe(props) {
           won: data.tttStats.won,
           loss: data.tttStats.lost,
         });
+        if(sessionStorage.getItem('roomId')) {
+          await getGameStatus(data);
+        }
       }
       if(!data.success){
         props.showAlert(data.error, 'danger', 10086);
+      }
+    } catch (err) {
+      props.setLoader({ showLoader: false });
+      console.log('Error** ', err);
+      props.showAlert("Some Error Occured", "danger", 10087);
+    }
+  }
+
+  const getGameStatus = async (user) => {
+    try { 
+      if(!sessionStorage.getItem('roomId') || connected) {
+        return;
+      }
+      const response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/getStatus?gameId=${sessionStorage.getItem('roomId')}`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem('token'),
+        },
+        body: JSON.stringify({
+          userId: user.userId,
+          name: user.userName,
+          gamesPlayed: user.tttStats.played,
+        })
+      });
+      const data = await response.json();
+      if(data.statusCode == 400) {
+        return;
+      }
+      if(data) {
+        setconnect(true);
+        setRoomDetails({id: data.gameId, joined: true});
+        setBoardFunc(data.board);
+        setTurn(data.turn);
+        setComp(false);
+        setPlayer(user.userId === data.userIdX ? 'X' : 'O');
+        let player = user.userId === data.player1.userId ? data.player2 : data.player1
+        if(player) {
+          setOppStats({
+            id: player.userId,
+            name: player.name,
+            played: player.gamesPlayed,
+          });
+        }
+        props.showAlert("Status Restored", 'success', 10089);
+        sessionStorage.setItem('roomId', data.gameId);
       }
     } catch (err) {
       props.setLoader({ showLoader: false });
@@ -156,6 +205,7 @@ export default function Tic_tac_toe(props) {
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('X');
         props.showAlert("Room created", 'success', 10089);
+        sessionStorage.setItem('roomId', data.gameId);
       }
     } catch (err) {
       console.log('Error***', err);
@@ -192,7 +242,7 @@ export default function Tic_tac_toe(props) {
         setRoomDetails({id: data.gameId, joined: true});
         setPlayer('O');
         props.showAlert(`Joined ${data.player1.name} 's room`, 'success', 10092);
-
+        sessionStorage.setItem('roomId', data.gameId);
         setOppStats({
           id: data.player1.userId,
           name: data.player1.name,

@@ -128,6 +128,9 @@ export default function FrInRow(props) {
           won: data.frnRowStats.won,
           loss: data.frnRowStats.lost,
         });
+        if(sessionStorage.getItem('roomId')) {
+          await getGameStatus(data);
+        }
       }
       if(!data.success){
         props.showAlert(data.error, 'danger', 10069);
@@ -136,6 +139,53 @@ export default function FrInRow(props) {
       props.setLoader({ showLoader: false });
       console.log('Error** ', err);
       props.showAlert("Some Error Occured", "danger", 10070);
+    }
+  }
+
+  const getGameStatus = async (user) => {
+    try { 
+      if(!sessionStorage.getItem('roomId') || connected) {
+        return;
+      }
+      const response = await fetch(`${process.env.REACT_APP_C4_BOOTSTRAP_URL}/game/getStatus?gameId=${sessionStorage.getItem('roomId')}`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem('token'),
+        },
+        body: JSON.stringify({
+          userId: user.userId,
+          name: user.userName,
+          gamesPlayed: user.frnRowStats.played,
+        })
+      });
+      const data = await response.json();
+      if(data.statusCode == 400) {
+        return;
+      }
+      if(data) {
+        setconnect(true);
+        setRoomDetails({id: data.gameId, joined: true});
+        setBoard(data.board);
+        setTurn(data.turn);
+        setComp(false);
+        setSelectedColor(sessionStorage.getItem('color'));
+        setPlayer(user.userId === data.userIdX ? 'X' : 'O');
+        let player = user.userId === data.player1.userId ? data.player2 : data.player1
+        if(player) {
+          setOppStats({
+            id: player.userId,
+            name: player.name,
+            played: player.gamesPlayed,
+          });
+        }
+        props.showAlert("Status Restored", 'success', 10089);
+        sessionStorage.setItem('roomId', data.gameId);
+      }
+    } catch (err) {
+      props.setLoader({ showLoader: false });
+      console.log('Error** ', err);
+      props.showAlert("Some Error Occured", "danger", 10087);
     }
   }
   
@@ -166,6 +216,7 @@ export default function FrInRow(props) {
         setSelectedColor('red');
         sessionStorage.setItem('color', 'red');
         props.showAlert("Room created", 'success', 10072);
+        sessionStorage.setItem('roomId', data.gameId);
       }
     } catch (err) {
       console.log('Error***', err);
@@ -203,7 +254,7 @@ export default function FrInRow(props) {
         setSelectedColor('yellow');
         sessionStorage.setItem('color', 'yellow');
         props.showAlert(`Joined ${data.player1.name} 's room`, 'success', 10075);
-
+        sessionStorage.setItem('roomId', data.gameId);
         setOppStats({
           id: data.player1.userId,
           name: data.player1.name,
