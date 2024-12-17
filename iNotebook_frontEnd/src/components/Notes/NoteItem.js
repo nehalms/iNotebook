@@ -6,13 +6,52 @@ import { history } from '../History';
 
 const NoteItem = (props) => {
     const context = useContext(noteContext);
+    const {note, editNote, draggable} = props;
+    const [position, setPosition] = useState({x: note.xPos, y: note.yPos});
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
     const {deleteNote} = context;
-    const {note, editNote} = props;
     const [showPopup, setShowPopup] = useState(false);
 
     const onCancel = () => {
         setShowPopup(false);
         return;
+    }
+
+    const handleDragStart = (e) => {
+        e.dataTransfer.setDragImage(new Image(), 0, 0);
+        setOffset({
+            x: e.clientX - position.x,
+            y: e.clientY - position.y,
+        });
+    };
+
+    const handleDrag = (e) => {
+        setPosition({
+            x: e.clientX < 40 ? 40 : e.clientX - offset.x,
+            y: e.clientY < 100 ? 100 : e.clientY - offset.y,
+        });
+    };
+
+    const handleDragEnd = (e) => {
+        let x = e.clientX < 40 ? 40 : e.clientX - offset.x
+        let y = e.clientY < 150 ? 150 : e.clientY - offset.y
+        setPosition({x: x, y: y});
+        saveCordinates(x, y, e.target.id);
+    };
+
+    const saveCordinates = (x, y, id) => {
+        try {
+            fetch(`${process.env.REACT_APP_BASE_URL}/notes/saveCord/${id}/${x}/${y}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "auth-token": localStorage.getItem('token')
+                }
+            });
+            return;
+        } catch (err) {
+            console.log("Error**", err);
+        }
     }
 
     const onConfirm = async () => {
@@ -28,7 +67,20 @@ const NoteItem = (props) => {
     }
 
     return (
-        <div className='col-md-4'>
+        <div className='col-md-4'
+            id={note._id}
+            draggable={draggable}
+            onDragStart={handleDragStart}
+            onDrag={handleDrag} 
+            onDragEnd={handleDragEnd}
+            style={ draggable ? {
+                position: 'absolute',
+                left: position.x < 40 ? 40 : position.x,
+                top: position.y < 150 ? 150 : position.y,
+                cursor: "move",
+                userSelect: "none",
+            } : undefined }
+        >
             <div className="card shadow-lg my-3">
                 <div className="card-body">
                     <div className="d-flex align-items-center justify-content-between my-1">

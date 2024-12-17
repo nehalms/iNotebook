@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import { Tooltip } from "react-tooltip";
 import noteContext from '../../context/notes/noteContext';
 import NoteItem from './NoteItem';
 import Addnote from './Addnote';
@@ -8,6 +9,7 @@ import { history } from '../History';
 const Notes = (props) => {
     const context = useContext(noteContext);
     const { notes, fetchNotes, updateNote } = context;
+    const [draggable, setDraggable] = useState(false);
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
 
     const modalStyle = {
@@ -157,13 +159,18 @@ const Notes = (props) => {
             </div>
 
             <div className="row my-5">
-                <h2>Your Notes</h2>
+                <div className="d-flex align-items-center justify-content-start">
+                    <h2 className=''>Your Notes</h2>
+                    <i className="fa-solid fa-grip mx-3" id='layout' onClick={() => {setDraggable(!draggable)}}></i>
+                    {draggable && <p className='m-0 mx-3'>(Warning: Not works with mobile phones)</p>}
+                    <Tooltip anchorId="layout" content={`Change layout to ${draggable ? 'Normal' : 'Draggable'}`} place="top" />
+                </div>
                 <div className='container mx-2'>
                     {notes.length === 0 && "No Notes to display"}
                 </div>
                 {notes.length > 0 && notes.map((note) => {
                     return (
-                        <NoteItem showAlert={props.showAlert} key={note.id} editNote={editNote} note={note}/>
+                        <NoteItem showAlert={props.showAlert} key={note.id} editNote={editNote} note={note} draggable={draggable} />
                     );
                 })}
             </div>

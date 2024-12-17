@@ -112,4 +112,26 @@ router.put('/deletenote/:id', fetchuser, async (req, res)=> {
     
 })
 
+router.post('/saveCord/:id/:xpos/:ypos', fetchuser, async (req, res) => {
+    try{
+        let id = req.params.id;
+        let xpos = req.params.xpos;
+        let ypos = req.params.ypos;
+        if(!id || !xpos ||  !ypos) {
+            res.status(400).send({msg: "Missing field parameters"});
+        }
+
+        let note = await Notes.findByIdAndUpdate(id, {xPos: xpos, yPos: ypos}, {new: true});
+        if(note) {
+            res.send({status: 'success', msg: 'cordinates updated successfully'});
+            return;
+        }
+        res.send({status: 'success', msg: 'No note found with the given Id'});
+    }
+    catch(err){
+        console.log(err.message);
+        return res.status(500).send("Internal Server Error!!");
+    }
+});
+
 module.exports = router

@@ -57,7 +57,7 @@ const Signup = (props) => {
             const json = await response.json();
             // console.log(json); 
             if(json.success){
-              history.navigate("/login"); // to redirect the page to home page
+              history.navigate("/"); // to redirect the page to home page
               props.showAlert("Sign in successfull", "success", 10057);
             }
             else {

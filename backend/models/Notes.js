@@ -18,6 +18,14 @@ const NotesSchema = new Schema({
         type: String,
         default: "General"
     },
+    xPos: {
+        type: Number,
+        default: 0
+    },
+    yPos: {
+        type: Number,
+        default: 0
+    },
     date : {
         type: Date,
         default: Date.now
