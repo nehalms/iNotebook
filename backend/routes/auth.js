@@ -65,8 +65,7 @@ router.post("/createuser", decrypt,
 
       const authToken = jwt.sign(data, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
       success = true;
-      res.json({success, authToken });
-
+      
       let html = getAdminNotifyhtml(user.name, user.email);
       Email(
         process.env.ADMIN_EMAIL,
@@ -76,6 +75,7 @@ router.post("/createuser", decrypt,
         html,
         false,
       )
+      res.json({success, authToken });
     } 
     catch (err) {
       console.log(err.message);

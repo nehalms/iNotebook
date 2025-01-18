@@ -124,7 +124,7 @@ function App() {
       localStorage.removeItem('token');
     } catch (err) {
       console.log("Error**" ,err);
-      showAlert("Error in deleting user", 'danger')
+      showAlert("Error in deleting user", 'danger', 10203)
     }
   }
 
@@ -138,7 +138,7 @@ function App() {
 
   const onConfirm = () => {
     setDialogInfo({open: false});
-    showAlert(`Account deleted Successfully`, 'success');
+    showAlert(`Account deleted Successfully`, 'success', 10202);
     setUserInactive();
     history.navigate('/login');
   }

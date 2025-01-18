@@ -45,10 +45,10 @@ router.post('/verify', async(req, res) => {
         let code = req.header('code');
         if(otpManager[email] && otpManager[email].code == code) {
             if(Date.now() > otpManager[email].expiryTime) {
-                res.send({success: true, verified: false, msg: 'Otp expired'});
+                res.send({success: true, verified: false, msg: 'OTP expired'});
                 return;
             }
-            res.send({success: true, verified: true, msg: 'Otp verified'});
+            res.send({success: true, verified: true, msg: 'OTP verified'});
         } else {
             res.send({success: true, verified: false, msg: 'Invalid code'});
         }

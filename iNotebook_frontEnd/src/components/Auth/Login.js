@@ -109,7 +109,7 @@ const Login = (props) => {
             });
             const res = await response.json();
             setVerified(res.success && res.verified);
-            props.showAlert(res.msg, res.success && res.verified ? 'success' : 'danger');
+            props.showAlert(res.msg, res.success && res.verified ? 'success' : 'danger', 10201);
         } catch (err) {
             console.error(err);
             props.showAlert('Error in otp Verification', 'danger', 10021);

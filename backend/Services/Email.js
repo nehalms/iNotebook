@@ -51,7 +51,7 @@ function Email(
           console.log(error);
           reject(error);
         } else {
-          console.log('Email sent: ' + info.response);
+          console.log(`Email sent: ` + info.response);
           resolve(info.response);
         }
       });

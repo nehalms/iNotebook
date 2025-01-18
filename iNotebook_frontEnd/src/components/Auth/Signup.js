@@ -58,6 +58,7 @@ const Signup = (props) => {
             // console.log(json); 
             if(json.success){
               history.navigate("/"); // to redirect the page to home page
+              localStorage.setItem('token', json.authToken);
               props.showAlert("Sign in successfull", "success", 10057);
             }
             else {
