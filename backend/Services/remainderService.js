@@ -33,7 +33,6 @@ async function setRemainder(req) {
                 dateOfMonth: dateTime.getDate(),
                 month: dateTime.getMonth() + 1
             }
-
             // //ServerTime
             // let cronExpression =  {
             //     seconds: dateTime.getUTCSeconds(),
