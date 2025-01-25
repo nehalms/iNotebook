@@ -27,19 +27,12 @@ async function setRemainder(req) {
             }
             let userId = req.user.id;
             let dateTime = new Date(body.date);
-            // let cronExpression =  {
-            //     seconds: dateTime.getSeconds(),
-            //     minutes: dateTime.getMinutes(),
-            //     hours: dateTime.getHours(),
-            //     dateOfMonth: dateTime.getDate(),
-            //     month: dateTime.getMonth() + 1
-            // }
             let cronExpression =  {
-                seconds: dateTime.getUTCSeconds(),
-                minutes: dateTime.getUTCMinutes(),
-                hours: dateTime.getUTCHours(),
-                dateOfMonth: dateTime.getUTCDate(),
-                month: dateTime.getUTCMonth() + 1
+                seconds: dateTime.getSeconds(),
+                minutes: dateTime.getMinutes(),
+                hours: dateTime.getHours(),
+                dateOfMonth: dateTime.getDate(),
+                month: dateTime.getMonth() + 1
             }
             let cronExp = `${cronExpression.seconds} ${cronExpression.minutes} ${cronExpression.hours} ${cronExpression.dateOfMonth} ${cronExpression.month} *`;
             let remainder = await Remainder.create({
@@ -53,7 +46,6 @@ async function setRemainder(req) {
             let validExp = cron.validate(cronExp);
 
             if(validExp) {
-                console.log('Cron set at', cronExp, 'for', userId);
                 cron.schedule(cronExp, async function() {
                     console.log(`Cron job for ${userId} started for ${remainder._id}`);                    
                     await Remainder.findByIdAndUpdate(remainder._id, {isComp: true}, {new: true});
