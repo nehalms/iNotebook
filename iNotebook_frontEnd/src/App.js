@@ -14,7 +14,6 @@ import Alert from './components/Utils/Alert';
 import Spinner from './components/LoadingScreens/Spinner';
 import ComponentLoader from './components/LoadingScreens/ComponentLoader';
 import Confirmation from './components/Utils/Confirmation';
-import Remainder from './components/Remainder/reaminder';
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
@@ -168,7 +167,6 @@ function App() {
                 <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
                 <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
                 <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/remainder' element={<Remainder showAlert={showAlert} setLoader={setLoader}/>}/> 
                 <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
                 <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
                 <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   

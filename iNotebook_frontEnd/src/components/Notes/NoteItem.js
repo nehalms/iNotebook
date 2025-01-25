@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import noteContext from '../../context/notes/noteContext';
-import { Tooltip } from "react-tooltip";
 import {jwtDecode} from 'jwt-decode';
 import Popup from '../Utils/Popup';
 import { history } from '../History';
@@ -93,11 +92,8 @@ const NoteItem = (props) => {
                         }
                         { !showPopup && 
                             <div>
-                                <i id={`edit ${note._id}`} className="fa-regular fa-pen-to-square mx-2 text-secondary" onClick={() => {editNote(note)}}></i>
-                                <Tooltip anchorId={`edit ${note._id}`} content={`Edit`} place="top" />
-
-                                <i id={`delete ${note._id}`} className="fa-solid fa-trash mx-2 text-danger" onClick={() => {setShowPopup(true)}}></i>
-                                <Tooltip anchorId={`delete ${note._id}`} content={`Delete`} place="top" />
+                                <i className="fa-regular fa-pen-to-square mx-2 text-secondary" onClick={() => {editNote(note)}}></i>
+                                <i className="fa-solid fa-trash mx-2 text-danger" onClick={() => {setShowPopup(true)}}></i>
                             </div>
                         }
                     </div>
