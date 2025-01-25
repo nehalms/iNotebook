@@ -20,7 +20,7 @@
   ],
   "crons": [
     {
-      "path": "/api/remainderCron",
+      "path": "/api/remainderCron.js",
       "schedule": "* * * * *"
     }
   ]
