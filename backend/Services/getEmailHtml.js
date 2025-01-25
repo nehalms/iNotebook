@@ -127,9 +127,40 @@ const getAdminhtml = (otp) => {
     return html;
 }
 
+const getRemainderhtml = (name, title, content) => {
+  let html = `<!DOCTYPE html>
+    <html>
+      <head>
+          <title> ${title} </title>
+      </head>
+      <body>
+        <p style="font-size: 12pt; font-weight: normal; font-family:Arial; color: #000;">
+          Hello ${name}, <br/>
+        </p>
+        <p style="font-size: 12pt; font-weight: normal; font-family:Arial; color: #000;">
+          This is a remainder for you about <strong>${title}</strong>
+          <br>
+          ${content}
+        </p>
+        <div 
+          style="font-size: 12pt; font-family: Arial; font-weight: 500; color: #000; margin-top: 1.5rem;text-align: left">
+          <br/>
+          <p style="margin: 0px;">
+            Best Regards,
+            <br /><br />
+            iNotebook team<br>
+            Email : inotebook002@gmail.com<br>
+          </p>
+        </div>
+      </body>
+    </html>`
+    return html;
+}
+
 module.exports = {
   getForgotPasshtml,
   getSignUphtml,
   getAdminNotifyhtml,
   getAdminhtml,
+  getRemainderhtml,
 }

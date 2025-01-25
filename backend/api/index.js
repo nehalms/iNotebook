@@ -29,6 +29,7 @@ app.use('/api/mail', require('../routes/EmailController'));
 app.use('/api/game', require('../routes/game'));
 app.use('/api/msg', require('../routes/message'));
 app.use('/api/aes', require('../routes/AesEncryption'));
+app.use('/api/remainder', require('../routes/remainderController'));
 
 app.listen(port, () => {
   console.log(`iNotebook backend listening at port :${port}`)
