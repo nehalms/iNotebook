@@ -1,8 +1,6 @@
 const Remainder = require("../models/Remainder");
 const cron = require('node-cron');
 const User = require("../models/User");
-const { getRemainderhtml } = require("./getEmailHtml");
-const { Email } = require('../Services/Email');
 
 async function getReaminders(req) {
     return new Promise(async (resolve, reject) => {
@@ -27,52 +25,38 @@ async function setRemainder(req) {
             }
             let userId = req.user.id;
             let dateTime = new Date(body.date);
-            // let cronExpression =  {
-            //     seconds: dateTime.getSeconds(),
-            //     minutes: dateTime.getMinutes(),
-            //     hours: dateTime.getHours(),
-            //     dateOfMonth: dateTime.getDate(),
-            //     month: dateTime.getMonth() + 1
-            // }
+
+            //Local time
             let cronExpression =  {
-                seconds: dateTime.getUTCSeconds(),
-                minutes: dateTime.getUTCMinutes(),
-                hours: dateTime.getUTCHours(),
-                dateOfMonth: dateTime.getUTCDate(),
-                month: dateTime.getUTCMonth() + 1
+                seconds: dateTime.getSeconds(),
+                minutes: dateTime.getMinutes(),
+                hours: dateTime.getHours(),
+                dateOfMonth: dateTime.getDate(),
+                month: dateTime.getMonth() + 1
             }
-            let cronExp = `${cronExpression.seconds} ${cronExpression.minutes} ${cronExpression.hours} ${cronExpression.dateOfMonth} ${cronExpression.month} *`;
-            let remainder = await Remainder.create({
-                userId: userId,
-                title: body.title,
-                content: body.content,
-                remainderDate: dateTime,
-                cronExp: cronExp,
-                isComp: false
-            });
+
+            // //ServerTime
+            // let cronExpression =  {
+            //     seconds: dateTime.getUTCSeconds(),
+            //     minutes: dateTime.getUTCMinutes(),
+            //     hours: dateTime.getUTCHours(),
+            //     dateOfMonth: dateTime.getUTCDate(),
+            //     month: dateTime.getUTCMonth() + 1
+            // }
+            let cronExp = `${cronExpression.minutes} ${cronExpression.hours} ${cronExpression.dateOfMonth} ${cronExpression.month} *`;
             let validExp = cron.validate(cronExp);
 
             if(validExp) {
                 console.log('Cron set at', cronExp, 'for', userId);
-                cron.schedule(cronExp, async function() {
-                    console.log(`Cron job for ${userId} started for ${remainder._id}`);                    
-                    await Remainder.findByIdAndUpdate(remainder._id, {isComp: true}, {new: true});
-                    let user = await User.findById(userId);
-                    let emailHtml = getRemainderhtml(user.name, remainder.title, remainder.content);
-                    console.log(emailHtml);
-                    Email(
-                        [user.email],
-                        [],
-                        remainder.title,
-                        '',
-                        emailHtml
-                    ).then(() => {
-                        console.log(`Remainder Completed for ${userId}`);
-                    })
-                    .catch((err) => {
-                        res.status(500).send(err);
-                    })
-                }, { timezone: 'Asia/Kolkata' });
+                await Remainder.create({
+                    userId: userId,
+                    title: body.title,
+                    content: body.content,
+                    remainderDate: dateTime,
+                    cronExp: cronExp,
+                    cronUrl: process.env.BASE_URL + '/cron/send-rem',
+                    isComp: false
+                });
                 resolve({status:1, msg: 'Remainder set successfully'});
             } else {
                 reject({error: 'Error in setting remainder'});
