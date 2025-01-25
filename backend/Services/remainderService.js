@@ -1,6 +1,5 @@
 const Remainder = require("../models/Remainder");
 const cron = require('node-cron');
-const User = require("../models/User");
 
 async function getReaminders(req) {
     return new Promise(async (resolve, reject) => {
