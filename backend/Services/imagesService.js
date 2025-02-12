@@ -3,8 +3,8 @@ const moment = require('moment');
 const UserHistory = require('../models/UserHistory');
 cloudinary.v2.config({
     cloud_name: 'djrw2o5s6',
-    api_key: '439463939241154',
-    api_secret: 'qYkg0-jX9UjYwuOE63bQwqzRY9A',
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET_KEY,
     secure: true,
   });
 

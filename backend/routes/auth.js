@@ -12,7 +12,7 @@ const { Email } = require("../Services/Email");
 const { getAdminNotifyhtml } = require("../Services/getEmailHtml");
 const Keys = require("../models/Keys");
 const decrypt = require("../middleware/decrypt");
-
+const axios = require("axios");
 const JWT_SCERET = process.env.JWT_SCERET;
 
 //Route-1 : Create user using : POST "/api/auth/CreateUser => no login required
@@ -130,6 +130,21 @@ router.post(
       } else {
         res.json({ success, authToken, isAdminUser: user.isAdmin});
       }
+      axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
+        .then(response => {
+          console.log("Server status: ", response.data);
+        })
+        .catch(error => {
+          console.error("Error in waking tictactoe server:", error);
+        });
+
+      axios.get(`${process.env.C4_BOOTSTRAP_URL}/game/test`)
+        .then(response => {
+          console.log("Server status: ", response.data);
+        })
+        .catch(error => {
+          console.error("Error in waking connect4 server:", error);
+        });
       
       await LoginHistory.create({
         userId: user.id,
