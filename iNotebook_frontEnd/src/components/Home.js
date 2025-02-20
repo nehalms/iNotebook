@@ -97,9 +97,10 @@ const Home = (props) => {
       <div className="feature-grid">
         {[
           { name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
-          { name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#FF9800' },
-          { name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#2196F3' },
-          { name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#F44336' },
+          { name: 'Tasks / To-Do list', route: '/tasks', icon: 'fa-pen', color: '#FF9800' },
+          { name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#2196F3' },
+          { name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#F44336' },
+          { name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#904caf' },
         ].map((feature, index) => (
           <div
             key={index}

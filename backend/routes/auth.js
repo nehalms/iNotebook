@@ -132,7 +132,7 @@ router.post(
       }
       axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
         .then(response => {
-          console.log("Server status: ", response.data);
+          console.log("Server status(TTT) ", response.data);
         })
         .catch(error => {
           console.error("Error in waking tictactoe server:", error);
@@ -140,7 +140,7 @@ router.post(
 
       axios.get(`${process.env.C4_BOOTSTRAP_URL}/game/test`)
         .then(response => {
-          console.log("Server status: ", response.data);
+          console.log("Server status(C4) ", response.data);
         })
         .catch(error => {
           console.error("Error in waking connect4 server:", error);

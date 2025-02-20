@@ -15,7 +15,7 @@ const fetchuser = (req, res, next) => {
     }
     catch(err){
         if(err.message === 'jwt expired') {
-            res.status(401).send({success: false, error: 'Session expired please login again'});
+            res.status(401).send({ sessionexpired: true, error: 'Session expired please login again', navigate: '/login'});
         } else {
             res.status(401).send({error: 'Pleaze authenticate using valid token'});
         }

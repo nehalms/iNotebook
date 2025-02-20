@@ -14,6 +14,8 @@ import Alert from './components/Utils/Alert';
 import Spinner from './components/LoadingScreens/Spinner';
 import ComponentLoader from './components/LoadingScreens/ComponentLoader';
 import Confirmation from './components/Utils/Confirmation';
+import TaskState from './context/tasks/TaskState';
+import Folder from './components/ToDoLists/Folders/Folder';
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
@@ -151,31 +153,34 @@ function App() {
   return (
     <>
       <NoteState showAlert={showAlert}  setLoader={setLoader}>  {/* components inside this can access the context data */}
-        <Router>
-          <Navbar showAlert={showAlert} mode={mode} toggleMode={toggleMode} setLoader={setLoader} setDialog={setDialog} />
-          <Alert alert={alert} setLoader={setLoader} />
-          <SpeedInsights/>
-          {loader.showLoader && <Spinner msg={loader.msg}/>}
-          {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
-          <div className="container" style={{marginTop: '40px'}}>
-            <Suspense fallback={<div><ComponentLoader msg={'Loading...'}/></div>}>
-              <Routes>
-                <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
-                <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
-                <Route exact path='/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
-                <Route exact path='/msg' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
-              </Routes>
-            </Suspense>
-          </div>
-        </Router>
+        <TaskState showAlert={showAlert}  setLoader={setLoader}>
+          <Router>
+            <Navbar showAlert={showAlert} mode={mode} toggleMode={toggleMode} setLoader={setLoader} setDialog={setDialog} />
+            <Alert alert={alert} setLoader={setLoader} />
+            <SpeedInsights/>
+            {loader.showLoader && <Spinner msg={loader.msg}/>}
+            {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
+            <div className="container" style={{marginTop: '40px'}}>
+              <Suspense fallback={<div><ComponentLoader msg={'Loading...'}/></div>}>
+                <Routes>
+                  <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
+                  <Route exact path='/login' element={<Login showAlert={showAlert} setLoader={setLoader}/>}/>       
+                  <Route exact path='/forgot' element={<Forgot showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/signup' element={<Signup showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/tasks' element={<Folder showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/msg' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
+                </Routes>
+              </Suspense>
+            </div>
+          </Router>
+        </TaskState>
       </NoteState>
     </>
 
