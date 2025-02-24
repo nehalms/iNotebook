@@ -9,12 +9,12 @@ function AddFolder(props) {
 
     const modalStyle = {
         borderRadius: '15px',
-        backgroundColor: '#fff',
+        backgroundColor: '#eafaf1',
     };
     
     const modalHeaderStyle = {
-        backgroundColor: '#ffad60',
-        color: '#4d3319',
+        backgroundColor: '#2d6a4f',
+        color: '#f1faee',
         borderTopLeftRadius: '15px',
         borderTopRightRadius: '15px',
         padding: '15px',
@@ -22,17 +22,17 @@ function AddFolder(props) {
     
     const formLabelStyle = {
         fontSize: '1rem',
-        color: '#6b3e26',
+        color: '#1b4332',
     };
     
     const formControlStyle = {
         borderRadius: '8px',
-        border: '1px solid rgb(0, 0, 0)',
+        border: '1px solid #40916c',
         padding: '12px',
         fontSize: '1rem',
         marginBottom: '10px',
-        backgroundColor: '#fff',
-        color: '#6b3e26',
+        backgroundColor: '#d8f3dc',
+        color: '#1b4332',
     };
     
     const modalFooterStyle = {
@@ -41,26 +41,26 @@ function AddFolder(props) {
     };
     
     const modalButtonSecondaryStyle = {
-        backgroundColor: '#ffb677',
-        color: '#6b3e26',
+        backgroundColor: '#52b788',
+        color: '#081c15',
         borderRadius: '30px',
     };
     
     const modalButtonPrimaryStyle = {
-        backgroundColor: '#ff924c',
-        color: '#fff8f0',
+        backgroundColor: '#1b4332',
+        color: '#f1faee',
         borderRadius: '30px',
-        border: '1px solid rgb(236, 149, 68)',
+        border: '1px solid #40916c',
         padding: '6px 12px',
     };
     
     const modalButtonPrimaryDisabledStyle = {
-        backgroundColor: '#ffcc99',
-        color: '#fff8f0',
+        backgroundColor: '#74c69d',
+        color: '#f1faee',
         borderRadius: '30px',
-        border: '1px solid rgb(239, 154, 69)',
+        border: '1px solid #52b788',
         padding: '6px 12px',
-    };    
+    };         
 
     const onChange = (e) => {
         setFolderName(e.target.value);
