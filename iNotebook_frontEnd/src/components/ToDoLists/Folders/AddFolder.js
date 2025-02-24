@@ -9,12 +9,12 @@ function AddFolder(props) {
 
     const modalStyle = {
         borderRadius: '15px',
-        backgroundColor: '#eafaf1',
+        backgroundColor: '#fff',
     };
     
     const modalHeaderStyle = {
-        backgroundColor: '#2d6a4f',
-        color: '#f1faee',
+        backgroundColor: '#ffad60',
+        color: '#4d3319',
         borderTopLeftRadius: '15px',
         borderTopRightRadius: '15px',
         padding: '15px',
@@ -22,17 +22,17 @@ function AddFolder(props) {
     
     const formLabelStyle = {
         fontSize: '1rem',
-        color: '#1b4332',
+        color: '#6b3e26',
     };
     
     const formControlStyle = {
         borderRadius: '8px',
-        border: '1px solid #40916c',
+        border: '1px solid rgb(0, 0, 0)',
         padding: '12px',
         fontSize: '1rem',
         marginBottom: '10px',
-        backgroundColor: '#d8f3dc',
-        color: '#1b4332',
+        backgroundColor: '#fff',
+        color: '#6b3e26',
     };
     
     const modalFooterStyle = {
@@ -41,24 +41,24 @@ function AddFolder(props) {
     };
     
     const modalButtonSecondaryStyle = {
-        backgroundColor: '#52b788',
-        color: '#081c15',
+        backgroundColor: '#ffb677',
+        color: '#6b3e26',
         borderRadius: '30px',
     };
     
     const modalButtonPrimaryStyle = {
-        backgroundColor: '#1b4332',
-        color: '#f1faee',
+        backgroundColor: '#ff924c',
+        color: '#fff8f0',
         borderRadius: '30px',
-        border: '1px solid #40916c',
+        border: '1px solid rgb(236, 149, 68)',
         padding: '6px 12px',
     };
     
     const modalButtonPrimaryDisabledStyle = {
-        backgroundColor: '#74c69d',
-        color: '#f1faee',
+        backgroundColor: '#ffcc99',
+        color: '#fff8f0',
         borderRadius: '30px',
-        border: '1px solid #52b788',
+        border: '1px solid rgb(239, 154, 69)',
         padding: '6px 12px',
     };         
 

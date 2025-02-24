@@ -10,12 +10,12 @@ function AddTask(props) {
 
     const modalStyle = {
         borderRadius: '15px',
-        backgroundColor: '#f0f7f4',
+        backgroundColor: '#eafaf1',
     };
     
     const modalHeaderStyle = {
-        backgroundColor: '#2a6357',
-        color: '#f0f7f4',
+        backgroundColor: '#2d6a4f',
+        color: '#f1faee',
         borderTopLeftRadius: '15px',
         borderTopRightRadius: '15px',
         padding: '15px',
@@ -23,17 +23,17 @@ function AddTask(props) {
     
     const formLabelStyle = {
         fontSize: '1rem',
-        color: '#17443b',
+        color: '#1b4332',
     };
     
     const formControlStyle = {
         borderRadius: '8px',
-        border: '1px solid #5a9c80',
+        border: '1px solid #40916c',
         padding: '12px',
         fontSize: '1rem',
         marginBottom: '10px',
-        backgroundColor: '#e3f2e9',
-        color: '#17443b',
+        backgroundColor: '#d8f3dc',
+        color: '#1b4332',
     };
     
     const modalFooterStyle = {
@@ -42,24 +42,24 @@ function AddTask(props) {
     };
     
     const modalButtonSecondaryStyle = {
-        backgroundColor: '#a3c9a8',
-        color: '#17443b',
+        backgroundColor: '#52b788',
+        color: '#081c15',
         borderRadius: '30px',
     };
     
     const modalButtonPrimaryStyle = {
-        backgroundColor: '#38776b',
-        color: '#ffffff',
+        backgroundColor: '#1b4332',
+        color: '#f1faee',
         borderRadius: '30px',
-        border: '1px solid #2a6357',
+        border: '1px solid #40916c',
         padding: '6px 12px',
     };
     
     const modalButtonPrimaryDisabledStyle = {
-        backgroundColor: '#7fb69d',
-        color: '#ffffff',
+        backgroundColor: '#74c69d',
+        color: '#f1faee',
         borderRadius: '30px',
-        border: '1px solid #5a9c80',
+        border: '1px solid #52b788',
         padding: '6px 12px',
     };     
 
