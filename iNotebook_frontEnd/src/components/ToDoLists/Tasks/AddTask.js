@@ -84,7 +84,7 @@ function AddTask(props) {
           <button
               className="p-3 text-white border rounded-pill"
               type="button"
-              style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 1, backgroundColor: '#f54287' }}
+              style={{ position: 'fixed', bottom: '25px', right: '25px', zIndex: 1, backgroundColor: '#f54287' }}
               data-bs-toggle="modal"
               data-bs-target="#newTaskModal"
           >

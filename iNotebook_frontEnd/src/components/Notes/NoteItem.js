@@ -9,7 +9,7 @@ const NoteItem = (props) => {
     const {note, editNote, draggable} = props;
     const [position, setPosition] = useState({x: note.xPos, y: note.yPos});
     const [offset, setOffset] = useState({ x: 0, y: 0 });
-    const {deleteNote} = context;
+    const {deleteNote, fetchNotes} = context;
     const [showPopup, setShowPopup] = useState(false);
 
     const onCancel = () => {
@@ -48,6 +48,7 @@ const NoteItem = (props) => {
                   "auth-token": localStorage.getItem('token')
                 }
             });
+            fetchNotes();
             return;
         } catch (err) {
             console.log("Error**", err);

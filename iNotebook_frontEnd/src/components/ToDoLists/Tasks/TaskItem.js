@@ -29,12 +29,12 @@ function TaskItem(props) {
     <div className='col-lg-6' id={task._id}>
         <div className="card shadow-lg my-3">
             <div className="card-body p-1" style={{backgroundColor: task.completed && '#baf5ce'}}>
-                <div className="d-flex align-items-center justify-content-between my-1 mx-2 p-2">
+                <div className="d-flex align-items-center justify-content-between my-1 mx-1 py-1">
                     <div className="form-check">
-                        <input className="form-check-input" type="checkbox" value="" id={`flexCheck${task._id}`} style={{border: '1px solid black', height: '30px', width: '30px'}} checked={task.completed} onChange={(e) => {updateStatus(e, task)}}/>
+                        <input className="form-check-input" type="checkbox" value="" id={`flexCheck${task._id}`} style={{border: '1px solid black', height: '25px', width: '25px'}} checked={task.completed} onChange={(e) => {updateStatus(e, task)}}/>
                         <Tooltip anchorId={`flexCheck${task._id}`} content={`Mark as ${task.completed ? 'incomplete': 'complete'}`} place="top" />
                     </div>
-                    <h4 className={`m-0 ${task.completed && 'text-decoration-line-through'}`} >{task.taskDesc}</h4>
+                    <h5 className={`m-0 mx-1 ${task.completed && 'text-decoration-line-through'} text-center`} >{task.taskDesc}</h5>
                     <div>
                         { showPopup && 
                             <div>
@@ -42,7 +42,7 @@ function TaskItem(props) {
                             </div>
                         }
                         { !showPopup && 
-                            <div>
+                            <div className="d-flex align-items-center justify-content-center">
                                 {
                                     task.completed ? <i className="fa-solid fa-lg fa-trash mx-2" style={{color: '#fb2d2d'}} onClick={() => {setShowPopup(true)}}></i> :
                                     <i className="fa-regular fa-lg fa-pen-to-square mx-2 text-secondary" onClick={() => {editTask(task)}}></i>

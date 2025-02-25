@@ -183,7 +183,7 @@ function Tasks(props) {
         {showTaskInfo.show && <TaskInfo task={showTaskInfo.task} showInfo={showInfo}/>}
 
 		<AddTask addTaskInt={addTaskInt}/>
-		<div className="row my-1">
+		<div className="row my-1 mb-5">
 			<div className='container mx-2'>
 				{tasks.length === 0 && "No Tasks to display"}
 			</div>

@@ -4,25 +4,18 @@ import CryptoJS from 'crypto-js';
 import { getSecretKey } from "../../components/Requests/getSecretKey";
 
 const NoteState = (props)=> {
-    const host = process.env.REACT_APP_BASE_URL
+    const host = process.env.REACT_APP_BASE_URL;
+    const [sortType, setSortType] = useState('NONE');
+    const [serachStr, setSearchStr] = useState('');
+
     const notesInitital = []
+    const [initNotes, setInitNotes] = useState(notesInitital);
     const [notes, setNotes] = useState(notesInitital);
     
-    async function decrypt() {
-        if( !sessionStorage.getItem('AesKey') ) {
-            await getSecretKey();
-        }
-        let decryptKey = ''
-        Array.from(sessionStorage.getItem('AesKey')).forEach(char => {
-            decryptKey += String.fromCharCode(char.charCodeAt(0) / 541);
-        });
-        return decryptKey;
-    }
-
     //get all notes
     const fetchNotes = async ()=> {
         try {
-            let secretKey = await decrypt();
+            let secretKey = await getSecretKey();
             props.setLoader({ showLoader: true, msg: "Fetching Notes"});
             const response = await fetch(`${host}/notes/fetchallnotes`, {
                 method: "GET", 
@@ -49,6 +42,9 @@ const NoteState = (props)=> {
                 decryptedNote.push(note);
             });
             setNotes(decryptedNote);
+            setInitNotes(decryptedNote);
+            sort(sortType, decryptedNote);
+            searchNote(serachStr, decryptedNote);
         } catch (err) {
             props.setLoader({ showLoader: false });
             console.log("Error**", err);
@@ -60,7 +56,7 @@ const NoteState = (props)=> {
     //Add a note
     const addNote = async (title, description, tag)=> {
         try {
-            let secretKey = await decrypt();
+            let secretKey = await getSecretKey();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
@@ -122,7 +118,7 @@ const NoteState = (props)=> {
     //Edit a note
     const updateNote = async (id, title, description, tag)=> {
         try {
-            let secretKey = await decrypt();
+            let secretKey = await getSecretKey();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
@@ -149,9 +145,104 @@ const NoteState = (props)=> {
         }
     }
 
+    const searchNote = (str, currNote=null) => {
+        try {
+            props.setLoader({ showLoader: true, msg: "Searching notes"});
+            str = str.trim();
+            setSearchStr(str);
+            if(str === '') {
+                setNotes(currNote ? currNote : initNotes)
+                sort(sortType, currNote ? currNote : initNotes);
+                return;
+            }
+            let tempNotes = currNote ? [...currNote] : [...initNotes];
+            tempNotes = tempNotes.filter((note) => {
+                return (
+                    note.title && note.title.toString().toLowerCase().includes(str.toLowerCase()) ||
+                    note.description && note.description.toString().toLowerCase().includes(str.toLowerCase()) ||
+                    note.tag && note.tag.toString().toLowerCase().includes(str.toLowerCase())
+                ); 
+                
+            });            
+            setNotes(tempNotes);
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger', 10123);
+        } finally {
+            props.setLoader({ showLoader: false });
+        }
+    }
+
+    const sort = (type, currNote = null) => {
+        try {
+            let tempNotes = currNote ? [...currNote] : [...notes];
+            if(type === 'NONE') {
+                setSortType('NONE');
+                setNotes(currNote ? currNote : initNotes);
+            } else if (type === 'T_ASCE') {
+                setSortType('T_ASCE');
+                tempNotes.sort((n1, n2) => {
+                    return n1.title.toLowerCase() > n2.title.toLowerCase() ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            } else if (type === 'T_DESC') {
+                setSortType('T_DESC');
+                tempNotes.sort((n1, n2) => {
+                    return n1.title.toLowerCase() < n2.title.toLowerCase() ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            } else if (type === 'D_ASCE') {
+                setSortType('D_ASCE');
+                tempNotes.sort((n1, n2) => {
+                    return n1.description.toLowerCase() > n2.description.toLowerCase() ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            } else if (type === 'D_DESC') {
+                setSortType('D_DESC');
+                tempNotes.sort((n1, n2) => {
+                    return n1.description.toLowerCase() < n2.description.toLowerCase() ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            }  else if (type === 'TG_ASCE') {
+                setSortType('TG_ASCE');
+                tempNotes.sort((n1, n2) => {
+                    return n1.tag.toLowerCase() > n2.tag.toLowerCase() ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            } else if (type === 'TG_DESC') {
+                setSortType('TG_DESC');
+                tempNotes.sort((n1, n2) => {
+                    return n1.tag.toLowerCase() < n2.tag.toLowerCase() ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            } else if (type === 'DATE_ASCE') {
+                setSortType('DATE_ASCE');
+                tempNotes.sort((n1, n2) => {
+                    return n1.date < n2.date ? -1 : 1;
+                })
+                setNotes(tempNotes);
+            } else if (type === 'DATE_DESC') {
+                setSortType('DATE_DESC');
+                tempNotes.sort((n1, n2) => {
+                    return n1.date < n2.date ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            } else if (type === 'LEN') {
+                setSortType('LEN');
+                tempNotes.sort((n1, n2) => {
+                    return n1.title.length + n1.description.length + n1.tag.length > n2.title.length + n2.description.length + n2.tag.length ? 1 : -1;
+                })
+                setNotes(tempNotes);
+            }
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger', 10123);
+        }
+    }
+
 
     return (
-        <NoteContext.Provider value={{notes, fetchNotes, addNote, deleteNote, updateNote}}>
+        <NoteContext.Provider value={{notes, fetchNotes, addNote, deleteNote, updateNote, sort, searchNote}}>
             {props.children}
         </NoteContext.Provider>
     )

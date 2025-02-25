@@ -1,0 +1,22 @@
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu.submenu {
+    top: 0;
+    right: 100%;
+    margin-top: -1px;
+    display: none;
+}
+
+.dropdown-submenu:hover .dropdown-menu.submenu {
+    display: block;
+}
+
+.dropdown-menu {
+    min-width: 140px;
+}
+
+.dropdown-item {
+    white-space: nowrap;
+}

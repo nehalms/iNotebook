@@ -6,10 +6,11 @@ import taskContext from '../../../context/tasks/taskContext';
 import FolderItem from './FolderItem';
 import AddFolder from './AddFolder';
 import Tasks from '../Tasks/Tasks';
+import SortNSerh from '../../Utils/SortNSearch/SortNSerh';
 
 export default function Folder(props) {
     const content = useContext(taskContext);
-    const {folders, fetchFolders, addFolder, updateFolder} = content
+    const {folders, fetchFolders, addFolder, updateFolder, sort, searchTask} = content
     const editFoldNameRef = useRef();
     const crtFolRefClose = useRef();
     const [showTasks, setShowTasks] = useState(false);
@@ -18,6 +19,14 @@ export default function Folder(props) {
         src: "",
         dest: ""
     })
+
+    const sortingList = [
+        { name: 'None', nested: [{name: 'None', type: 'NONE'}] },
+        { name: 'Name', nested: [{ name: 'A-Z', type: 'ASCE'}, { name: 'Z-A', type: 'DESC'}] },
+        { name: 'Date', nested: [{ name: 'Older', type: 'DATE_ASCE'}, { name: 'Latest', type: 'DATE_DESC'}] },
+        { name: 'Status', nested: [{ name: 'Completed', type: 'COMP_ASCE'}, { name: 'Incomplete', type: 'COMP_DESC'}] },
+        { name: 'Length', nested: [{ name: 'Length', type: 'LEN'},] },
+    ];
 
     const modalStyle = {
         borderRadius: '15px',
@@ -131,7 +140,7 @@ export default function Folder(props) {
     }
 
   return (
-    <div> 
+    <div className='my-5'> 
         {!showTasks && <AddFolder addFolder={addFolder}/>}
         <button type="button" className="btn" ref={editFoldNameRef} hidden={true} data-bs-toggle="modal" data-bs-target="#editfolderModal">
             Launch demo modal
@@ -191,13 +200,19 @@ export default function Folder(props) {
         </div>
 
 
-        <div className="d-flex align-items-center justify-content-start mt-5">
-            <h2 className='me-4 ms-1'>{showTasks ? <><i className="m-0 mx-2 p-0 fa-regular fa-folder"></i>{currSrc}</> : 'Your Tasks'}</h2>
-            {  showTasks &&
-                <div id="back" className='p-2 ms-2 border rounded' style={boxStyle} onClick={() => {handleFolderClick(null)}}>
-                    <p className='m-0'><i className="m-0 fa-solid fa-arrow-left"></i><i className="ms-3 p-0 fa-regular fa-folder"></i> Folders</p>
-                    <Tooltip anchorId="back" content={`Go back to folders`} place="right" />
-                </div>
+        <div className="row mt-5">
+            <div className='col-md-6 my-1 p-1 d-flex align-items-center justify-content-start'>
+                <h2 className='mx-1 my-0 text-left'>{showTasks ? <><i className="m-0 me-2 p-0 fa-regular fa-folder"></i>{currSrc}</> : 'Your Tasks'}</h2>
+                {  showTasks &&
+                    <div id="back" className='p-2 mx-2 border rounded text-center' style={boxStyle} onClick={() => {handleFolderClick(null)}}>
+                        <p className='m-0'><i className="m-0 fa-solid fa-arrow-left"></i><i className="ms-3 p-0 fa-regular fa-folder"></i> Folders</p>
+                        <Tooltip anchorId="back" style={{zIndex: '10'}} content={`Go back to folders`} place="right" />
+                    </div>
+                }
+            </div>
+            {   
+                showTasks &&
+                <SortNSerh sortingList={sortingList} sort={sort} search={searchTask} />
             }
         </div>
         { !showTasks ?

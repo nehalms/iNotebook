@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import './Home.css';
 import loading_gif from './loading.gif';
 import Confirmation from '../components/Utils/Confirmation';
-import { getSecretKey } from '../components/Requests/getSecretKey'
+import { fetchSecretKey } from '../components/Requests/getSecretKey'
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
@@ -26,7 +26,7 @@ const Home = (props) => {
         history.navigate('/login');
         return;
       }
-      getSecretKey();
+      fetchSecretKey();
       fetchHistory();
     } else {
       props.showAlert('Please log in', 'warning', 10002);
