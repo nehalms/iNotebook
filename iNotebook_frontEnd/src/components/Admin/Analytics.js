@@ -5,10 +5,11 @@ import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 import moment from 'moment';
 import loading from './loading.gif' 
+import { useNavigate } from 'react-router-dom';
 
 export default function Analytics(props) {
   Chart.register(...registerables);
-
+  history.navigate = useNavigate();
   const [notesData, setNotesData] = useState({xAxisDates: [], notesData: [], colors: []});
   const [loginData, setLoginData] = useState({xAxisDates: [], loginData: [], colors: []});
   const [showUserLoader, setShowUserLoader] = useState(false);

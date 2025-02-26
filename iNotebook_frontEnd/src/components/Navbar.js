@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react'
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { history } from './History';
 import img from './favicon-32x32.png'
 import './Navbar.css'
 
 const Navbar = (props) => {
+    history.navigate = useNavigate();
     const [showNavBar, setShowNavbar] = useState(false);
     const [modeEnabled, setEnabled] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') === 'bg-dark' : false);
 

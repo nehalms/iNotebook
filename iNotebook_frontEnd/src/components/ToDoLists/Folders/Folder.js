@@ -7,8 +7,10 @@ import FolderItem from './FolderItem';
 import AddFolder from './AddFolder';
 import Tasks from '../Tasks/Tasks';
 import SortNSerh from '../../Utils/SortNSearch/SortNSerh';
+import { useNavigate } from 'react-router-dom';
 
 export default function Folder(props) {
+    history.navigate = useNavigate();
     const content = useContext(taskContext);
     const {folders, fetchFolders, addFolder, updateFolder, sort, searchTask} = content
     const editFoldNameRef = useRef();

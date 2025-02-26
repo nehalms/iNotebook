@@ -6,8 +6,10 @@ import Addnote from './Addnote';
 import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 import SortNSerh from '../Utils/SortNSearch/SortNSerh';
+import { useNavigate } from 'react-router-dom';
 
 const Notes = (props) => {
+    history.navigate = useNavigate();
     const context = useContext(noteContext);
     const { notes, fetchNotes, updateNote, sort, searchNote } = context;
     const [draggable, setDraggable] = useState(false);

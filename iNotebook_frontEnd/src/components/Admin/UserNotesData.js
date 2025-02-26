@@ -4,8 +4,10 @@ import { Tooltip } from '@mui/material';
 import moment from 'moment';
 import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserNotesData(props) {
+  history.navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [totalcount, setTotalCount] = useState({ usersCount: 0, notesCount: 0 });
 

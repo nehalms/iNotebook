@@ -3,10 +3,11 @@ import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-g
 import { colors, Tooltip } from '@mui/material';
 import { history } from '../History';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 export default function GameStats(props) {
   const [rows, setRows] = useState([]);
-
+  history.navigate = useNavigate();
   useEffect(() => {
     if (
       sessionStorage.getItem('adminToken') &&

@@ -5,9 +5,11 @@ import { history } from '../../History';
 import TaskItem from './TaskItem';
 import AddTask from './AddTask';
 import TaskInfo from './TaskInfo';
+import { useNavigate } from 'react-router-dom';
 
 function Tasks(props) {
-	const { src, showAlert } = props;
+    history.navigate = useNavigate();
+    const { src, showAlert } = props;
     const [showTaskInfo, setTaskInfo] = useState({
         show: false,
         task: null,
