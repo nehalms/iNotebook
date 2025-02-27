@@ -70,7 +70,7 @@ const TaskState = (props)=> {
             });
             const json = await response.json();
             if(json.errors && json.errors.length) {
-                props.showAlert(json.errors[0].msg, 'info', 10122);
+                props.showAlert(json.errors[0].msg, 'warning', 10122);
                 return;
             }
             if(json.status === 1) {
@@ -98,7 +98,7 @@ const TaskState = (props)=> {
             });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'info', 10124);
+                props.showAlert(json.error, 'warning', 10124);
                 return;
             }
             if(json.status === 1) {
@@ -131,7 +131,7 @@ const TaskState = (props)=> {
             });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'info', 10126);
+                props.showAlert(json.error, 'warning', 10126);
                 return;
             }
             if(json.status === 1) {
@@ -158,7 +158,7 @@ const TaskState = (props)=> {
             });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'info', 10306);
+                props.showAlert(json.error, 'warning', 10306);
                 return;
             }
             if(json.status === 1) {
@@ -218,7 +218,7 @@ const TaskState = (props)=> {
             });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'info', 10122);
+                props.showAlert(json.error, 'warning', 10122);
                 return;
             }
             if(json.status === 1) {
@@ -246,7 +246,7 @@ const TaskState = (props)=> {
             });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'info', 10122);
+                props.showAlert(json.error, 'warning', 10122);
                 return;
             }
             if(json.status === 1) {
@@ -274,7 +274,7 @@ const TaskState = (props)=> {
             });
             const json = await response.json();
             if(json.error) {
-                props.showAlert(json.error, 'info', 10122);
+                props.showAlert(json.error, 'warning', 10122);
                 return;
             }
             if(json.status === 1) {
