@@ -68,7 +68,7 @@ router.post("/createuser", decrypt,
       success = true;
       res.cookie('authToken', authToken, {
         httpOnly: true,   
-        secure: false,           
+        secure: true,           
         sameSite: 'none',
         maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
       });
@@ -133,7 +133,7 @@ router.post(
         if(req.query.verified == 'true') {
           res.cookie('authToken', authToken, {
             httpOnly: true,   
-            secure: false,           
+            secure: true,           
             sameSite: 'none',
             maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
           });
@@ -142,7 +142,7 @@ router.post(
       } else {
         res.cookie('authToken', authToken, {
           httpOnly: true,   
-          secure: false,           
+          secure: true,           
           sameSite: 'none',
           maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
         });
