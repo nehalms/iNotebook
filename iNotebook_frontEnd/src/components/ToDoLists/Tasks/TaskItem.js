@@ -11,11 +11,6 @@ function TaskItem(props) {
 
     const onConfirm = async () => {
         setShowPopup(false);
-        if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger', 10107);
-            history.navigate("/login");
-            return;
-        }
         await deleteTask(task._id);
         return;
     }

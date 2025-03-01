@@ -69,11 +69,6 @@ function AddTask(props) {
 
     const handleClick = async (e) => {
         e.preventDefault();
-        if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger', 10105);
-            history.navigate("/login");
-            return;
-        }
         addTaskInt(task.toString().trim());
         setTask("");
         crtFolRefClose.current.click();

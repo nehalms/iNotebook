@@ -14,6 +14,7 @@ const Keys = require("../models/Keys");
 const decrypt = require("../middleware/decrypt");
 const axios = require("axios");
 const JWT_SCERET = process.env.JWT_SCERET;
+const SESSION_EXPIRY_TIME = parseInt(process.env.SESSION_EXPIRY_TIME);
 
 //Route-1 : Create user using : POST "/api/auth/CreateUser => no login required
 
@@ -63,8 +64,14 @@ router.post("/createuser", decrypt,
         },
       };
 
-      const authToken = jwt.sign(data, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
+      const authToken = jwt.sign(data, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
       success = true;
+      res.cookie('authToken', authToken, {
+        httpOnly: true,   
+        secure: true,           
+        sameSite: 'none',
+        maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
+      });
       
       let html = getAdminNotifyhtml(user.name, user.email);
       Email(
@@ -75,10 +82,10 @@ router.post("/createuser", decrypt,
         html,
         false,
       )
-      res.json({success, authToken });
+      res.json({success});
     } 
     catch (err) {
-      console.log(err.message);
+      console.log("Error in creating user", err.message);
       return res.status(500).send("Internal Server Error!!");
     }
   }
@@ -119,20 +126,31 @@ router.post(
           id: user.id,
         },
       };
-      const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: 24 * 60 * 60 });
+      const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
       success = true;
+
       if(user.isAdmin == true) {
         if(req.query.verified == 'true') {
-          res.json({ success, authToken, isAdminUser: user.isAdmin});
-        } else {
-          res.json({ success, isAdminUser: user.isAdmin});
+          res.cookie('authToken', authToken, {
+            httpOnly: true,   
+            secure: true,           
+            sameSite: 'none',
+            maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
+          });
         }
+        res.json({ success, isAdminUser: user.isAdmin});
       } else {
-        res.json({ success, authToken, isAdminUser: user.isAdmin});
+        res.cookie('authToken', authToken, {
+          httpOnly: true,   
+          secure: true,           
+          sameSite: 'none',
+          maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
+        });
+        res.json({ success, isAdminUser: user.isAdmin});
       }
       axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
         .then(response => {
-          console.log("Server status(TTT) ", response.data);
+          console.log("Server status(TTT) ", response.data, '\n');
         })
         .catch(error => {
           console.error("Error in waking tictactoe server:", error);
@@ -140,7 +158,7 @@ router.post(
 
       axios.get(`${process.env.C4_BOOTSTRAP_URL}/game/test`)
         .then(response => {
-          console.log("Server status(C4) ", response.data);
+          console.log("Server status(C4) ", response.data, '\n');
         })
         .catch(error => {
           console.error("Error in waking connect4 server:", error);
@@ -158,7 +176,7 @@ router.post(
       await User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
     } 
     catch (err) {
-      console.log(err.message);
+      console.log("Error in logging in", err.message);
       return res.status(500).send("Internal Server Error!!");
     }
   }
@@ -259,7 +277,12 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
       userId: user.id,
       action: "Account deleted",
     });
-    console.log(user);
+    res.clearCookie("authToken", {
+      path: "/",     
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none",
+    });
     res.send(user);
   } 
   catch (err) {
@@ -268,11 +291,33 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
   }
 });
 
+router.get('/getstate', fetchuser, async (req, res) => {
+  try {
+    let user = await User.findById(req.user.id);
+    res.send({
+      status: 1,
+      data: {
+        loggedIn: true,
+        isAdminUser: user.isAdmin,
+      }
+    });
+  }  catch (err) {
+    console.log(err.message);
+    return res.status(500).send("Internal Server Error!!");
+  }
+})
+
 router.post('/logout', fetchuser, async (req, res) => {
   try {
     await UserHistory.create({
       userId: req.user.id,
       action: "Logged out",
+    });
+    res.clearCookie("authToken", {
+      path: "/",     
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none",
     });
     res.send({success: true, msg: 'Logged out'});
   }  catch (err) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import OptionsMenu from '../Utils/OptionsMenu'
 import RoundCorners from './RoundCorners';
 import Enhance from './Enhance';
@@ -6,9 +6,13 @@ import LoadingBar from '../LoadingScreens/LoadingBar';
 import GenerativeBackground from './GenerativeBackground';
 import RotateImage from './RotateImage';
 import Shapen from './Shapen';
+import { history } from '../History';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function ImageEditor(props) {
+  const { handleSessionExpiry } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
+  const { getUserState } = useContext(AuthContext);
   const [compStr, setCompStr] = useState('roundcorners');
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
   const options =  {
@@ -18,6 +22,17 @@ export default function ImageEditor(props) {
     'Rotate Image': 'rotateimage',
     'Sharpen': 'sharpen'
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let state = await getUserState();
+      if (!state.loggedIn) {
+        history.navigate("/login");
+        return;
+      }
+    };
+    fetchData();
+  }, [])
   
   const toggleNav = () => {
     setIsOpen(!isOpen);
@@ -33,13 +48,14 @@ export default function ImageEditor(props) {
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/delete`, {
         method: "DELETE", 
         headers: {
-            "auth-token": localStorage.getItem('token'),
           },
+        credentials: 'include',
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();
       if(json.error) {
         props.showAlert(json.error, 'danger', 10131)
+        handleSessionExpiry(json);
         return;
       }
       if(json.success) {

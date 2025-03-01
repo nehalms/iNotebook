@@ -8,9 +8,11 @@ import AddFolder from './AddFolder';
 import Tasks from '../Tasks/Tasks';
 import SortNSerh from '../../Utils/SortNSearch/SortNSerh';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../../context/auth_state/authContext';
 
 export default function Folder(props) {
     history.navigate = useNavigate();
+    const { getUserState } = useContext(AuthContext);
     const content = useContext(taskContext);
     const {folders, fetchFolders, addFolder, updateFolder, sort, searchTask} = content
     const editFoldNameRef = useRef();
@@ -86,17 +88,17 @@ export default function Folder(props) {
     };
 
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-                props.showAlert("Session expired Login again", 'danger', 10109);
+        const fetchData = async () => {
+            let state = await getUserState();
+            if (!state.loggedIn) {
                 history.navigate("/login");
+                return;
             } else {
                 fetchFolders();
             }
-        }
-        else {
-            history.navigate("/login");
-        }
+        };
+        fetchData();
+        
     }, []);
 
 
@@ -114,11 +116,6 @@ export default function Folder(props) {
 
     const handleClick = (e) => {
         e.preventDefault();
-        if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger', 10105);
-            history.navigate("/login");
-            return;
-        }
         updateFolder(updFold.src, updFold.dest);
         setUpdFold({
             src: '',

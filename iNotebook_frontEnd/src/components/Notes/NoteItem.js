@@ -45,8 +45,8 @@ const NoteItem = (props) => {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  "auth-token": localStorage.getItem('token')
-                }
+                },
+                credentials: 'include',
             });
             fetchNotes();
             return;
@@ -57,13 +57,7 @@ const NoteItem = (props) => {
 
     const onConfirm = async () => {
         setShowPopup(false);
-        if(jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger', 10107);
-            history.navigate("/login");
-            return;
-        }
         await deleteNote(note._id); 
-        props.showAlert("Note deleted successfully", 'success', 10108);
         return;
     }
 

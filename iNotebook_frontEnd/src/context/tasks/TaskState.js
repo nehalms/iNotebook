@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import TaskContext from "./taskContext";
 import CryptoJS from 'crypto-js';
 import { getSecretKey } from "../../components/Requests/getSecretKey";
 import { encryptMessage } from "../../components/Utils/Encryption";
+import AuthContext from "../auth_state/authContext";
 
 const TaskState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL
@@ -10,7 +11,7 @@ const TaskState = (props)=> {
     const [sortType, setSortType] = useState('NONE');
     const [serachStr, setSearchStr] = useState('');
     const [tasks, setTasks] = useState(tasksInitial);
-
+    const { handleSessionExpiry } = useContext(AuthContext);
     const foldersInitial = [];
     const [initTasks, setInitTasks] = useState(foldersInitial);
     const [folders, setFolders] = useState(foldersInitial);
@@ -23,10 +24,15 @@ const TaskState = (props)=> {
                 method: "GET", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
-                }
+                },
+                credentials: 'include',
             });
             const json = await response.json();
+            if(json.error) {
+                props.showAlert(json.error, 'danger', 10120);
+                handleSessionExpiry(json);
+                return;
+            }
             if(json.status === 1) {
                 let decryptedTasks = [];
                 json.tasks.map((task) => {
@@ -61,8 +67,8 @@ const TaskState = (props)=> {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     src: encryptMessage(src),
                     taskDesc: encryptMessage(CryptoJS.AES.encrypt(taskDesc, secretKey).toString())
@@ -71,6 +77,7 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.errors && json.errors.length) {
                 props.showAlert(json.errors[0].msg, 'warning', 10122);
+                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -93,12 +100,13 @@ const TaskState = (props)=> {
                 method: "DELETE", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
             });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10124);
+                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -122,8 +130,8 @@ const TaskState = (props)=> {
                 method: "PUT", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     src: encryptMessage(src),
                     taskDesc: encryptMessage(CryptoJS.AES.encrypt(taskDesc, secretKey).toString())
@@ -136,6 +144,7 @@ const TaskState = (props)=> {
             }
             if(json.status === 1) {
                 props.showAlert(json.msg, 'success', 10303);
+                handleSessionExpiry(json);
                 fetchTasks(json.task.src);
             }
         } catch (err) {
@@ -153,12 +162,13 @@ const TaskState = (props)=> {
                 method: "PUT", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
             });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10306);
+                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -184,11 +194,13 @@ const TaskState = (props)=> {
                 method: "GET", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
-                }
+                },
+                credentials: 'include',
             });
             const json = await response.json();
             if(json.error) {
+                props.showAlert(json.error, 'danger', 10120);
+                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -213,12 +225,13 @@ const TaskState = (props)=> {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
             });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10122);
+                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -241,12 +254,13 @@ const TaskState = (props)=> {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
             });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10122);
+                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -269,12 +283,13 @@ const TaskState = (props)=> {
                 method: "DELETE", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
             });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10122);
+                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {

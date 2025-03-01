@@ -1,18 +1,13 @@
-import { jwtDecode } from 'jwt-decode';
 var secretKey = null;
 
 const fetchSecretKey = async () => {
     try {
-      if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-        return;
-      }
-      if (!localStorage.getItem('token')) return;
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/aes/secretKey`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token'),
         },
+        credentials: 'include',
       });
       const json = await response.json();
       if (json.status === 'success') {

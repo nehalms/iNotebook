@@ -1,10 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useContext } from 'react'
 import { saveAs } from 'file-saver'
 import Enhance from './StaticImages/Enhance.jpg'
 import TryIt from './TryIt';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function RoundCorners(props) {
-
+  const { handleSessionExpiry } = useContext(AuthContext);
   const [file, setFile] = useState();
   const imgRef = useRef();
   const divRef = useRef();
@@ -57,8 +58,8 @@ export default function RoundCorners(props) {
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/enhance`, {
         method: "POST", 
         headers: {
-            "auth-token": localStorage.getItem('token'),
           },
+        credentials: 'include',
         body: formData
       });
       props.setLoader({ showLoader: false });
@@ -66,6 +67,7 @@ export default function RoundCorners(props) {
       // console.log(json);
       if(json.error) {
           props.showAlert(json.error, 'danger', 10128);
+          handleSessionExpiry(json);
           return;
       }
       if(json.success) {

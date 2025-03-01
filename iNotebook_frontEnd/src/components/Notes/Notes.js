@@ -3,13 +3,14 @@ import { Tooltip } from "react-tooltip";
 import noteContext from '../../context/notes/noteContext';
 import NoteItem from './NoteItem';
 import Addnote from './Addnote';
-import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 import SortNSerh from '../Utils/SortNSearch/SortNSerh';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/auth_state/authContext';
 
 const Notes = (props) => {
     history.navigate = useNavigate();
+    const { getUserState } = useContext(AuthContext);
     const context = useContext(noteContext);
     const { notes, fetchNotes, updateNote, sort, searchNote } = context;
     const [draggable, setDraggable] = useState(false);
@@ -71,17 +72,16 @@ const Notes = (props) => {
     };
 
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-                props.showAlert("Session expired Login again", 'danger', 10109);
+        const fetchData = async () => {
+            let state = await getUserState();
+            if (!state.loggedIn) {
                 history.navigate("/login");
+                return;
             } else {
                 fetchNotes(props);
             }
-        }
-        else {
-            history.navigate("/login");
-        }
+        };
+        fetchData();
     }, [])
 
     const editNote = (currentNote) => {
@@ -94,13 +94,7 @@ const Notes = (props) => {
 
     const handleClick = async (e) => {
         e.preventDefault();
-        if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger', 10110);
-            history.navigate("/login");
-            return;
-        }
         await updateNote(note.id, note.etitle, note.edescription, note.etag);
-        props.showAlert("Notes updated successfully", "success", 10111);
         refClose.current.click();
     }
 

@@ -1,8 +1,11 @@
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { encryptMessage } from '../Utils/Encryption';
+import { history } from '../History';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function Profile(props) {
+  const { getUserState, handleSessionExpiry } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [profile, setProfile] = useState({
     id: '',
@@ -21,7 +24,17 @@ export default function Profile(props) {
   });
 
   useEffect(() => {
-    getUserProfile();
+    const fetchData = async () => {
+      let state = await getUserState();
+      if (!state.loggedIn) {
+        history.navigate("/login");
+        return;
+      } else {
+        getUserProfile();
+      }
+    };
+    fetchData();
+    
   }, []);
 
   const getUserProfile = async () => {
@@ -31,11 +44,12 @@ export default function Profile(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token') ? localStorage.getItem('token') : sessionStorage.getItem('adminToken')
-        }
+        },
+        credentials: 'include',
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();
+      handleSessionExpiry(json);
       setProfile({ id: json._id, name: json.name, email: json.email, createdOn: json.date, lastLogIn: json.lastLogIn, isActive: json.isActive });
       setUpdtProfile({ name: json.name });
     } catch (err) {
@@ -61,8 +75,8 @@ export default function Profile(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token') ? localStorage.getItem('token') : sessionStorage.getItem('adminToken')
         },
+        credentials: 'include',
         body: JSON.stringify({ name: encryptMessage(updatedProfile.name) })
       });
       props.setLoader({ showLoader: false });
@@ -71,6 +85,7 @@ export default function Profile(props) {
         setProfile({ ...profile, name: json.user.name });
         props.showAlert("Name updated successfully", 'success', 10113);
       } else {
+        handleSessionExpiry(json);
         props.showAlert("Something went wrong", 'danger', 10114);
       }
     } catch (err) {
@@ -105,6 +120,7 @@ export default function Profile(props) {
         props.showAlert("Password updated successfully", 'success', 10117);
         setPass({ password: '', cpassword: '' });
       } else {
+        handleSessionExpiry(json);
         props.showAlert("Something went wrong", 'danger', 10118);
       }
     } catch (err) {

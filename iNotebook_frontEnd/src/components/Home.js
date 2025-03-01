@@ -1,15 +1,16 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { history } from './History';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import './Home.css';
 import loading_gif from './loading.gif';
 import Confirmation from '../components/Utils/Confirmation';
 import { fetchSecretKey } from '../components/Requests/getSecretKey'
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/auth_state/authContext';
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
   history.navigate = useNavigate();
+  const { getUserState } = useContext(AuthContext);
   const [userHistory, setHistory] = useState();
   const [loading, setLoading] = useState(false);
   const [dialog, setDialog] = useState({
@@ -20,18 +21,17 @@ const Home = (props) => {
   });
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
-      if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-        props.showAlert('Session expired, login again', 'danger', 10001);
+    const fetchData = async () => {
+      let state = await getUserState();
+      if (state?.loggedIn) {
+        fetchSecretKey();
+        fetchHistory();
+      } else {
+        props.showAlert('Please log In', 'warning', 10002);
         history.navigate('/login');
-        return;
       }
-      fetchSecretKey();
-      fetchHistory();
-    } else {
-      props.showAlert('Please log in', 'warning', 10002);
-      history.navigate('/login');
-    }
+    };
+    fetchData();
   }, []);
 
 
@@ -39,7 +39,7 @@ const Home = (props) => {
     try {
       setLoading(true);
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getdata/userhistory`, {
-        headers: { 'auth-token': localStorage.getItem('token') },
+        credentials: 'include',
       });
       const data = await response.json();
       if (data.error) {
@@ -59,7 +59,7 @@ const Home = (props) => {
       props.setLoader({ showLoader: true, msg: 'Deleting history...' });
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getdata/userhistory`, {
         method: 'DELETE',
-        headers: { 'auth-token': localStorage.getItem('token') },
+        credentials: 'include',
       });
       const data = await response.json();
       if(data) fetchHistory();

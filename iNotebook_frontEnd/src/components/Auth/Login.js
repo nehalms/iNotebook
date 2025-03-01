@@ -1,7 +1,8 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { history } from '../History';
 import { encryptMessage } from '../Utils/Encryption';
+import AuthContext from '../../context/auth_state/authContext';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Login = (props) => {
@@ -13,6 +14,7 @@ const Login = (props) => {
     const [showPassword, setShowPassword] = useState(false);
     const divRef = useRef();
     const [height, setHeight] = useState(0);
+    const { fetchUserState } = useContext(AuthContext);
     history.navigate = useNavigate();
 
     useEffect(() => {
@@ -31,6 +33,7 @@ const Login = (props) => {
             const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login?verified=${Verified}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     email: encryptMessage(credentials.email),
                     password: encryptMessage(credentials.password)
@@ -50,11 +53,7 @@ const Login = (props) => {
                     props.showAlert('Admin passkey not verified', 'danger', 10016);
                     return;
                 }
-                if(isAdminUser) {
-                    sessionStorage.setItem('adminToken', json.authToken);
-                } else {
-                    localStorage.setItem('token', json.authToken);
-                }
+                await fetchUserState();
                 history.navigate(isAdminUser ? '/dashboard' : '/');
                 props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success', 10053);
             } else {

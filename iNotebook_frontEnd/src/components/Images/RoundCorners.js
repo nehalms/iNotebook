@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import './inputNumber.css'
 import { saveAs } from 'file-saver'
 import Roundcorners from './StaticImages/Roundcorners.png';
 import TryIt from './TryIt';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function RoundCorners(props) {
-
+  const { handleSessionExpiry } = useContext(AuthContext);
   const [file, setFile] = useState();
   const [preview, setPreview] = useState();
   const imgRef = useRef();
@@ -64,9 +65,7 @@ export default function RoundCorners(props) {
         props.setLoader({ showLoader: true, msg: "Transforming..."});
         const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/roundcorners?setMax=${maxChecked}&tl=${cornerValues.topleft}&tr=${cornerValues.topright}&bl=${cornerValues.btmleft}&br=${cornerValues.btmright}`, {
         method: "POST", 
-        headers: {
-            "auth-token": localStorage.getItem('token'),
-            },
+        credentials: 'include',
         body: formData
         });
         props.setLoader({ showLoader: false });
@@ -74,6 +73,7 @@ export default function RoundCorners(props) {
         // console.log(json);
         if(json.error) {
             props.showAlert(json.error, 'danger', 10135)
+            handleSessionExpiry(json);
             return;
         }
         if(json.success) {

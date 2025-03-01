@@ -1,37 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import { colors, Tooltip } from '@mui/material';
 import { history } from '../History';
-import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function GameStats(props) {
   const [rows, setRows] = useState([]);
   history.navigate = useNavigate();
+  const { userState, handleSessionExpiry } = useContext(AuthContext);
+
   useEffect(() => {
-    if (
-      sessionStorage.getItem('adminToken') &&
-      jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000
-    ) {
-      props.showAlert('Session expired. Login again', 'danger', 10008);
-      history.navigate('/login');
-      return;
-    }
-    if (sessionStorage.getItem('adminToken')) fetchData();
+    fetchData();
   }, []);
 
   const fetchData = async () => {
     try {
+      if(!(userState.loggedIn)) {
+        return;
+      }
       props.setLoader({ showLoader: true, msg: 'Loading...' });
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/gamestats`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'auth-token': sessionStorage.getItem('adminToken'),
         },
+        credentials: 'include'
       });
       props.setLoader({ showLoader: false });
       const data = await response.json();
+      if(data.error) {
+        props.showAlert(data.error, 'danger', 10122);
+        handleSessionExpiry(data);
+        return;
+      }
       if (data.status === 'success') {
         let stats = [];
         await Promise.all(
@@ -190,8 +192,8 @@ export default function GameStats(props) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'auth-token': sessionStorage.getItem('adminToken'),
         },
+        credentials: 'include'
       });
       const data = await response.json();
       if (data.success === false) {
