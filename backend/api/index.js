@@ -1,20 +1,41 @@
 require('dotenv').config() 
 const connectToMongo = require('../db')
 const express = require('express')
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 connectToMongo();
 const app = express()
 const port = process.env.PORT || 8080
- 
+const allowedOrigins = process.env.ORIGINS
+
 let corsOptions = {
-  origin: ['https://i-notebook-six-lovat.vercel.app', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', 'auth-token']
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', 'auth-token', 'email', 'code']
 };
 
-app.use(cors())
+app.use(cors(corsOptions))
+app.use(cookieParser());
 app.use(express.json())
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Access-Control-Allow-Origin, auth-token");
+  next();
+});
 
 app.get("/test", (req, res) => {
  res.send("Hello");

@@ -1,11 +1,13 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { history } from './History';
 import img from './favicon-32x32.png'
 import './Navbar.css'
+import AuthContext from '../context/auth_state/authContext';
 
 const Navbar = (props) => {
     history.navigate = useNavigate();
+    const { userState, resetUserState } = useContext(AuthContext);
     const [showNavBar, setShowNavbar] = useState(false);
     const [modeEnabled, setEnabled] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') === 'bg-dark' : false);
 
@@ -21,15 +23,14 @@ const Navbar = (props) => {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": localStorage.getItem('token') ? localStorage.getItem('token') : sessionStorage.getItem('adminToken')
-                }
+                },
+                credentials: 'include',
             });
             const data = await response.json();
             if(data.success === true) {
                 props.showAlert(data.msg, "success", 10031); 
-                localStorage.removeItem('token'); 
+                resetUserState();
                 sessionStorage.removeItem('AesKey');
-                sessionStorage.removeItem('adminToken');
                 history.navigate('/login');
             }
         } catch (err) {
@@ -46,61 +47,6 @@ const Navbar = (props) => {
 
     return (
         <div>
-            {/*<nav className="navbar navbar-expand-lg bg-black">
-                <div className="container-fluid ">
-                    <Link className="navbar-brand text-white" to="/"><span><img src={img} alt="image" /></span> iNotebook - Home</Link>
-                    <button className="navbar-toggler bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        {/* <li className="nav-item">
-                            {location.pathname === '/' ? <Link className={`nav-link ${location.pathname === '/' ? 'active' : ""} text-white`} aria-current="page" to="/">Home</Link> : <></>}
-                        </li> */}
-                    {/* </ul>
-                    <div className="d-flex mx-5 my-1">
-                        <div className="bg-primary rounded mx-2" onClick={() => {props.toggleMode('primary')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                        <div className="bg-warning rounded mx-2" onClick={() => {props.toggleMode('warning')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                        <div className="bg-success rounded mx-2" onClick={() => {props.toggleMode('success')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                        <div className="bg-danger rounded mx-2" onClick={() => {props.toggleMode('danger')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                        <div className="bg-info rounded mx-2" onClick={() => {props.toggleMode('info')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                        <div className="bg-primary-subtle rounded mx-2" onClick={() => {props.toggleMode('primary-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                        <div className="bg-secondary-subtle rounded mx-2" onClick={() => {props.toggleMode('secondary-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                        <div className="bg-info-subtle rounded mx-2" onClick={() => {props.toggleMode('info-subtle')}} style={{height:'20px', width:'20px', cursor:'pointer'}} ></div>
-                    </div>
-
-                    <div className={`form-check form-switch mx-5 my-1 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
-                        { props.mode === 'light' ? 
-                            <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault"/> : 
-                            <input className="form-check-input" type="checkbox" role="switch" onClick={() => {props.toggleMode(null)}} id="flexSwitchCheckDefault" checked/>
-                        }
-                        <label className="form-check-label text-white" htmlFor="flexSwitchCheckDefault">Dark Mode</label>
-                    </div>
-                    { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
-                        <>
-                        { localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && 
-                            <div className="dropdown">
-                                <button className="btn btn-success me-3 my-2" type="button" onClick={() => {return getUser()}} data-bs-toggle="dropdown" aria-expanded="false">Profile <i className="fa-solid fa-user mx-2"></i></button>
-                                <ul className="dropdown-menu">
-                                    <li><p className="text-bg-light m-0 p-3 rounded border border-2 border-top-0 border-end-0 border-start-0">{userinfo.name}</p></li>
-                                    <li><p className="outer-bg-colorstext-bg-light m-0 p-3 rounded border border-2 border-top-0 border-end-0 border-start-0">{userinfo.email}</p></li>
-                                    <li><p className="text-bg-light m-0 p-3 rounded"><strong>Created on: </strong>{moment(new Date (userinfo.createdOn)).format('MMMM Do YYYY, h:mm:ss a')}</p></li>
-                                </ul>
-                            </div>
-                        }
-                        <Link className='btn btn-warning me-3 my-2' to="/login" role='button' onClick={() => {handleLogout(); props.showAlert("logged out", "success"); localStorage.removeItem('token'); sessionStorage.removeItem('adminToken'); }}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
-                        {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='btn btn-danger me-1' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
-                        </> :
-                        <form className="d-flex" role="search">
-                            <Link className='btn btn-success mx-1' to="/login" role='button'>Login<i className="fa-solid fa-right-to-bracket mx-2"></i></Link>
-                            <Link className='btn btn-warning mx-3' to="/signup" role='button'>Signup <i className="fa-solid fa-user-plus mx-2"></i></Link>
-                        </form>
-                    }
-                    </div>
-                </div>
-            </nav> */}
-
-
             <nav className="navbar">
                 <div className="container__">
                     <div className="logo">
@@ -143,13 +89,19 @@ const Navbar = (props) => {
                                     </div>
                                 </div>
                             </li>
-                            { (localStorage.getItem('token') || sessionStorage.getItem('adminToken')) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
+                            { ((userState?.loggedIn) || (userState?.loggedIn && userState?.isAdminUser)) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
                                 <>
                                     <div className='my-2 profile'>
                                         <Link className={`mx-3 my-2 ${location.pathname === '/profile' && 'active'}`} to="/profile" role='button' onClick={() => {setShowNavbar(!showNavBar)}}>Profile<i className="fa-solid fa-user mx-2"></i></Link>
                                     </div>
                                     <Link className={`px-3 my-2 logout`} role='button' onClick={handleLogout}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
-                                    {localStorage.getItem('token') && !sessionStorage.getItem('adminToken') && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
+                                    {(userState?.loggedIn) && !(userState?.loggedIn && userState?.isAdminUser) && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
+                                    { 
+                                        (userState?.loggedIn && userState?.isAdminUser) && 
+                                        <div className='my-2 mx-1'>
+                                            <Link className={`px-3 my-2 ${location.pathname === '/dashboard' && 'active'}`} to='/dashboard' role='button'>DashBoard<i className="mx-2 fa-solid fa-gauge"></i></Link>
+                                        </div>
+                                    }
                                 </> :
                                 <>
                                     <div className='my-2 login'>

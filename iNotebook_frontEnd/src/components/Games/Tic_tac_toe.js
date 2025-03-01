@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useContext } from 'react'
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import tictactoe from './images/tic-tac-toe.jpg'
+import { history } from '../History';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function Tic_tac_toe(props) {  
   const socket = new SockJS(process.env.REACT_APP_SOCKET_URL);
+  const { getUserState, handleSessionExpiry } = useContext(AuthContext);
   const detailsDiv = useRef();
   const [height, setHeight] = useState();
   const [copied, setCopied] = useState(false);
@@ -34,6 +37,14 @@ export default function Tic_tac_toe(props) {
   });
 
   useEffect(() => {
+    const fetchData = async () => {
+      let state = await getUserState();
+      if (!state.loggedIn) {
+        history.navigate("/login");
+        return;
+      }
+    };
+    fetchData();
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, (frame) => {
@@ -107,8 +118,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
       });
       const data = await response.json();
       if(data && data.tttStats) {
@@ -124,6 +135,7 @@ export default function Tic_tac_toe(props) {
         }
       }
       if(!data.success){
+        handleSessionExpiry(data)
         props.showAlert(data.error, 'danger', 10086);
       }
     } catch (err) {
@@ -142,8 +154,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           userId: user.userId,
           name: user.userName,
@@ -187,8 +199,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -223,8 +235,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -285,8 +297,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           type: player,
           gameId: roomDetails.id,
@@ -337,8 +349,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+      credentials: 'include',
       });
       let data = await response.json();
       if(data.statusCode == 400) {
@@ -366,8 +378,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,

@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import UserNotesData from './UserNotesData';
 import Analytics_tab from './Analytics';
-import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 import GameStats from './GameStats';
 import Confirmation from '../Utils/Confirmation';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function DashBoard(props) {
-    
-    history.navigate = useNavigate();
+    const { getUserState } = useContext(AuthContext);
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
@@ -20,16 +18,21 @@ export default function DashBoard(props) {
     });
 
     useEffect(()=> {
-        if(!sessionStorage.getItem('adminToken')) {
-            props.showAlert("User not Authorized to access dashboard", 'info', 10036);
-            history.navigate('/login');
-            return;
-        }
-        if(sessionStorage.getItem('adminToken') && jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger', 10037);
-            history.navigate("/login");
-            return;
-        }
+        const fetchData = async () => {
+            let state = await getUserState();
+            if(!state.loggedIn) {
+                props.showAlert('Please log in', 'warning', 10002);
+                history.navigate('/login');
+                return;
+            }
+            if(state.loggedIn && !state.isAdminUser) {
+                props.showAlert("User not Authorized to access dashboard", 'info', 10036);
+                history.navigate('/');
+                return;
+            }
+        };
+        fetchData();
+        
     }, []);
 
     const setDialogFunc = (open, title, onConfirm, onClose) => {

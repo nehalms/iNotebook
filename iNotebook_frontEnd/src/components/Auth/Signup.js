@@ -1,7 +1,8 @@
-import React, { Suspense, useState, useRef, useEffect } from 'react'
+import React, { Suspense, useState, useRef, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { history } from '../History';
 import { encryptMessage } from '../Utils/Encryption';
+import AuthContext from '../../context/auth_state/authContext';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Signup = (props) => {
@@ -15,6 +16,7 @@ const Signup = (props) => {
     const[show, setShow] = useState(false);
     const[Verified, setVerified] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const { fetchUserState } = useContext(AuthContext);
     history.navigate = useNavigate();
 
     useEffect(() => {
@@ -47,6 +49,7 @@ const Signup = (props) => {
                 headers: {
                 "Content-Type": "application/json",
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                   name: encryptMessage(credentials.name), 
                   email: encryptMessage(credentials.email), 
@@ -57,8 +60,8 @@ const Signup = (props) => {
             const json = await response.json();
             // console.log(json); 
             if(json.success){
+              await fetchUserState();
               history.navigate("/"); // to redirect the page to home page
-              localStorage.setItem('token', json.authToken);
               props.showAlert("Sign in successfull", "success", 10057);
             }
             else {

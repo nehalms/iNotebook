@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
 import TryIt from './TryIt';
 import GenBgr from './StaticImages/GenBgr.jpeg'
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function GenerativeBackground(props) {
-
+  const { handleSessionExpiry } = useContext(AuthContext);
   const [file, setFile] = useState();
   const [preview, setPreview] = useState();
   const [prompt, setPrompt] = useState('');
@@ -62,14 +63,15 @@ export default function GenerativeBackground(props) {
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/gen-bgr-rep?prompt=${prompt}`, {
         method: "POST", 
         headers: {
-            "auth-token": localStorage.getItem('token'),
           },
+        credentials: 'include',
         body: formData
       });
       props.setLoader({ showLoader: false });
       const json = await response.json();
       if(json.error) {
           props.showAlert(json.error, 'danger', 10135)
+          handleSessionExpiry(json);
           return;
       }
       if(json.success) {

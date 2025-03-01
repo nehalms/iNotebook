@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import NoteContext from "./noteContext";
 import CryptoJS from 'crypto-js';
 import { getSecretKey } from "../../components/Requests/getSecretKey";
+import AuthContext from "../auth_state/authContext";
 
 const NoteState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL;
     const [sortType, setSortType] = useState('NONE');
     const [serachStr, setSearchStr] = useState('');
-
+    const { handleSessionExpiry } = useContext(AuthContext);
     const notesInitital = []
     const [initNotes, setInitNotes] = useState(notesInitital);
     const [notes, setNotes] = useState(notesInitital);
@@ -21,13 +22,14 @@ const NoteState = (props)=> {
                 method: "GET", 
                 headers: {
                 "Content-Type": "application/json",
-                "auth-token": localStorage.getItem('token')
-                }
+                },
+                credentials: 'include',
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10120);
+                handleSessionExpiry(json);
                 return;
             }
             // console.log(json);
@@ -65,17 +67,18 @@ const NoteState = (props)=> {
                 method: "POST", 
                 headers: {
                 "Content-Type": "application/json",
-                "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
                 body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10122);
+                handleSessionExpiry(json);
                 return;
             }
-            // console.log(json);
+            props.showAlert("Note added successfully", 'success', 10106);
             fetchNotes();
         } catch (err) {
             props.setLoader({ showLoader: false });
@@ -94,16 +97,17 @@ const NoteState = (props)=> {
                 method: "PUT", 
                 headers: {
                 "Content-Type": "application/json",
-                "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10124);
+                handleSessionExpiry(json);
                 return;
             }
-            // console.log(json);
+            props.showAlert("Note deleted successfully", 'success', 10108);
             fetchNotes();
         } catch (err) {
             props.setLoader({ showLoader: false });
@@ -127,16 +131,18 @@ const NoteState = (props)=> {
                 method: "PUT", 
                 headers: {
                 "Content-Type": "application/json",
-                "auth-token": localStorage.getItem('token')
                 },
+                credentials: 'include',
                 body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
             });
             props.setLoader({ showLoader: false });
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10126);
+                handleSessionExpiry(json);
                 return;
             }
+            props.showAlert("Notes updated successfully", "success", 10111);
             fetchNotes();
         } catch (err) {
             props.setLoader({ showLoader: false });

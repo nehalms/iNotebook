@@ -64,13 +64,7 @@ const Addnote = (props) => {
 
     const handleClick = async (e) => {
         e.preventDefault();
-        if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-            props.showAlert("Session expired Login again", 'danger', 10105);
-            history.navigate("/login");
-            return;
-        }
         await addNote(note.title, note.description, note.tag);
-        props.showAlert("Note added successfully", 'success', 10106);
         setNote({ title: "", description: "", tag: "" });
         addNoteRefClose.current.click();
     }

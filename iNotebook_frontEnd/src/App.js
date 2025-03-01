@@ -1,6 +1,6 @@
 //'use npm run both' command to run both front end backend server at a time
 import './App.css';
-import React, { Suspense, useEffect, useState} from "react";
+import React, { Suspense, useContext, useEffect, useState} from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,6 +16,7 @@ import ComponentLoader from './components/LoadingScreens/ComponentLoader';
 import Confirmation from './components/Utils/Confirmation';
 import TaskState from './context/tasks/TaskState';
 import Folder from './components/ToDoLists/Folders/Folder';
+import AuthContext from './context/auth_state/authContext';
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
@@ -34,6 +35,7 @@ function App() {
   const [mode, setMode] = useState('light');
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
   const [dialogInfo, setDialogInfo] = useState({open: false});
+  const { resetUserState } = useContext(AuthContext);
 
   const showAlert = (message, type, id)=> {
     setAlert({
@@ -119,11 +121,11 @@ function App() {
           method: "POST", 
           headers: {
             "Content-Type": "application/json",
-            "auth-token": localStorage.getItem('token')
-          }
+          },
+          credentials: 'include',
       });
+      resetUserState();
       setLoader({ showLoader: false });
-      localStorage.removeItem('token');
     } catch (err) {
       console.log("Error**" ,err);
       showAlert("Error in deleting user", 'danger', 10203)

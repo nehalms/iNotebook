@@ -1,14 +1,27 @@
-import React from 'react'
+import React, { useEffect, useContext } from 'react'
 import { history } from '../History';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function Menu(props) {
     history.navigate = useNavigate();
+    const { getUserState } = useContext(AuthContext);
 
     const features = [
         { name: 'Tic-Tac-Toe', route: '/games/tictactoe', icon: 'fa-gamepad', color: '#4CAF50' },
         { name: 'Four in a Row (Connect4)', route: '/games/frinrow', icon: 'fa-gamepad', color: '#FF9800' },
     ];
+
+    useEffect(() => {
+      const fetchData = async () => {
+        let state = await getUserState();
+        if (!state.loggedIn) {
+          history.navigate("/login");
+          return;
+        }
+      };
+      fetchData();
+    }, [])
 
     return (
         <div className='container my-4'>

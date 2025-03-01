@@ -196,7 +196,6 @@ router.get('/gamestats', fetchuser, async (req, res) => {
 router.get('/delstats/:statsId', fetchuser, async (req, res) => {
     try {
         let adminUser = await User.findById(req.user.id);
-        console.log(adminUser);
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;

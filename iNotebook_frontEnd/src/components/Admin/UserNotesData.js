@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import { Tooltip } from '@mui/material';
 import moment from 'moment';
-import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function UserNotesData(props) {
   history.navigate = useNavigate();
+  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [rows, setRows] = useState([]);
   const [totalcount, setTotalCount] = useState({ usersCount: 0, notesCount: 0 });
 
-  useEffect(() => {
-    if (sessionStorage.getItem('adminToken') && jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
-      props.showAlert('Session expired. Login again', 'danger', 10012);
-      history.navigate('/login');
-      return;
-    }
-    if (sessionStorage.getItem('adminToken')) fetchData();
+useEffect(() => {
+    fetchData();
   }, []);
 
   function CustomToolbar() {
@@ -30,18 +26,22 @@ export default function UserNotesData(props) {
 
   const fetchData = async () => {
     try {
+      if(!userState.loggedIn) {
+        return;
+      }
       props.setLoader({ showLoader: true, msg: 'Loading...' });
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/users`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'auth-token': sessionStorage.getItem('adminToken'),
         },
+        credentials: 'include'
       });
       props.setLoader({ showLoader: false });
       const data = await response.json();
       if (data.error) {
         props.showAlert(data.error, 'danger', 10038);
+        handleSessionExpiry(data);
         return;
       }
       setRows(data.users);
@@ -171,8 +171,8 @@ export default function UserNotesData(props) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'auth-token': sessionStorage.getItem('adminToken'),
         },
+        credentials: 'include'
       });
       const data = await response.json();
       if (data.success === false) {

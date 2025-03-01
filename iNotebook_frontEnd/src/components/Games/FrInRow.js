@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect} from 'react'
+import React, { useState, useRef, useEffect, useContext} from 'react'
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import './FrInRow.css'
 import connect4 from './images/connect4.png'
+import { history } from '../History';
+import AuthContext from '../../context/auth_state/authContext';
 
 const ROWS = 7;
 const COLS = 7;
@@ -21,6 +23,7 @@ export default function FrInRow(props) {
   const [roomId, setRoomId] = useState("");
   const [secondClk, setSecondClk] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
+  const { getUserState, handleSessionExpiry } = useContext(AuthContext);
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -39,6 +42,14 @@ export default function FrInRow(props) {
   });
   
   useEffect(() => {
+    const fetchData = async () => {
+      let state = await getUserState();
+      if (!state.loggedIn) {
+        history.navigate("/login");
+        return;
+      }
+    };
+    fetchData();
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, (frame) => {
@@ -116,8 +127,8 @@ export default function FrInRow(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
       });
       const data = await response.json();
       if(data && data.frnRowStats) {
@@ -133,6 +144,7 @@ export default function FrInRow(props) {
         }
       }
       if(!data.success){
+        handleSessionExpiry(data);
         props.showAlert(data.error, 'danger', 10069);
       }
     } catch (err) {
@@ -151,8 +163,8 @@ export default function FrInRow(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           userId: user.userId,
           name: user.userName,
@@ -196,8 +208,8 @@ export default function FrInRow(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -233,8 +245,8 @@ export default function FrInRow(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -300,8 +312,8 @@ export default function FrInRow(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           type: player,
           gameId: roomDetails.id,
@@ -359,8 +371,8 @@ export default function FrInRow(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
       });
       let data = await response.json();
       if(data.statusCode == 400) {

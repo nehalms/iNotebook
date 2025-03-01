@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import taskContext from '../../../context/tasks/taskContext';
-import { jwtDecode } from 'jwt-decode';
 import { history } from '../../History';
 import TaskItem from './TaskItem';
 import AddTask from './AddTask';
 import TaskInfo from './TaskInfo';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../../context/auth_state/authContext';
 
 function Tasks(props) {
     history.navigate = useNavigate();
+    const { userState } = useContext(AuthContext);
     const { src, showAlert } = props;
     const [showTaskInfo, setTaskInfo] = useState({
         show: false,
@@ -80,17 +81,12 @@ function Tasks(props) {
     };        
 	
 	useEffect(() => {
-		if (localStorage.getItem('token')) {
-			if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-				showAlert("Session expired Login again", 'danger', 10109);
-				history.navigate("/login");
-			} else {
-				fetchTasks(src);
-			}
-		}
-		else {
-			history.navigate("/login");
-		}
+        if (!(userState.loggedIn)) {
+            history.navigate("/login");
+            return;
+        } else {
+            fetchTasks(src);
+        }
 	}, []);
 
 	const onChange = (e) => {
@@ -99,11 +95,6 @@ function Tasks(props) {
 
 	const handleClick = (e) => {
 		e.preventDefault();
-		if (jwtDecode(localStorage.getItem('token')).exp < Date.now() / 1000) {
-			props.showAlert("Session expired Login again", 'danger', 10105);
-			history.navigate("/login");
-			return;
-		}
 		updateTask(task.id, task.src, task.taskDesc);
 		crtFolRefClose.current.click();
 	}

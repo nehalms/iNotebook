@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { history } from '../History';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function Encrypt_Decrypt_Msg(props) {
-
+  const { getUserState } = useContext(AuthContext);
   const [encrypt, setEncrypt] = useState({
     secretMsg: "",
     coverMsg: "",
@@ -16,7 +18,14 @@ export default function Encrypt_Decrypt_Msg(props) {
   const [decryptedMsg, setDeMsg] = useState("");
 
   useEffect(() => {
-
+    const fetchData = async () => {
+      let state = await getUserState();
+      if (!state.loggedIn) {
+        history.navigate("/login");
+        return;
+      }
+    };
+    fetchData();
   }, [encryptedMsg, decryptedMsg]);
 
   const onEncryptChange = (event) => {
@@ -39,8 +48,8 @@ export default function Encrypt_Decrypt_Msg(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           coverMsg: encrypt.coverMsg,
           secretMsg: encrypt.secretMsg,
@@ -71,8 +80,8 @@ export default function Encrypt_Decrypt_Msg(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem('token'),
         },
+        credentials: 'include',
         body: JSON.stringify({
           msg: decrypt.msg,
           password: decrypt.password,
@@ -127,7 +136,7 @@ export default function Encrypt_Decrypt_Msg(props) {
                 encryptedMsg && encryptedMsg !== "" &&
                 <>
                   <p className='text-danger p-1 m-0'>* Click on the text to copy</p>
-                  <div className='mb-2 rounded border p-3 text-center bg-secondary-subtle' style={{ userSelect: 'none', cursor: 'pointer' }} onClick={() => { navigator.clipboard.writeText(encryptedMsg); props.showAlert("Text copied", 'success'); }}>
+                  <div className='mb-2 rounded border p-3 text-center bg-secondary-subtle' style={{ userSelect: 'none', cursor: 'pointer' }} onClick={() => { navigator.clipboard.writeText(encryptedMsg); props.showAlert("Text copied", 'success', 10203); }}>
                     <h4 className='m-0'>{encryptedMsg}</h4>
                   </div>
                 </>

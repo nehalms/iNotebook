@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import { Bar } from "react-chartjs-2";
 import { Chart, registerables } from 'chart.js';
-import { jwtDecode } from 'jwt-decode';
 import { history } from '../History';
 import moment from 'moment';
 import loading from './loading.gif' 
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function Analytics(props) {
   Chart.register(...registerables);
   history.navigate = useNavigate();
+  const { userState } = useContext(AuthContext)
   const [notesData, setNotesData] = useState({xAxisDates: [], notesData: [], colors: []});
   const [loginData, setLoginData] = useState({xAxisDates: [], loginData: [], colors: []});
   const [showUserLoader, setShowUserLoader] = useState(false);
@@ -24,17 +25,14 @@ export default function Analytics(props) {
   })
 
   useEffect(() => {
-    if(jwtDecode(sessionStorage.getItem('adminToken')).exp < Date.now() / 1000) {
-      props.showAlert("Session expired Login again", 'danger', 10033);
-      history.navigate("/login");
-      return;
-    }
-    if(sessionStorage.getItem('adminToken'))
-      fetchData();
+    fetchData();
   }, [])
 
   const fetchData = async (reqType='both') => {
     try {
+      if(!userState.loggedIn) {
+        return;
+      }
       let dates;
       if(reqType === 'both') {
         dates = {
@@ -70,9 +68,9 @@ export default function Analytics(props) {
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/graphData?reqType=${reqType}&startDate=${dates.startDate}&endDate=${dates.endDate}`, {
           method: "GET", 
           headers: {
-              "Content-Type": "application/json",
-              "auth-token": sessionStorage.getItem('adminToken')
-          }
+            "Content-Type": "application/json", 
+          },
+          credentials: 'include'
       });
       const data = await response.json();
       if(data.error) {

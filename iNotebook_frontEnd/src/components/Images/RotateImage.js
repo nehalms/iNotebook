@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
 import TryIt from './TryIt';
 import Rotate from './StaticImages/Rotate.png'
-
+import AuthContext from '../../context/auth_state/authContext';
 
 export default function RotateImage(props) {
-
+    const { handleSessionExpiry } = useContext(AuthContext);
     const [file, setFile] = useState();
     const [preview, setPreview] = useState();
     const [angle, setAngle] = useState(0);
@@ -60,15 +60,14 @@ export default function RotateImage(props) {
         props.setLoader({ showLoader: true, msg: "Rotating..."});
         const response = await fetch(`${process.env.REACT_APP_BASE_URL}/image/rotate?angle=${angle}&hflip=${hflip}&vflip=${vflip}`, {
           method: "POST", 
-          headers: {
-              "auth-token": localStorage.getItem('token'),
-            },
+          credentials: 'include',
           body: formData
         });
         props.setLoader({ showLoader: false });
         const json = await response.json();
         if(json.error) {
             props.showAlert(json.error, 'danger', 10135)
+            handleSessionExpiry(json);
             return;
         }
         if(json.success) {
