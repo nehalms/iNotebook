@@ -36,7 +36,7 @@ const AuthState = (props) => {
         } catch (err) {
             console.error('Error fetching user state:', err);
         }
-    }, [handleSessionExpiry, userState]);
+    }, []);
 
     const getUserState = async () => {
         // if (!userState.loggedIn) {

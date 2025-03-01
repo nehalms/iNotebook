@@ -150,7 +150,7 @@ router.post(
       }
       axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
         .then(response => {
-          console.log("Server status(TTT) ", response.data);
+          console.log("Server status(TTT) ", response.data, '\n');
         })
         .catch(error => {
           console.error("Error in waking tictactoe server:", error);
@@ -158,7 +158,7 @@ router.post(
 
       axios.get(`${process.env.C4_BOOTSTRAP_URL}/game/test`)
         .then(response => {
-          console.log("Server status(C4) ", response.data);
+          console.log("Server status(C4) ", response.data, '\n');
         })
         .catch(error => {
           console.error("Error in waking connect4 server:", error);
@@ -295,7 +295,7 @@ router.get('/getstate', fetchuser, async (req, res) => {
         loggedIn: true,
         isAdminUser: user.isAdmin,
       }
-    })
+    });
   }  catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");

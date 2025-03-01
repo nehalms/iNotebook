@@ -7,6 +7,7 @@ const fetchuser = (req, res, next) => {
     const token = req.cookies.authToken;
     if(!token){
         res.status(401).send({error: 'Pleaze authenticate using valid token'});
+        return;
     }
 
     try{
