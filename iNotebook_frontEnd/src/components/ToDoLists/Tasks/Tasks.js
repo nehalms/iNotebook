@@ -81,7 +81,7 @@ function Tasks(props) {
     };        
 	
 	useEffect(() => {
-        if (!(userState.loggedIn)) {
+        if (!((userState.loggedIn))) {
             history.navigate("/login");
             return;
         } else {

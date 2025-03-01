@@ -39,9 +39,9 @@ const AuthState = (props) => {
     }, []);
 
     const getUserState = async () => {
-        // if (!userState.loggedIn) {
-        //     return await fetchUserState();
-        // }
+        if (!(userState.loggedIn)) {
+            return await fetchUserState();
+        }
         return userState;
     };
 

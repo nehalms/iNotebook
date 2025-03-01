@@ -277,7 +277,12 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
       userId: user.id,
       action: "Account deleted",
     });
-    res.clearCookie('authToken');
+    res.clearCookie("authToken", {
+      path: "/",     
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none",
+    });
     res.send(user);
   } 
   catch (err) {
@@ -308,7 +313,12 @@ router.post('/logout', fetchuser, async (req, res) => {
       userId: req.user.id,
       action: "Logged out",
     });
-    res.clearCookie('authToken');
+    res.clearCookie("authToken", {
+      path: "/",     
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none",
+    });
     res.send({success: true, msg: 'Logged out'});
   }  catch (err) {
     console.log(err.message);

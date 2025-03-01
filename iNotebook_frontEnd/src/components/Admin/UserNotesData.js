@@ -26,7 +26,7 @@ useEffect(() => {
 
   const fetchData = async () => {
     try {
-      if(!userState.loggedIn) {
+      if(!((userState.loggedIn))) {
         return;
       }
       props.setLoader({ showLoader: true, msg: 'Loading...' });
