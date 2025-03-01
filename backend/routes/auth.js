@@ -69,7 +69,7 @@ router.post("/createuser", decrypt,
       res.cookie('authToken', authToken, {
         httpOnly: true,   
         secure: false,           
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
       });
       
@@ -134,7 +134,7 @@ router.post(
           res.cookie('authToken', authToken, {
             httpOnly: true,   
             secure: false,           
-            sameSite: 'strict',
+            sameSite: 'none',
             maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
           });
         }
@@ -143,7 +143,7 @@ router.post(
         res.cookie('authToken', authToken, {
           httpOnly: true,   
           secure: false,           
-          sameSite: 'strict',
+          sameSite: 'none',
           maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
         });
         res.json({ success, isAdminUser: user.isAdmin});
