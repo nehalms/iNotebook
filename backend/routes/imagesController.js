@@ -1,11 +1,13 @@
 const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
+const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
 const { roundCorners, enhance, deleteImage, generativeBackground, rotateImage, sharpen } = require('../Services/imagesService')
 const multer  = require('multer');
 const upload = multer();
+const scope = 'images';
 
-router.delete('/delete', fetchuser, async (req, res) => {
+router.delete('/delete', fetchuser, checkPermission(scope),  async (req, res) => {
     try{
         deleteImage(req)
         .then((data) => {res.send({success: true, data: data})})
@@ -16,7 +18,7 @@ router.delete('/delete', fetchuser, async (req, res) => {
     }
 });
 
-router.post('/roundcorners', fetchuser, upload.single('image'), async (req, res) => {
+router.post('/roundcorners', fetchuser, checkPermission(scope),  upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
             res.send({error: 'File size is too large'});
@@ -33,7 +35,7 @@ router.post('/roundcorners', fetchuser, upload.single('image'), async (req, res)
     }
 });
 
-router.post('/enhance', fetchuser, upload.single('image'), async (req, res) => {
+router.post('/enhance', fetchuser, checkPermission(scope),  upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
             res.send({error: 'File size is too large'});
@@ -50,7 +52,7 @@ router.post('/enhance', fetchuser, upload.single('image'), async (req, res) => {
     }
 });
 
-router.post('/gen-bgr-rep', fetchuser, upload.single('image'), async (req, res) => {
+router.post('/gen-bgr-rep', fetchuser, checkPermission(scope),  upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
             res.send({error: 'File size is too large'});
@@ -67,7 +69,7 @@ router.post('/gen-bgr-rep', fetchuser, upload.single('image'), async (req, res) 
     }
 });
 
-router.post('/rotate', fetchuser, upload.single('image'), async (req, res) => {
+router.post('/rotate', fetchuser, checkPermission(scope),  upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
             res.send({error: 'File size is too large'});
@@ -84,7 +86,7 @@ router.post('/rotate', fetchuser, upload.single('image'), async (req, res) => {
     }
 });
 
-router.post('/sharpen', fetchuser, upload.single('image'), async (req, res) => {
+router.post('/sharpen', fetchuser, checkPermission(scope),  upload.single('image'), async (req, res) => {
     try {
         if((req.file.size / 1000000) > 10) {
             res.send({error: 'File size is too large'});

@@ -1,12 +1,14 @@
 const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
+const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
 const Notes = require('../models/Notes')
 const { body, validationResult } = require("express-validator"); //to validate the inputs
 const UserHistory = require('../models/UserHistory');
+const scope = 'notes';
 
 //Route-1 : Get all the notes : POST "/api/notes/fetchallnotes" => Login required
-router.get('/fetchallnotes', fetchuser, async (req, res)=> {
+router.get('/fetchallnotes', fetchuser, checkPermission(scope), async (req, res)=> {
     try{
         const notes = await Notes.find({user: req.user.id});
         res.json(notes);
@@ -23,7 +25,7 @@ router.post('/addnote',
         body("title", "Enter a valid title").isLength({ min: 3}),
         body("description", "description must be 5 characters").isLength({ min: 5 }),
     ], 
-    fetchuser, async (req, res)=> {
+    fetchuser, checkPermission(scope),  async (req, res)=> {
 
         try{
             const errors = validationResult(req);
@@ -51,7 +53,7 @@ router.post('/addnote',
 
 
 //Route-3 : Update an exsisting note : PUT "/api/notes/updatenote" => Login required
-router.put('/updatenote/:id', fetchuser, async (req, res)=> {
+router.put('/updatenote/:id', fetchuser, checkPermission(scope),  async (req, res)=> {
     const {title, description, tag} = req.body;
 
     //Create a newNote object
@@ -86,7 +88,7 @@ router.put('/updatenote/:id', fetchuser, async (req, res)=> {
 
 
 //Route-4 : delete an exsisting note : PUT "/api/notes/deletenote" => Login required
-router.put('/deletenote/:id', fetchuser, async (req, res)=> {
+router.put('/deletenote/:id', fetchuser, checkPermission(scope),  async (req, res)=> {
     try{
         //Find the note to be deleted
         let note = await Notes.findById(req.params.id) //fetch note based on id sent in url
@@ -112,7 +114,7 @@ router.put('/deletenote/:id', fetchuser, async (req, res)=> {
     
 })
 
-router.post('/saveCord/:id/:xpos/:ypos', fetchuser, async (req, res) => {
+router.post('/saveCord/:id/:xpos/:ypos', fetchuser, checkPermission(scope),  async (req, res) => {
     try{
         let id = req.params.id;
         let xpos = req.params.xpos;

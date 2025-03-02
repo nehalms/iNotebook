@@ -15,6 +15,9 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    permissions : {
+        type: [String],
+    },
     date : {
         type: Date,
         default: Date.now

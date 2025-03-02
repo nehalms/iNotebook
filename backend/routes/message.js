@@ -1,9 +1,11 @@
 const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
+const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
 const StegCloak = require('stegcloak');
+const scope = 'messages';
 
-router.post('/encrypt', fetchuser, async (req, res) => {
+router.post('/encrypt', fetchuser, checkPermission(scope),  async (req, res) => {
     try {
         const stegcloak = new StegCloak(true);
         const secretMessage = req.body.secretMsg;
@@ -22,7 +24,7 @@ router.post('/encrypt', fetchuser, async (req, res) => {
     }
 });
 
-router.post('/decrypt', fetchuser, async (req, res) => {
+router.post('/decrypt', fetchuser, checkPermission(scope),  async (req, res) => {
     try {
         const stegcloak = new StegCloak(true);
         const concealedText = req.body.msg;

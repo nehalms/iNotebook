@@ -1,13 +1,15 @@
 const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
+const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
 const { body, validationResult } = require("express-validator"); //to validate the inputs
 const UserHistory = require('../models/UserHistory');
 const Task = require('../models/Task');
 const Folder = require('../models/Folder');
 const decrypt = require('../middleware/decrypt');
+const scope = 'tasks';
 
-router.get('/', fetchuser, async (req, res)=> {
+router.get('/', fetchuser, checkPermission(scope),  async (req, res)=> {
     try{
         if( !req.query.src || req.query.src.toString().trim() == "" ) {
             return res.status(404).send({ error: "Missing folder name" });
@@ -31,7 +33,7 @@ router.post('/addTask', decrypt,
         body("src", "Folder(source) name cannot be empty").isLength({ min: 3 }),
         body("taskDesc", "description must be 5 characters").isLength({ min: 5 }),
     ], 
-    fetchuser, async (req, res)=> {
+    fetchuser, checkPermission(scope),  async (req, res)=> {
 
         try{
             const errors = validationResult(req);
@@ -68,7 +70,7 @@ router.put('/updatetask/:id', decrypt,
         body("src", "Folder(source) name cannot be empty").isLength({ min: 3 }),
         body("taskDesc", "description must be 5 characters").isLength({ min: 5 }),
     ], 
-    fetchuser, async (req, res)=> {
+    fetchuser, checkPermission(scope),  async (req, res)=> {
         
     try{
         const errors = validationResult(req);
@@ -103,7 +105,7 @@ router.put('/updatetask/:id', decrypt,
 })
 
 
-router.put('/updatestatus/:id', fetchuser, async (req, res) => {
+router.put('/updatestatus/:id', fetchuser, checkPermission(scope),  async (req, res) => {
     try{
         let task = await Task.findById(req.params.id)
         if(!task){
@@ -128,7 +130,7 @@ router.put('/updatestatus/:id', fetchuser, async (req, res) => {
 })
 
 
-router.delete('/deletetask/:id', fetchuser, async (req, res)=> {
+router.delete('/deletetask/:id', fetchuser, checkPermission(scope),  async (req, res)=> {
     try{
         let task = await Task.findById(req.params.id)
         if(!task){
@@ -157,7 +159,7 @@ router.delete('/deletetask/:id', fetchuser, async (req, res)=> {
 })
 
 
-router.get('/folders', fetchuser, async (req, res) => {
+router.get('/folders', fetchuser, checkPermission(scope),  async (req, res) => {
     try {
         let folder = await Folder.findOne({user: req.user.id});
         if(!folder) {
@@ -172,7 +174,7 @@ router.get('/folders', fetchuser, async (req, res) => {
 })
 
 
-router.post('/addfolder', fetchuser, async (req, res) => {
+router.post('/addfolder', fetchuser, checkPermission(scope),  async (req, res) => {
     try {
         if( !req.query.src || req.query.src.toString().trim() == "") {
             return res.status(404).send({ error: "Missing folder name" });
@@ -206,7 +208,7 @@ router.post('/addfolder', fetchuser, async (req, res) => {
     }
 })
 
-router.post('/updatefolder', fetchuser, async (req, res) => {
+router.post('/updatefolder', fetchuser, checkPermission(scope),  async (req, res) => {
     try {
         if( !req.query.src || req.query.src.toString().trim() == "" || !req.query.dest || req.query.dest.toString().trim() == "" ) {
             return res.status(404).send({ error: "Missing folder name" });
@@ -248,7 +250,7 @@ router.post('/updatefolder', fetchuser, async (req, res) => {
     }
 })
 
-router.delete('/rmvfolder', fetchuser, async (req, res) => {
+router.delete('/rmvfolder', fetchuser, checkPermission(scope),  async (req, res) => {
     try {
         if( !req.query.src || req.query.src.toString().trim() == "") {
             return res.status(404).send({ error: "Missing folder name" });

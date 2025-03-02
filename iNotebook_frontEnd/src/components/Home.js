@@ -4,7 +4,7 @@ import './Home.css';
 import loading_gif from './loading.gif';
 import Confirmation from '../components/Utils/Confirmation';
 import { fetchSecretKey } from '../components/Requests/getSecretKey'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/auth_state/authContext';
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
@@ -19,10 +19,12 @@ const Home = (props) => {
     onConfirm: () => {},
     onClose: () => {},
   });
+  const [permissions, setPermissions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       let state = await fetchUserState();
+      setPermissions(state?.permissions);
       if (userState?.loggedIn || state?.loggedIn) {
         fetchSecretKey();
         fetchHistory();
@@ -95,23 +97,31 @@ const Home = (props) => {
     <div className="home-container">
       {dialog.open && <Confirmation open={dialog.open} title={dialog.title} onConfirm={dialog.onConfirm} onClose={dialog.onClose} />}
       <div className="feature-grid">
-        {[
-          { name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
-          { name: 'Tasks / To-Do list', route: '/tasks', icon: 'fa-pen', color: '#FF9800' },
-          { name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#2196F3' },
-          { name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#F44336' },
-          { name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#904caf' },
-        ].map((feature, index) => (
-          <div
-            key={index}
-            className="feature-card"
-            style={{ backgroundColor: feature.color }}
-            onClick={() => history.navigate(feature.route)}
-          >
-            <i className={`fa ${feature.icon} feature-icon`}></i>
-            <h5 className="feature-name">{feature.name}</h5>
-          </div>
-        ))}
+        { permissions.length == 0 ? (
+            <div className='p-4 m-0 border rounded text-center'>
+              <p className='m-0'>You dont have access to any of the features, please contact admin <Link to="/">inotebook@gmail.com</Link></p>
+            </div>
+          ) :
+          [
+            { id: 'notes', name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
+            { id: 'tasks', name: 'Tasks / To-Do list', route: '/tasks', icon: 'fa-pen', color: '#FF9800' },
+            { id: 'images', name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#2196F3' },
+            { id: 'games', name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#F44336' },
+            { id: 'messages', name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#904caf' },
+          ].map((feature, index) => (
+            permissions.includes(feature.id) && (
+              <div
+                key={index}
+                className="feature-card"
+                style={{ backgroundColor: feature.color }}
+                onClick={() => history.navigate(feature.route)}
+              >
+                <i className={`fa ${feature.icon} feature-icon`}></i>
+                <h5 className="feature-name">{feature.name}</h5>
+              </div>
+            )
+          ))
+        }
       </div>
 
       <div className="history-section">

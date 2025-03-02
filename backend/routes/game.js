@@ -1,10 +1,12 @@
 const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
+const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
 const GameDetails = require('../models/GameDetails');
 const User = require('../models/User');
 var jwt = require('jsonwebtoken');
 const JWT_SCERET = process.env.JWT_SCERET;
+const scope = 'games';
 
 router.get("/authenticateUser/:token", async (req, res) => {
     const token = req.params.token;
@@ -25,7 +27,7 @@ router.get("/authenticateUser/:token", async (req, res) => {
     }
 });
 
-router.post('/getStats', fetchuser, async (req, res) => {
+router.post('/getStats', fetchuser, checkPermission(scope),  async (req, res) => {
     try { 
         let userName = await User.findById(req.user.id);
         let userStats = await GameDetails.findOne({userId: req.user.id});

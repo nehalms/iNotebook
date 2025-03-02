@@ -51,6 +51,7 @@ router.post("/createuser", decrypt,
         name: req.body.name,
         email: req.body.email,
         password: secPass,
+        permissions: ['notes', 'tasks', 'games', 'images', 'messages']
       });
 
       await UserHistory.create({
@@ -61,6 +62,7 @@ router.post("/createuser", decrypt,
       const data = {
         user: {
           id: user.id,
+          permissions: user.permissions,
         },
       };
 
@@ -124,6 +126,7 @@ router.post(
       const payload = {
         user: {
           id: user.id,
+          permissions: user.permissions,
         },
       };
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
@@ -299,6 +302,7 @@ router.get('/getstate', fetchuser, async (req, res) => {
       data: {
         loggedIn: true,
         isAdminUser: user.isAdmin,
+        permissions: user.permissions,
       }
     });
   }  catch (err) {
