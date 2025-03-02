@@ -23,7 +23,7 @@ export default function FrInRow(props) {
   const [roomId, setRoomId] = useState("");
   const [secondClk, setSecondClk] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
-  const { getUserState, handleSessionExpiry } = useContext(AuthContext);
+  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -41,15 +41,11 @@ export default function FrInRow(props) {
     played: 0,
   });
   
-  useEffect(() => {
-    const fetchData = async () => {
-      let state = await getUserState();
-      if (!state.loggedIn) {
-        history.navigate("/login");
-        return;
-      }
-    };
-    fetchData();
+useEffect(() => {
+    if (!userState.loggedIn) {
+      history.navigate("/");
+      return;
+    }
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, (frame) => {

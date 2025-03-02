@@ -12,7 +12,7 @@ import AuthContext from '../../../context/auth_state/authContext';
 
 export default function Folder(props) {
     history.navigate = useNavigate();
-    const { getUserState } = useContext(AuthContext);
+    const { userState } = useContext(AuthContext);
     const content = useContext(taskContext);
     const {folders, fetchFolders, addFolder, updateFolder, sort, searchTask} = content
     const editFoldNameRef = useRef();
@@ -88,16 +88,12 @@ export default function Folder(props) {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            let state = await getUserState();
-            if (!state.loggedIn) {
-                history.navigate("/login");
-                return;
-            } else {
-                fetchFolders();
-            }
-        };
-        fetchData();
+        if (!userState.loggedIn) {
+            history.navigate("/");
+            return;
+        } else {
+            fetchFolders();
+        }
         
     }, []);
 

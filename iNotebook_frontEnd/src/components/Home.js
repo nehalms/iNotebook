@@ -10,7 +10,7 @@ const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
   history.navigate = useNavigate();
-  const { getUserState } = useContext(AuthContext);
+  const { userState, fetchUserState } = useContext(AuthContext);
   const [userHistory, setHistory] = useState();
   const [loading, setLoading] = useState(false);
   const [dialog, setDialog] = useState({
@@ -22,8 +22,8 @@ const Home = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      let state = await getUserState();
-      if (state?.loggedIn) {
+      let state = await fetchUserState();
+      if (userState?.loggedIn || state?.loggedIn) {
         fetchSecretKey();
         fetchHistory();
       } else {

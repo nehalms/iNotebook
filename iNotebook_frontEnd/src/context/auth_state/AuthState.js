@@ -1,6 +1,6 @@
+import React, { useState, useEffect, useCallback } from 'react';
 import AuthContext from './authContext';
 import { history } from '../../components/History';
-import { useState, useEffect, useCallback } from 'react';
 
 const AuthState = (props) => {
     const [userState, setUserState] = useState({
@@ -27,27 +27,21 @@ const AuthState = (props) => {
             const json = await response.json();
             if (json.error) {
                 handleSessionExpiry(json);
+                return;
             }
             if (json.status === 1) {
                 setUserState(json.data);
                 return json.data;
             }
-            return userState;
+
         } catch (err) {
             console.error('Error fetching user state:', err);
         }
-    }, []);
+    }, [handleSessionExpiry]);
 
-    const getUserState = async () => {
-        if (!(userState.loggedIn)) {
-            return await fetchUserState();
-        }
-        return userState;
-    };
-
-    const resetUserState = () => {
+    const resetUserState = useCallback(() => {
         setUserState({ loggedIn: false, isAdminUser: false });
-    };
+    }, []);
 
     useEffect(() => {
         fetchUserState();
@@ -57,7 +51,6 @@ const AuthState = (props) => {
         <AuthContext.Provider
             value={{
                 userState,
-                getUserState,
                 fetchUserState,
                 handleSessionExpiry,
                 resetUserState,

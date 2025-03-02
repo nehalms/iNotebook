@@ -9,7 +9,7 @@ import Confirmation from '../Utils/Confirmation';
 import AuthContext from '../../context/auth_state/authContext';
 
 export default function DashBoard(props) {
-    const { getUserState } = useContext(AuthContext);
+    const { userState } = useContext(AuthContext);
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
@@ -18,21 +18,16 @@ export default function DashBoard(props) {
     });
 
     useEffect(()=> {
-        const fetchData = async () => {
-            let state = await getUserState();
-            if(!state.loggedIn) {
-                props.showAlert('Please log in', 'warning', 10002);
-                history.navigate('/login');
-                return;
-            }
-            if(state.loggedIn && !state.isAdminUser) {
-                props.showAlert("User not Authorized to access dashboard", 'info', 10036);
-                history.navigate('/');
-                return;
-            }
-        };
-        fetchData();
-        
+        if(!userState.loggedIn) {
+            props.showAlert('Please log in', 'warning', 10002);
+            history.navigate('/login');
+            return;
+        }
+        if(userState.loggedIn && !userState.isAdminUser) {
+            props.showAlert("User not Authorized to access dashboard", 'info', 10036);
+            history.navigate('/');
+            return;
+        }        
     }, []);
 
     const setDialogFunc = (open, title, onConfirm, onClose) => {

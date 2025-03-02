@@ -5,7 +5,7 @@ import AuthContext from '../../context/auth_state/authContext';
 
 export default function Menu(props) {
     history.navigate = useNavigate();
-    const { getUserState } = useContext(AuthContext);
+    const { userState } = useContext(AuthContext);
 
     const features = [
         { name: 'Tic-Tac-Toe', route: '/games/tictactoe', icon: 'fa-gamepad', color: '#4CAF50' },
@@ -13,14 +13,10 @@ export default function Menu(props) {
     ];
 
     useEffect(() => {
-      const fetchData = async () => {
-        let state = await getUserState();
-        if (!state.loggedIn) {
-          history.navigate("/login");
-          return;
-        }
-      };
-      fetchData();
+      if (!userState.loggedIn) {
+        history.navigate("/");
+        return;
+      }
     }, [])
 
     return (

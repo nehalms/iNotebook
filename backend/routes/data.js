@@ -5,6 +5,7 @@ const User = require("../models/User");
 const Notes = require('../models/Notes')
 const LoginHistory = require('../models/LoginHistory')
 const GameDetails = require('../models/GameDetails')
+const Task = require('../models/Task')
 const moment = require('moment');
 const UserHistory = require('../models/UserHistory');
 
@@ -17,6 +18,9 @@ router.get('/users', fetchuser, async (req, res)=> {
         }
         const Users = await User.find({email: {$ne: 'inotebook002@gmail.com'}});
         const notes = await Notes.find();
+        const tasks = await Task.find();
+        const loginHistories = await LoginHistory.find();
+        const userHistories = await UserHistory.find();
         Users.sort((user1, user2) => {return user1.name.toLowerCase() > user2.name.toLowerCase() ? 1 : -1})
         let response = {};
         let data = [];
@@ -32,13 +36,18 @@ router.get('/users', fetchuser, async (req, res)=> {
                     isActive: user.isActive,
                 }
                 const countOfUserNotes = await Notes.find({user: user.id});
-                User.count = countOfUserNotes.length;
+                User.notesCount = countOfUserNotes.length;
+                const countOfUserTasks = await Task.find({user: user.id});
+                User.tasksCount = countOfUserTasks.length;
                 data.push(User);  
             })
         );
         response.users = data;
         response.usersCount = Users.length;
         response.notesCount = notes.length;
+        response.tasksCount = tasks.length;
+        response.loginHistoryCount = loginHistories.length;
+        response.userHistoryCount = userHistories.length;
         res.json(response);
     }
     catch(err){

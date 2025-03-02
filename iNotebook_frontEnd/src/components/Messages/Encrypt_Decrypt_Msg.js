@@ -3,7 +3,7 @@ import { history } from '../History';
 import AuthContext from '../../context/auth_state/authContext';
 
 export default function Encrypt_Decrypt_Msg(props) {
-  const { getUserState } = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
   const [encrypt, setEncrypt] = useState({
     secretMsg: "",
     coverMsg: "",
@@ -18,14 +18,10 @@ export default function Encrypt_Decrypt_Msg(props) {
   const [decryptedMsg, setDeMsg] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      let state = await getUserState();
-      if (!state.loggedIn) {
-        history.navigate("/login");
-        return;
-      }
-    };
-    fetchData();
+    if (!userState.loggedIn) {
+      history.navigate("/");
+      return;
+    }
   }, [encryptedMsg, decryptedMsg]);
 
   const onEncryptChange = (event) => {

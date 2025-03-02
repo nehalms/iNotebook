@@ -30,7 +30,7 @@ export default function Analytics(props) {
 
   const fetchData = async (reqType='both') => {
     try {
-      if(!(userState.loggedIn)) {
+      if(!(userState.loggedIn) || !(userState.isAdminUser)) {
         return;
       }
       let dates;

@@ -7,7 +7,7 @@ import AuthContext from '../../context/auth_state/authContext';
 
 export default function Tic_tac_toe(props) {  
   const socket = new SockJS(process.env.REACT_APP_SOCKET_URL);
-  const { getUserState, handleSessionExpiry } = useContext(AuthContext);
+  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const detailsDiv = useRef();
   const [height, setHeight] = useState();
   const [copied, setCopied] = useState(false);
@@ -37,14 +37,10 @@ export default function Tic_tac_toe(props) {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      let state = await getUserState();
-      if (!state.loggedIn) {
-        history.navigate("/login");
-        return;
-      }
-    };
-    fetchData();
+    if (!userState.loggedIn) {
+      history.navigate("/");
+      return;
+    }
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, (frame) => {

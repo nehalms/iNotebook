@@ -10,7 +10,7 @@ import AuthContext from '../../context/auth_state/authContext';
 
 const Notes = (props) => {
     history.navigate = useNavigate();
-    const { getUserState } = useContext(AuthContext);
+    const { userState } = useContext(AuthContext);
     const context = useContext(noteContext);
     const { notes, fetchNotes, updateNote, sort, searchNote } = context;
     const [draggable, setDraggable] = useState(false);
@@ -72,16 +72,12 @@ const Notes = (props) => {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            let state = await getUserState();
-            if (!state.loggedIn) {
-                history.navigate("/login");
-                return;
-            } else {
-                fetchNotes(props);
-            }
-        };
-        fetchData();
+        if (!userState.loggedIn) {
+            history.navigate("/");
+            return;
+        } else {
+            fetchNotes(props);
+        }
     }, [])
 
     const editNote = (currentNote) => {

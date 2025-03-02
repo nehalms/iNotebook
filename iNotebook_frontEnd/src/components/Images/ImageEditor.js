@@ -12,7 +12,7 @@ import AuthContext from '../../context/auth_state/authContext';
 export default function ImageEditor(props) {
   const { handleSessionExpiry } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
-  const { getUserState } = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
   const [compStr, setCompStr] = useState('roundcorners');
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
   const options =  {
@@ -24,14 +24,10 @@ export default function ImageEditor(props) {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      let state = await getUserState();
-      if (!state.loggedIn) {
-        history.navigate("/login");
-        return;
-      }
-    };
-    fetchData();
+    if (!userState.loggedIn) {
+      history.navigate("/");
+      return;
+    }
   }, [])
   
   const toggleNav = () => {

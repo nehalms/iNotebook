@@ -5,7 +5,7 @@ import { history } from '../History';
 import AuthContext from '../../context/auth_state/authContext';
 
 export default function Profile(props) {
-  const { getUserState, handleSessionExpiry } = useContext(AuthContext);
+  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [profile, setProfile] = useState({
     id: '',
@@ -24,16 +24,12 @@ export default function Profile(props) {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      let state = await getUserState();
-      if (!state.loggedIn) {
-        history.navigate("/login");
-        return;
-      } else {
-        getUserProfile();
-      }
-    };
-    fetchData();
+    if (!userState.loggedIn) {
+      history.navigate("/");
+      return;
+    } else {
+      getUserProfile();
+    }
     
   }, []);
 

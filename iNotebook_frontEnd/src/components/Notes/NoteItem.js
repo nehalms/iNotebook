@@ -39,9 +39,9 @@ const NoteItem = (props) => {
         saveCordinates(x, y, e.target.id);
     };
 
-    const saveCordinates = (x, y, id) => {
+    const saveCordinates = async (x, y, id) => {
         try {
-            fetch(`${process.env.REACT_APP_BASE_URL}/notes/saveCord/${id}/${x}/${y}`, {
+            await fetch(`${process.env.REACT_APP_BASE_URL}/notes/saveCord/${id}/${x}/${y}`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

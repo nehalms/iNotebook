@@ -10,7 +10,13 @@ export default function UserNotesData(props) {
   history.navigate = useNavigate();
   const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [rows, setRows] = useState([]);
-  const [totalcount, setTotalCount] = useState({ usersCount: 0, notesCount: 0 });
+  const [totalcount, setTotalCount] = useState({ 
+    usersCount: 0, 
+    notesCount: 0, 
+    tasksCount: 0,
+    userHistoryCount: 0,
+    loginHistoryCount: 0,
+  });
 
 useEffect(() => {
     fetchData();
@@ -26,7 +32,7 @@ useEffect(() => {
 
   const fetchData = async () => {
     try {
-      if(!((userState.loggedIn))) {
+      if(!(userState.loggedIn) || !(userState.isAdminUser)) {
         return;
       }
       props.setLoader({ showLoader: true, msg: 'Loading...' });
@@ -49,6 +55,9 @@ useEffect(() => {
       setTotalCount({
         usersCount: data.usersCount,
         notesCount: data.notesCount,
+        tasksCount: data.tasksCount,
+        loginHistoryCount: data.loginHistoryCount,
+        userHistoryCount: data.userHistoryCount,
       });
     } catch (err) {
       props.setLoader({ showLoader: false });
@@ -98,8 +107,17 @@ useEffect(() => {
       flex: 1,
     },
     {
-      field: 'count',
+      field: 'notesCount',
       headerName: 'Notes Count',
+      minWidth: 100,
+      headerAlign: 'center',
+      headerClassName: 'custom-header',
+      cellClassName: 'text-center',
+      flex: 1,
+    },
+    {
+      field: 'tasksCount',
+      headerName: 'Tasks Count',
       minWidth: 100,
       headerAlign: 'center',
       headerClassName: 'custom-header',
@@ -206,9 +224,30 @@ useEffect(() => {
           </div>
         </div>
         <div className="col-md-3">
-          <div className="card shadow-lg my-3 py-2" style={{ backgroundColor: '#89faba' }}>
+          <div className="card shadow-lg my-3 py-2" style={{ backgroundColor: '#89e0fa' }}>
             <div className="card-body">
               <h5 className="card-title my-0 text-center">No. of Notes: {totalcount.notesCount}</h5>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card shadow-lg my-3 py-2" style={{ backgroundColor: '#89faba' }}>
+            <div className="card-body">
+              <h5 className="card-title my-0 text-center">No. of Taks: {totalcount.tasksCount}</h5>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card shadow-lg my-3 py-2" style={{ backgroundColor: '#fa8989' }}>
+            <div className="card-body">
+              <h5 className="card-title my-0 text-center">Users History: {totalcount.userHistoryCount}</h5>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card shadow-lg my-3 py-2" style={{ backgroundColor: '#c789fa' }}>
+            <div className="card-body">
+              <h5 className="card-title my-0 text-center">Login History: {totalcount.loginHistoryCount}</h5>
             </div>
           </div>
         </div>
