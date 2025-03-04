@@ -23,9 +23,8 @@ const Home = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      let state = await fetchUserState();
-      setPermissions(state?.permissions);
-      if (userState?.loggedIn || state?.loggedIn) {
+      if (userState?.loggedIn || (await fetchUserState().then((data) => {setPermissions(data?.permissions); return data?.loggedIn}))) {
+        userState?.loggedIn && setPermissions(userState?.permissions);
         fetchSecretKey();
         fetchHistory();
       } else {
