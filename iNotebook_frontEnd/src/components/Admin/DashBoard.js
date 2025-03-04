@@ -22,12 +22,12 @@ export default function DashBoard(props) {
     useEffect(()=> {
         const fetchData = async () => {
             let state = await fetchUserState();
-            if(!(userState && userState.loggedIn) && !(state && state.loggedIn)) {
+            if(!(state && state.loggedIn)) {
                 props.showAlert('Please log in', 'warning', 10002);
                 history.navigate('/login');
                 return;
             }
-            if((userState && userState.loggedIn && !userState.isAdminUser) && (state && state.loggedIn && !state.isAdminUser)) {
+            if(!(state && state.loggedIn && state.isAdminUser)) {
                 props.showAlert("User not Authorized to access dashboard", 'info', 10036);
                 history.navigate('/');
                 return;
