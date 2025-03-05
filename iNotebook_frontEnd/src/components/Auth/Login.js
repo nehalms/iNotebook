@@ -53,8 +53,8 @@ const Login = (props) => {
                     props.showAlert('Admin passkey not verified', 'danger', 10016);
                     return;
                 }
-                await fetchUserState();
                 history.navigate(isAdminUser ? '/dashboard' : '/');
+                await fetchUserState();
                 props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success', 10053);
             } else {
                 props.showAlert(json.errors ? json.errors[0].msg : json.error, 'danger', 10054);

@@ -98,7 +98,7 @@ const Home = (props) => {
       <div className="feature-grid">
         { permissions.length == 0 ? (
             <div className='p-4 m-0 border rounded text-center'>
-              <p className='m-0'>You dont have access to any of the features, please contact admin <Link to="/">inotebook@gmail.com</Link></p>
+              <p className='m-0'>You dont have access to any of the features, please contact admin <Link to="/">inotebook002@gmail.com</Link></p>
             </div>
           ) :
           [
