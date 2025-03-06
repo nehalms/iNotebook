@@ -6,7 +6,6 @@ const AuthState = (props) => {
     const [userState, setUserState] = useState({
         loggedIn: false,
         isAdminUser: false,
-        permissions: [],
     });
 
     const handleSessionExpiry = useCallback((json) => {

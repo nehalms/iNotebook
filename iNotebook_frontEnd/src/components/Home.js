@@ -10,7 +10,7 @@ const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 
 const Home = (props) => {
   history.navigate = useNavigate();
-  const { userState, fetchUserState } = useContext(AuthContext);
+  const { userState, fetchUserState, handleSessionExpiry } = useContext(AuthContext);
   const [userHistory, setHistory] = useState();
   const [loading, setLoading] = useState(false);
   const [dialog, setDialog] = useState({
@@ -23,10 +23,10 @@ const Home = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (userState?.loggedIn || (await fetchUserState().then((data) => {setPermissions(data?.permissions); return data?.loggedIn}))) {
-        userState?.loggedIn && setPermissions(userState?.permissions);
+      if (userState?.loggedIn || (await fetchUserState().then((data) => {return data?.loggedIn}))) {
         fetchSecretKey();
         fetchHistory();
+        await fetchPermissions();
       } else {
         props.showAlert('Please log In', 'warning', 10002);
         history.navigate('/login');
@@ -54,6 +54,30 @@ const Home = (props) => {
       console.error('Error fetching history:', error);
     }
   };
+
+  const fetchPermissions = async () => {
+    try {
+      props.setLoader({ showLoader: true, msg: "Setting up things for you..." });
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+      });
+      const json = await response.json();
+      if(json.error) {
+        handleSessionExpiry(json);
+      }
+      if(json.status === 1) {
+        setPermissions(json.user.permissions);
+      }
+    } catch (error) {
+      console.error('Error fetching Permissions:', error);
+    } finally {
+      props.setLoader({ showLoader: false });
+    }
+  }
 
   const deleteHistory = async () => {
     try {

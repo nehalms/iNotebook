@@ -1,0 +1,16 @@
+.profTable {
+    border-collapse: collapse;
+    padding: 2px;
+    width: 100%;
+}
+
+.profth {
+    padding: 10px;
+    background-color: aquamarine;
+    text-align: center;
+}
+
+.proftd {
+    text-align: center;
+    padding: 7px;
+}

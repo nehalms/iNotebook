@@ -10,7 +10,7 @@ const PERMISSIONS = {
 
 const getUsers = async (req) => {
     return await new Promise( async (resolve, reject) => {
-        let users = await User.find();
+        let users = await User.find({email: {$ne: 'inotebook002@gmail.com'}});
         let parsedUsers = []
         await Promise.all(
             users.map(async (user, i) => {
