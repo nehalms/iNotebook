@@ -6,8 +6,9 @@ This repository contains the source code for iNotebook, a secure and interactive
 
 ## Features
 
-- **Secure Note Management**: Add, edit, and delete notes with built-in encryption for secure data storage.
 - **User Authentication**: Full authentication and authorization system with login, signup, and password recovery.
+- **Secure Note Management**: Add, edit, and delete notes with built-in encryption for secure data storage.
+- **Task Management**: Create, update, and track tasks with an organized to-do list system.
 - **Games Integration**: Interactive games such as Tic-Tac-Toe and Four-in-Row, enhancing user engagement.
 - **Admin Dashboard**: Comprehensive admin portal to manage user data, game statistics, and analytics.
 - **Image Editing Tools**: Features like image enhancement, rounding corners, and generating background images.
@@ -24,31 +25,38 @@ backend/
 ├── api/                   # APIs for handling requests
 │   └── index.js
 ├── Services/              # Helper services
+│   ├── Email.js
 │   ├── getEmailHtml.js
 │   ├── imagesService.js
-│   └── Email.js
+│   └── permissionsService.js
 ├── models/                # Database models
+│   ├── Folder.js
+│   ├── GameDetails.js
 │   ├── Keys.js
-│   ├── UserHistory.js
-│   ├── User.js
-│   ├── Notes.js
 │   ├── LoginHistory.js
-│   └── GameDetails.js
+│   ├── Notes.js
+│   ├── Task.js
+│   ├── User.js
+│   └── UserHistory.js
 ├── routes/                # API routes
-│   ├── message.js
-│   ├── game.js
 │   ├── AesEncryption.js
-│   ├── notes.js
 │   ├── EmailController.js
-│   ├── data.js
 │   ├── auth.js
-│   └── imagesController.js
+│   ├── data.js
+│   ├── game.js
+│   ├── imagesController.js
+│   ├── message.js
+│   ├── notes.js
+│   ├── permissionsController.js
+│   └── tasks.js
 ├── middleware/            # Middleware for request handling
+│   ├── checkPermission.js
 │   ├── decrypt.js
 │   └── fetchuser.js
 ├── db.js                  # Database connection
 ├── package.json           # Node.js dependencies
 ├── vercel.json            # Deployment configuration for Vercel
+├── .gitignore             # Git ignore file
 └── uploads/               # Directory for file uploads
 ```
 
@@ -61,9 +69,15 @@ iNotebook_frontEnd/
 │   └── robots.txt
 ├── src/                   # React source code
 │   ├── context/           # Context API for state management
-│   │   └── notes/
-│   │       ├── NoteState.js
-│   │       └── noteContext.js
+│   │   ├── auth_state/
+│   │   │   ├── AuthState.js
+│   │   │   └── authContext.js
+│   │   ├── notes/
+│   │   │   ├── NoteState.js
+│   │   │   └── noteContext.js
+│   │   └── tasks/
+│   │       ├── TaskState.js
+│   │       └── taskContext.js
 │   ├── components/        # UI components
 │   │   ├── Auth/          # Authentication components
 │   │   │   ├── Forgot_.js
@@ -76,17 +90,40 @@ iNotebook_frontEnd/
 │   │   ├── Games/         # Games components
 │   │   │   ├── Menu.js
 │   │   │   ├── Tic_tac_toe.js
-│   │   │   └── FrInRow.js
+│   │   │   ├── FrInRow.js
+│   │   │   └── images/
 │   │   ├── Admin/         # Admin dashboard components
 │   │   │   ├── DashBoard.js
 │   │   │   ├── UserNotesData.js
 │   │   │   ├── GameStats.js
-│   │   │   └── Analytics.js
+│   │   │   ├── Analytics.js
+│   │   │   └── Permissions.js
 │   │   ├── Images/        # Image editing components
-│   │   └── Utils/         # Utility components
-├── App.js                 # Root React component
-├── App.css                # Styling for the app
-└── index.js               # Entry point for React
+│   │   │   ├── Enhance.js
+│   │   │   ├── GenerativeBackground.js
+│   │   │   ├── ImageEditor.js
+│   │   │   ├── RotateImage.js
+│   │   │   ├── RoundCorners.js
+│   │   │   ├── Shapen.js
+│   │   │   ├── TryIt.js
+│   │   │   ├── inputNumber.css
+│   │   │   └── StaticImages/
+│   │   ├── Messages/      # Encrypted messaging components
+│   │   │   └── Encrypt_Decrypt_Msg.js
+│   │   ├── ToDoLists/     # Task and folder management
+│   │   │   ├── Folders/
+│   │   │   │   ├── AddFolder.js
+│   │   │   │   ├── Folder.js
+│   │   │   │   └── FolderItem.js
+│   │   │   └── Tasks/
+│   │   │       ├── AddTask.js
+│   │   │       ├── TaskInfo.js
+│   │   │       ├── TaskItem.js
+│   │   │       └── Tasks.js
+│   ├── App.js             # Root React component
+│   ├── App.css            # Styling for the app
+│   ├── index.js           # Entry point for React
+└── .gitignore             # Git ignore file
 ```
 
 ---
