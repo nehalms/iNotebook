@@ -14,3 +14,7 @@
     text-align: center;
     padding: 7px;
 }
+
+.proftr:nth-of-type(even) {
+    background-color: #e6e6e6;
+}

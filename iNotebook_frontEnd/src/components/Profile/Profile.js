@@ -201,7 +201,7 @@ export default function Profile(props) {
           <div style={{ textAlign: 'center', marginBottom: '3px' }}>
             <h5 className='text-black border-bottom' style={{ margin: '0px', padding: '10px', backgroundColor: '#fff', fontWeight: '600', fontSize: '1.5rem'}}>Permissions</h5>
           </div>
-          <div className='m-0 p-2'>
+          <div className='m-0 py-1'>
             <table className='profTable'>
               <thead>
                 <tr>
@@ -211,7 +211,7 @@ export default function Profile(props) {
               </thead>
               <tbody>
                 {Object.keys(permissionsArray).map((key) => (
-                  <tr key={key}>
+                  <tr key={key} className='proftr'>
                     <td className='proftd'>{key}</td>
                     <td className='proftd'>
                       {permissions.includes(permissionsArray[key]) ? (

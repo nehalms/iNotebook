@@ -3,6 +3,9 @@ const connectToMongo = require('../db')
 const express = require('express')
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
 
 connectToMongo();
 const app = express()
@@ -25,6 +28,9 @@ let corsOptions = {
 app.use(cors(corsOptions))
 app.use(cookieParser());
 app.use(express.json())
+
+const logStream = fs.createWriteStream(path.join(__dirname, 'requests.log'), { flags: 'a' });
+app.use(morgan('common',  { stream: logStream }));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
