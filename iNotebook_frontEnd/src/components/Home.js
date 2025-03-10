@@ -23,13 +23,23 @@ const Home = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (userState?.loggedIn || (await fetchUserState().then((data) => {return data?.loggedIn}))) {
+      if (userState?.loggedIn || 
+        (await fetchUserState().then((data) => {
+          if(data.error && data.sessionexpired) {
+            props.showAlert(data.error, 'danger', 10304);
+            return false;
+          } else if(data?.loggedIn) {
+            return true;
+          } else {
+            props.showAlert('Login Please', 'info', 10284);
+            history.navigate('/login');
+            return false;
+          }
+        }))
+      ) {
+        fetchPermissions();
         fetchSecretKey();
         fetchHistory();
-        await fetchPermissions();
-      } else {
-        props.showAlert('Please log In', 'warning', 10002);
-        history.navigate('/login');
       }
     };
     fetchData();

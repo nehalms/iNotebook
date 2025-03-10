@@ -72,7 +72,7 @@ router.post("/createuser", decrypt,
         httpOnly: true,   
         secure: true,           
         sameSite: 'none',
-        maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
+        maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
       });
       
       let html = getAdminNotifyhtml(user.name, user.email);
@@ -138,7 +138,7 @@ router.post(
             httpOnly: true,   
             secure: true,           
             sameSite: 'none',
-            maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
+            maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
           });
         }
         res.json({ success, isAdminUser: user.isAdmin});
@@ -147,7 +147,7 @@ router.post(
           httpOnly: true,   
           secure: true,           
           sameSite: 'none',
-          maxAge: SESSION_EXPIRY_TIME * 60 * 60 * 1000,          
+          maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
         });
         res.json({ success, isAdminUser: user.isAdmin});
       }

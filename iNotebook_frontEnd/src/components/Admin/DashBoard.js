@@ -22,8 +22,13 @@ export default function DashBoard(props) {
     useEffect(()=> {
         const fetchData = async () => {
             let state = await fetchUserState();
-            if(!(state && state.loggedIn)) {
-                props.showAlert('Please log in', 'warning', 10002);
+            if(state && !state.loggedIn) {
+                props.showAlert('Login Please', 'info', 10284);
+                history.navigate('/login');
+                return;
+            }
+            if(state && state.error && state.sessionexpired) {
+                props.showAlert(state.error, 'info', 10001);
                 history.navigate('/login');
                 return;
             }

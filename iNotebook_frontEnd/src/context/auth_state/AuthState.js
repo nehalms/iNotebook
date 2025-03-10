@@ -27,7 +27,7 @@ const AuthState = (props) => {
             const json = await response.json();
             if (json.error) {
                 handleSessionExpiry(json);
-                return;
+                return json;
             }
             if (json.status === 1) {
                 setUserState(json.data);

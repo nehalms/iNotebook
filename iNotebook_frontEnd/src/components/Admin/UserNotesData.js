@@ -32,9 +32,6 @@ useEffect(() => {
 
   const fetchData = async () => {
     try {
-      if(!(userState.loggedIn) || !(userState.isAdminUser)) {
-        return;
-      }
       props.setLoader({ showLoader: true, msg: 'Loading...' });
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/users`, {
         method: 'GET',
