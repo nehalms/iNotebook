@@ -3,9 +3,10 @@ const connectToMongo = require('../db')
 const express = require('express')
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const morgan = require('morgan');
-const fs = require('fs');
-const path = require('path');
+const compression = require('compression');
+// const morgan = require('morgan');
+// const fs = require('fs');
+// const path = require('path');
 
 connectToMongo();
 const app = express()
@@ -28,9 +29,10 @@ let corsOptions = {
 app.use(cors(corsOptions))
 app.use(cookieParser());
 app.use(express.json())
+app.use(compression());
 
-const logStream = fs.createWriteStream(path.join(__dirname, 'requests.log'), { flags: 'a' });
-app.use(morgan('common',  { stream: logStream }));
+// const logStream = fs.createWriteStream(path.join(__dirname, 'requests.log'), { flags: 'a' });
+// app.use(morgan('common',  { stream: logStream }));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -41,6 +43,11 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Access-Control-Allow-Origin, auth-token");
   next();
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 app.get("/test", (req, res) => {
