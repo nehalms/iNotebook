@@ -19,8 +19,11 @@ export default function UserNotesData(props) {
   });
 
 useEffect(() => {
+    if(!userState.loggedIn || !userState.isAdminUser ) {
+      return;
+    }
     fetchData();
-  }, []);
+  }, [userState]);
 
   function CustomToolbar() {
     return (

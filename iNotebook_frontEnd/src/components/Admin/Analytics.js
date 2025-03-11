@@ -25,14 +25,14 @@ export default function Analytics(props) {
   })
 
   useEffect(() => {
+    if(!userState.loggedIn || !userState.isAdminUser ) {
+        return;
+    }
     fetchData();
-  }, [])
+  }, [userState])
 
   const fetchData = async (reqType='both') => {
     try {
-      if(!(userState.loggedIn) || !(userState.isAdminUser)) {
-        return;
-      }
       let dates;
       if(reqType === 'both') {
         dates = {

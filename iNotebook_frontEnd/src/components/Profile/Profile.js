@@ -40,7 +40,7 @@ export default function Profile(props) {
       getUserProfile();
     }
     
-  }, []);
+  }, [userState]);
 
   const getUserProfile = async () => {
     try {

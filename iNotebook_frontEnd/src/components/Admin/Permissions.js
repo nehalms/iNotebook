@@ -15,8 +15,11 @@ export default function Permissions(props) {
   const [rows, setRows] = useState([]);
 
     useEffect(() => {
-        fetchData();
-    }, []);
+      if(!userState.loggedIn || !userState.isAdminUser ) {
+        return;
+      }
+      fetchData();
+    }, [userState]);
 
   function CustomToolbar() {
     return (

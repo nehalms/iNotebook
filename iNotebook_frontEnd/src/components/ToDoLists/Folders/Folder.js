@@ -95,7 +95,7 @@ export default function Folder(props) {
             fetchFolders();
         }
         
-    }, []);
+    }, [userState]);
 
 
     const editFolderName = (src, dest) => {

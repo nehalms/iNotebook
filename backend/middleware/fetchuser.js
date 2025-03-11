@@ -19,7 +19,7 @@ const fetchuser = (req, res, next) => {
         if(err.message === 'jwt expired') {
             const user = jwt.decode(token);
             UserHistory.create({
-                userId: user.id,
+                userId: user.user.id,
                 action: "Session expired",
             });
             res.clearCookie('authToken');

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import NoteContext from "./noteContext";
 import CryptoJS from 'crypto-js';
-import { getSecretKey } from "../../components/Requests/getSecretKey";
+import { useSecretKey } from "../../components/Requests/getSecretKey";
 import AuthContext from "../auth_state/authContext";
 
 const NoteState = (props)=> {
@@ -12,6 +12,7 @@ const NoteState = (props)=> {
     const notesInitital = []
     const [initNotes, setInitNotes] = useState(notesInitital);
     const [notes, setNotes] = useState(notesInitital);
+    const { getSecretKey } = useSecretKey();
     
     //get all notes
     const fetchNotes = async ()=> {

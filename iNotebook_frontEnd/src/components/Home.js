@@ -3,7 +3,7 @@ import { history } from './History';
 import './Home.css';
 import loading_gif from './loading.gif';
 import Confirmation from '../components/Utils/Confirmation';
-import { fetchSecretKey } from '../components/Requests/getSecretKey'
+import { useSecretKey } from '../components/Requests/getSecretKey'
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/auth_state/authContext';
 const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
@@ -11,6 +11,7 @@ const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
 const Home = (props) => {
   history.navigate = useNavigate();
   const { userState, fetchUserState, handleSessionExpiry } = useContext(AuthContext);
+  const { getSecretKey } = useSecretKey();
   const [userHistory, setHistory] = useState();
   const [loading, setLoading] = useState(false);
   const [dialog, setDialog] = useState({
@@ -19,31 +20,41 @@ const Home = (props) => {
     onConfirm: () => {},
     onClose: () => {},
   });
+  const Features = [
+    { id: 'notes', name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
+    { id: 'tasks', name: 'Tasks / To-Do list', route: '/tasks', icon: 'fa-pen', color: '#FF9800' },
+    { id: 'images', name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#2196F3' },
+    { id: 'games', name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#F44336' },
+    { id: 'messages', name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#904caf' },
+  ]
   const [permissions, setPermissions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (userState?.loggedIn || 
-        (await fetchUserState().then((data) => {
-          if(data.error && data.sessionexpired) {
-            props.showAlert(data.error, 'danger', 10304);
-            return false;
-          } else if(data?.loggedIn) {
-            return true;
-          } else {
-            props.showAlert('Login Please', 'info', 10284);
-            history.navigate('/login');
-            return false;
-          }
-        }))
-      ) {
-        fetchPermissions();
-        fetchSecretKey();
-        fetchHistory();
+      if (!userState?.loggedIn) {
+        const data = await fetchUserState();
+        if (data.error && data.sessionexpired) {
+          props.showAlert(data.error, 'danger', 10304);
+          return;
+        } else if (!data?.loggedIn) {
+          props.showAlert('Login Please', 'info', 10284);
+          history.navigate('/login');
+          return;
+        }
+      }
+  
+      try {
+        await Promise.all([
+          fetchPermissions(),
+          fetchHistory(),
+        ]);
+        getSecretKey();
+      } catch (error) {
+        props.showAlert('Error fetching data', 'danger', 10005);
       }
     };
     fetchData();
-  }, []);
+  }, [userState]);
 
 
   const fetchHistory = async () => {
@@ -80,7 +91,8 @@ const Home = (props) => {
         handleSessionExpiry(json);
       }
       if(json.status === 1) {
-        setPermissions(json.user.permissions);
+        const filteredFeatures = Features.filter((feature) => json.user.permissions.includes(feature.id));
+        setPermissions(filteredFeatures);
       }
     } catch (error) {
       console.error('Error fetching Permissions:', error);
@@ -135,24 +147,16 @@ const Home = (props) => {
               <p className='m-0'>You dont have access to any of the features, please contact admin <Link to="/">inotebook002@gmail.com</Link></p>
             </div>
           ) :
-          [
-            { id: 'notes', name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
-            { id: 'tasks', name: 'Tasks / To-Do list', route: '/tasks', icon: 'fa-pen', color: '#FF9800' },
-            { id: 'images', name: 'Image Editor', route: '/imEdit', icon: 'fa-image', color: '#2196F3' },
-            { id: 'games', name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#F44336' },
-            { id: 'messages', name: 'Hide Messages', route: '/msg', icon: 'fa-envelope', color: '#904caf' },
-          ].map((feature, index) => (
-            permissions.includes(feature.id) && (
-              <div
-                key={index}
-                className="feature-card"
-                style={{ backgroundColor: feature.color }}
-                onClick={() => history.navigate(feature.route)}
-              >
-                <i className={`fa ${feature.icon} feature-icon`}></i>
-                <h5 className="feature-name">{feature.name}</h5>
-              </div>
-            )
+          permissions.map((feature, index) => (
+            <div
+              key={index}
+              className="feature-card"
+              style={{ backgroundColor: feature.color }}
+              onClick={() => history.navigate(feature.route)}
+            >
+              <i className={`fa ${feature.icon} feature-icon`}></i>
+              <h5 className="feature-name">{feature.name}</h5>
+            </div>
           ))
         }
       </div>

@@ -21,7 +21,7 @@ export default function DashBoard(props) {
 
     useEffect(()=> {
         const fetchData = async () => {
-            let state = await fetchUserState();
+            let state = userState?.loggedIn ? userState : await fetchUserState();
             if(state && !state.loggedIn) {
                 props.showAlert('Login Please', 'info', 10284);
                 history.navigate('/login');
@@ -39,7 +39,7 @@ export default function DashBoard(props) {
             }
         };
         fetchData();
-    }, []);
+    }, [userState]);
 
     const setDialogFunc = (open, title, onConfirm, onClose, color='danger') => {
         setDialog({

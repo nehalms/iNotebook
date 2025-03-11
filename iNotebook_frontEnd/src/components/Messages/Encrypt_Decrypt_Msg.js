@@ -22,7 +22,7 @@ export default function Encrypt_Decrypt_Msg(props) {
       history.navigate("/");
       return;
     }
-  }, [encryptedMsg, decryptedMsg]);
+  }, [encryptedMsg, decryptedMsg, userState]);
 
   const onEncryptChange = (event) => {
     setEncrypt({ ...encrypt, [event.target.name]: event.target.value });

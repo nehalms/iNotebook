@@ -17,7 +17,7 @@ export default function Menu(props) {
         history.navigate("/");
         return;
       }
-    }, [])
+    }, [userState])
 
     return (
         <div className='container my-4'>

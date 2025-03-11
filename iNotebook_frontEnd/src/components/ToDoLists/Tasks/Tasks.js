@@ -87,7 +87,7 @@ function Tasks(props) {
         } else {
             fetchTasks(src);
         }
-	}, []);
+	}, [userState]);
 
 	const onChange = (e) => {
         setTask({...task, [e.target.name]: e.target.value});

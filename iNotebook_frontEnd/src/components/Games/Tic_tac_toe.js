@@ -106,7 +106,7 @@ export default function Tic_tac_toe(props) {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [roomDetails.id, player]);
+  }, [roomDetails.id, player, userState]);
 
   const getPlayerData = async () => {
     try { 

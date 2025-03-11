@@ -115,7 +115,7 @@ useEffect(() => {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [roomDetails.id, player]); 
+  }, [roomDetails.id, player, userState]); 
 
   const getPlayerData = async () => {
     try { 

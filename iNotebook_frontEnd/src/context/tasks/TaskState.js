@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import TaskContext from "./taskContext";
 import CryptoJS from 'crypto-js';
-import { getSecretKey } from "../../components/Requests/getSecretKey";
+import { useSecretKey } from "../../components/Requests/getSecretKey";
 import { encryptMessage } from "../../components/Utils/Encryption";
 import AuthContext from "../auth_state/authContext";
 
@@ -15,6 +15,7 @@ const TaskState = (props)=> {
     const foldersInitial = [];
     const [initTasks, setInitTasks] = useState(foldersInitial);
     const [folders, setFolders] = useState(foldersInitial);
+    const { getSecretKey } = useSecretKey();
 
     const fetchTasks = async (src)=> {
         try {

@@ -11,8 +11,11 @@ export default function GameStats(props) {
   const { userState, handleSessionExpiry } = useContext(AuthContext);
 
   useEffect(() => {
+    if(!userState.loggedIn || !userState.isAdminUser ) {
+      return;
+    }
     fetchData();
-  }, []);
+  }, [userState]);
 
   const fetchData = async () => {
     try {

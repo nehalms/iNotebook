@@ -28,7 +28,7 @@ export default function ImageEditor(props) {
       history.navigate("/");
       return;
     }
-  }, [])
+  }, [userState])
   
   const toggleNav = () => {
     setIsOpen(!isOpen);

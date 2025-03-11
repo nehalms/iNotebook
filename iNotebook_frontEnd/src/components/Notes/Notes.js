@@ -78,7 +78,7 @@ const Notes = (props) => {
         } else {
             fetchNotes(props);
         }
-    }, [])
+    }, [userState])
 
     const editNote = (currentNote) => {
         ref.current.click();
