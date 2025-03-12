@@ -8,10 +8,17 @@ var jwt = require('jsonwebtoken');
 const JWT_SCERET = process.env.JWT_SCERET;
 const scope = 'games';
 
-router.get("/authenticateUser/:token", async (req, res) => {
+router.get("/authenticateUser/:token/:apikey", async (req, res) => {
     const token = req.params.token;
-    if(!token){
+    const apiKey = req.params.apikey;
+    if(!token || !apiKey){
         res.send(false);
+    }
+    const data = jwt.verify(apiKey, JWT_SCERET);
+    let adminUser = await User.findById(data.user.id);
+    if(!adminUser || !adminUser.isAdmin) {
+        res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+        return;
     }
     try{
         const data = jwt.verify(token, JWT_SCERET);

@@ -492,7 +492,7 @@ useEffect(() => {
             { player && player != '' ? 
              <>
               <div className="_board_">
-                {board.map((row, rowIndex) => (
+                {board && board.map((row, rowIndex) => (
                   <div key={rowIndex} className="_row_">
                     {row.map((_, colIndex) => renderSquare(rowIndex, colIndex))}
                   </div>
