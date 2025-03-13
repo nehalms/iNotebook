@@ -21,7 +21,9 @@ export default function DashBoard(props) {
 
     useEffect(()=> {
         const fetchData = async () => {
+            props.setLoader({ showLoader: true, msg: "Getting data..." });
             let state = userState?.loggedIn ? userState : await fetchUserState();
+            props.setLoader({ showLoader: false});
             if(state && !state.loggedIn) {
                 props.showAlert('Login Please', 'info', 10284);
                 history.navigate('/login');

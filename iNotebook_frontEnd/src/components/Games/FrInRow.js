@@ -24,6 +24,7 @@ export default function FrInRow(props) {
   const [secondClk, setSecondClk] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
   const { userState, handleSessionExpiry } = useContext(AuthContext);
+  const [gameToken, setToken] = useState("");
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -108,7 +109,7 @@ useEffect(() => {
     getPlayerData();
 
     const resizeObserver = new ResizeObserver(() => {
-      setHeight(detailsDiv.current.offsetHeight);
+      detailsDiv && setHeight(detailsDiv.current.offsetHeight);
     });
     resizeObserver.observe(detailsDiv.current);
     
@@ -126,7 +127,9 @@ useEffect(() => {
         },
         credentials: 'include',
       });
-      const data = await response.json();
+      const json = await response.json();
+      setToken(json.authToken);
+      const data = json.stats;
       if(data && data.frnRowStats) {
         setStats({
           id: data.userId,
@@ -136,7 +139,7 @@ useEffect(() => {
           loss: data.frnRowStats.lost,
         });
         if(sessionStorage.getItem('roomId')) {
-          await getGameStatus(data);
+          await getGameStatus(data, json.authToken);
         }
       }
       if(!data.success){
@@ -144,23 +147,23 @@ useEffect(() => {
         props.showAlert(data.error, 'danger', 10069);
       }
     } catch (err) {
-      props.setLoader({ showLoader: false });
       console.log('Error** ', err);
       props.showAlert("Some Error Occured", "danger", 10070);
     }
   }
 
-  const getGameStatus = async (user) => {
+  const getGameStatus = async (user, token = null) => {
     try { 
       if(!sessionStorage.getItem('roomId') || connected) {
         return;
       }
+      props.setLoader({ showLoader: true, msg: "Checking for the previous game..."});
       const response = await fetch(`${process.env.REACT_APP_C4_BOOTSTRAP_URL}/game/getStatus?gameId=${sessionStorage.getItem('roomId')}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": token ? token : gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           userId: user.userId,
           name: user.userName,
@@ -168,7 +171,7 @@ useEffect(() => {
         })
       });
       const data = await response.json();
-      if(data.statusCode == 400) {
+      if(data.statusCode == 400 || data.statusCode == 500) {
         return;
       }
       if(data) {
@@ -191,9 +194,10 @@ useEffect(() => {
         sessionStorage.setItem('roomId', data.gameId);
       }
     } catch (err) {
-      props.setLoader({ showLoader: false });
       console.log('Error** ', err);
       props.showAlert("Some Error Occured", "danger", 10087);
+    } finally {
+      props.setLoader({ showLoader: false });
     }
   }
   
@@ -204,8 +208,8 @@ useEffect(() => {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -241,8 +245,8 @@ useEffect(() => {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -308,8 +312,8 @@ useEffect(() => {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           type: player,
           gameId: roomDetails.id,
@@ -367,8 +371,8 @@ useEffect(() => {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
       });
       let data = await response.json();
       if(data.statusCode == 400) {
@@ -502,7 +506,7 @@ useEffect(() => {
               <div className='p-3 m-0 bg-white rounded border'>
                 <img src={connect4} alt="Connnect 4" style={{ width: '50%', height: '50%'}}/>
                 <h5 className='m-0 my-3'>The goal of the game Four in a Row, also known as Connect 4, is to be the first player to connect four of their colored discs in a row, either horizontally, vertically, or diagonally</h5>
-                <button className="btn btn-success py-2 m-1" style={{width: '80%'}} onClick={handleCreateRoom}>Create Room</button>
+                <button className="btn btn-success py-2 m-1" style={{width: '80%'}} onClick={handleCreateRoom} disabled={gameToken == ""}>Create Room</button>
               </div>
             }
           </div>

@@ -156,7 +156,7 @@ router.post(
           console.log("Server status(TTT) ", response.data, '\n');
         })
         .catch(error => {
-          console.error("Error in waking tictactoe server:", error);
+          console.error("Error in waking tictactoe server", error.message);
         });
 
       axios.get(`${process.env.C4_BOOTSTRAP_URL}/game/test`)
@@ -164,7 +164,7 @@ router.post(
           console.log("Server status(C4) ", response.data, '\n');
         })
         .catch(error => {
-          console.error("Error in waking connect4 server:", error);
+          console.error("Error in waking connect4 server:", error.message);
         });
       
       await LoginHistory.create({

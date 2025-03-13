@@ -19,6 +19,7 @@ export default function Tic_tac_toe(props) {
   const [roomId, setRoomId] = useState("");
   const [secondClk, setSecondClk] = useState(false);
   const [vsBot, setVsBot] = useState(false);
+  const [gameToken, setToken] = useState("");
   const [roomDetails, setRoomDetails] = useState({
     id: '',
     joined: false,
@@ -99,7 +100,7 @@ export default function Tic_tac_toe(props) {
     getPlayerData();
 
     const resizeObserver = new ResizeObserver(() => {
-      setHeight(detailsDiv.current.offsetHeight);
+      detailsDiv && setHeight(detailsDiv.current.offsetHeight);
     });
     resizeObserver.observe(detailsDiv.current);
     
@@ -117,7 +118,9 @@ export default function Tic_tac_toe(props) {
         },
         credentials: 'include',
       });
-      const data = await response.json();
+      const json = await response.json();
+      setToken(json.authToken);
+      const data = json.stats;
       if(data && data.tttStats) {
         setStats({
           id: data.userId,
@@ -127,7 +130,7 @@ export default function Tic_tac_toe(props) {
           loss: data.tttStats.lost,
         });
         if(sessionStorage.getItem('roomId')) {
-          await getGameStatus(data);
+          await getGameStatus(data, json.authToken);
         }
       }
       if(!data.success){
@@ -141,17 +144,18 @@ export default function Tic_tac_toe(props) {
     }
   }
 
-  const getGameStatus = async (user) => {
+  const getGameStatus = async (user, token = null) => {
     try { 
       if(!sessionStorage.getItem('roomId') || connected) {
         return;
       }
+      props.setLoader({ showLoader: true, msg: "Checking for the previous game..."});
       const response = await fetch(`${process.env.REACT_APP_BOOTSTRAP_URL}/game/getStatus?gameId=${sessionStorage.getItem('roomId')}`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": token ? token : gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           userId: user.userId,
           name: user.userName,
@@ -159,7 +163,7 @@ export default function Tic_tac_toe(props) {
         })
       });
       const data = await response.json();
-      if(data.statusCode == 400) {
+      if(data.statusCode == 400 || data.statusCode == 500) {
         return;
       }
       if(data) {
@@ -181,9 +185,10 @@ export default function Tic_tac_toe(props) {
         sessionStorage.setItem('roomId', data.gameId);
       }
     } catch (err) {
-      props.setLoader({ showLoader: false });
       console.log('Error** ', err);
       props.showAlert("Some Error Occured", "danger", 10087);
+    } finally {
+      props.setLoader({ showLoader: false });
     }
   }
 
@@ -195,8 +200,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -231,8 +236,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -293,8 +298,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           type: player,
           gameId: roomDetails.id,
@@ -345,8 +350,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-      credentials: 'include',
       });
       let data = await response.json();
       if(data.statusCode == 400) {
@@ -374,8 +379,8 @@ export default function Tic_tac_toe(props) {
         method: "POST", 
         headers: {
           "Content-Type": "application/json",
+          "authToken": gameToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           userId: userstats.id,
           name: userstats.name,
@@ -531,8 +536,8 @@ export default function Tic_tac_toe(props) {
                 <img src={tictactoe} alt="Connnect 4" style={{ width: '50%', height: '50%'}}/>
                 <h5 className='m-0 my-5'>The objective of the game of tic-tac-toe is to be the first player to get three of their marks in a row, either horizontally, vertically, or diagonally</h5>
                 <div className="d-flex align-items-center justify-content-around">
-                  <button className="btn btn-success py-2 m-1" style={{width: '50%'}} onClick={handleCreateRoom}>Create Room</button>
-                  <button className="btn btn-danger py-2 m-1" style={{width: '50%'}} onClick={handlePlayvsBot}>vs Computer</button>
+                  <button className="btn btn-success py-2 m-1" style={{width: '50%'}} onClick={handleCreateRoom} disabled={gameToken == ""} >Create Room</button>
+                  <button className="btn btn-danger py-2 m-1" style={{width: '50%'}} onClick={handlePlayvsBot} disabled={gameToken == ""} >vs Computer</button>
                 </div>
               </div>}
           </div>

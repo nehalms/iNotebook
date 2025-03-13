@@ -54,7 +54,7 @@ router.post('/getStats', fetchuser, checkPermission(scope),  async (req, res) =>
                 }
             });
         }
-        res.send(userStats);
+        res.send({stats: userStats, authToken: req.cookies.authToken});
     } catch (err) {
         console.log("Error**", err.message);
         res.status(500).send('Internal Server Error');

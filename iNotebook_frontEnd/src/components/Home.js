@@ -32,7 +32,9 @@ const Home = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       if (!userState?.loggedIn) {
+        props.setLoader({ showLoader: true, msg: "Getting data..." });
         const data = await fetchUserState();
+        props.setLoader({ showLoader: false});
         if (data.error && data.sessionexpired) {
           props.showAlert(data.error, 'danger', 10304);
           return;
