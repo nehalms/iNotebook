@@ -17,6 +17,7 @@ import Confirmation from './components/Utils/Confirmation';
 import TaskState from './context/tasks/TaskState';
 import Folder from './components/ToDoLists/Folders/Folder';
 import AuthContext from './context/auth_state/authContext';
+import Breadcrumbs from './components/Utils/Breadcrumb';
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
@@ -162,7 +163,8 @@ function App() {
             <SpeedInsights/>
             {loader.showLoader && <Spinner msg={loader.msg}/>}
             {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
-            <div className="container" style={{marginTop: '40px'}}>
+            <div className="container" style={{marginTop: '70px'}}>
+              {<Breadcrumbs/>}
               <Suspense fallback={<div><ComponentLoader msg={'Loading...'}/></div>}>
                 <Routes>
                   <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
@@ -173,11 +175,11 @@ function App() {
                   <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/tasks' element={<Folder showAlert={showAlert} setLoader={setLoader}/>}/>   
-                  <Route exact path='/imEdit' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/images' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
-                  <Route exact path='/msg' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/message' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
                 </Routes>
               </Suspense>
             </div>

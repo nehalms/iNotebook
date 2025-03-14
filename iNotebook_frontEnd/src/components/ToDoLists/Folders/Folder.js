@@ -127,6 +127,12 @@ export default function Folder(props) {
     }
 
     const boxStyle = {
+        position: 'fixed',
+        bottom: '25px', 
+        left: '25px', 
+        zIndex: 1,
+        backgroundColor: '#000',
+        color: '#fff',
         cursor: 'pointer',
         userSelect: 'none',
         WebkitUserSelect: 'none',
@@ -200,7 +206,7 @@ export default function Folder(props) {
                 <h2 className='mx-1 my-0 text-left'>{showTasks ? <><i className="m-0 me-2 p-0 fa-regular fa-folder"></i>{currSrc}</> : 'Your Tasks'}</h2>
                 {  showTasks &&
                     <div id="back" className='p-2 mx-2 border rounded text-center' style={boxStyle} onClick={() => {handleFolderClick(null)}}>
-                        <p className='m-0'><i className="m-0 fa-solid fa-arrow-left"></i><i className="ms-3 p-0 fa-regular fa-folder"></i> Folders</p>
+                        <p className='m-0'><i className="m-0 fa-solid fa-arrow-left"></i><i className="ms-3 p-0 fa-regular fa-folder"></i> Back</p>
                         <Tooltip anchorId="back" style={{zIndex: '10'}} content={`Go back to folders`} place="right" />
                     </div>
                 }

@@ -1,6 +1,4 @@
 import React, { useRef, useState } from 'react'
-import { jwtDecode } from 'jwt-decode';
-import { history } from '../../History';
 
 function AddTask(props) {
 
@@ -10,11 +8,11 @@ function AddTask(props) {
 
     const modalStyle = {
         borderRadius: '15px',
-        backgroundColor: '#eafaf1',
+        backgroundColor: '#faeaea',
     };
     
     const modalHeaderStyle = {
-        backgroundColor: '#2d6a4f',
+        backgroundColor: '#ff7878',
         color: '#f1faee',
         borderTopLeftRadius: '15px',
         borderTopRightRadius: '15px',
@@ -28,11 +26,11 @@ function AddTask(props) {
     
     const formControlStyle = {
         borderRadius: '8px',
-        border: '1px solid #40916c',
+        border: '1px solidrgb(223, 255, 241)',
         padding: '12px',
         fontSize: '1rem',
         marginBottom: '10px',
-        backgroundColor: '#d8f3dc',
+        backgroundColor: '#fff',
         color: '#1b4332',
     };
     
@@ -42,24 +40,24 @@ function AddTask(props) {
     };
     
     const modalButtonSecondaryStyle = {
-        backgroundColor: '#52b788',
+        backgroundColor: '#fc7979',
         color: '#081c15',
         borderRadius: '30px',
     };
     
     const modalButtonPrimaryStyle = {
-        backgroundColor: '#1b4332',
+        backgroundColor: '#fa6464',
         color: '#f1faee',
         borderRadius: '30px',
-        border: '1px solid #40916c',
+        border: '1px solid rgb(145, 64, 64)',
         padding: '6px 12px',
     };
     
     const modalButtonPrimaryDisabledStyle = {
-        backgroundColor: '#74c69d',
+        backgroundColor: '#d47b7b',
         color: '#f1faee',
         borderRadius: '30px',
-        border: '1px solid #52b788',
+        border: '1px solid rgb(183, 82, 82)',
         padding: '6px 12px',
     };     
 

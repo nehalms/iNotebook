@@ -170,7 +170,7 @@ const Signup = (props) => {
                 className="card-header text-center text-black fw-bold py-4"
                 style={{ backgroundColor: '#ffc107', borderRadius: '1rem 1rem 0 0' }}
             >
-                <h2>iNotebook</h2>
+                <h2>Nexus Pad</h2>
                 <p className='m-0'>Welcome! Sign up now to explore</p>
             </div>
             <div className="card-body">

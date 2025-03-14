@@ -181,8 +181,8 @@ const Forgot_ = (props)=> {
               className="card-header text-center text-white fw-bold py-4"
               style={{ backgroundColor: '#0d6efd', borderRadius: '1rem 1rem 0 0' }}
           >
-            <h2>iNotebook</h2>
-            <h6 className='m-0'>Please note that we cannot recover your original password because we store it using hashing and salting techniques</h6>
+            <h2>Nexus Pad</h2>
+            <h6 className='m-0'>We are unable to retrieve your original password as it is securely stored using hashing and salting techniques.</h6>
           </div>
           <div className="card-body">
               <form onSubmit={handleSubmit}>

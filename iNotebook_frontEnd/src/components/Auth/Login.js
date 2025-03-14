@@ -127,8 +127,8 @@ const Login = (props) => {
                     className="card-header text-center text-white fw-bold py-4"
                     style={{ backgroundColor: '#198754', borderRadius: '1rem 1rem 0 0' }}
                 >
-                    <h2>iNotebook</h2>
-                    <p className='m-0'>Save your notes from one place, access anywhere</p>
+                    <h2>Nexus Pad</h2>
+                    <p className='m-0'>Save your notes, tasks, play games, encrypt messages, manage your profile, and access everything from one place, anytime, anywhere!</p>
                 </div>
                 <div className="card-body">
                     <form onSubmit={handleSubmit}>
