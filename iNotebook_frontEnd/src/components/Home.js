@@ -22,10 +22,11 @@ const Home = (props) => {
   });
   const Features = [
     { id: 'notes', name: 'Save Notes', route: '/notes', icon: 'fa-book', color: '#4CAF50' },
-    { id: 'tasks', name: 'Tasks / To-Do list', route: '/tasks', icon: 'fa-pen', color: '#FF9800' },
-    { id: 'images', name: 'Image Editor', route: '/images', icon: 'fa-image', color: '#2196F3' },
-    { id: 'games', name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#F44336' },
-    { id: 'messages', name: 'Hide Messages', route: '/message', icon: 'fa-envelope', color: '#904caf' },
+    { id: 'tasks', name: 'Tasks / To-Do list', route: '/tasks', icon: 'fa-pen', color: '#2196F3' },
+    { id: 'images', name: 'Image Editor', route: '/images', icon: 'fa-image', color: '#FF9800' },
+    { id: 'games', name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#904caf' },
+    { id: 'messages', name: 'Hide Messages', route: '/message', icon: 'fa-envelope', color: '#F44336' },
+    { id: 'news', name: 'Top News', route: '/news', icon: 'fa-newspaper', color: '#af4c7d' },
   ]
   const [permissions, setPermissions] = useState([]);
 

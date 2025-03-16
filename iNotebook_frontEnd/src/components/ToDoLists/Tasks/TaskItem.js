@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import { Tooltip } from "react-tooltip";
-import { jwtDecode } from 'jwt-decode';
-import { history } from '../../History';
 import Popup from '../../Utils/Popup';
 
 function TaskItem(props) {

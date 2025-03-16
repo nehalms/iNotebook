@@ -18,6 +18,7 @@ import TaskState from './context/tasks/TaskState';
 import Folder from './components/ToDoLists/Folders/Folder';
 import AuthContext from './context/auth_state/authContext';
 import Breadcrumbs from './components/Utils/Breadcrumb';
+import News from './components/News/News';
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
@@ -164,7 +165,7 @@ function App() {
             {loader.showLoader && <Spinner msg={loader.msg}/>}
             {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
             <div className="container" style={{marginTop: '70px'}}>
-              {<Breadcrumbs/>}
+              <Breadcrumbs/>
               <Suspense fallback={<div><ComponentLoader msg={'Loading...'}/></div>}>
                 <Routes>
                   <Route exact path='/' element={<Home showAlert={showAlert}  setLoader={setLoader}/>} /> 
@@ -180,6 +181,7 @@ function App() {
                   <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/message' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/news' element={<News showAlert={showAlert} setLoader={setLoader}/>}/>   
                 </Routes>
               </Suspense>
             </div>

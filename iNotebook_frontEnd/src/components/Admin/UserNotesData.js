@@ -18,7 +18,7 @@ export default function UserNotesData(props) {
     loginHistoryCount: 0,
   });
 
-useEffect(() => {
+  useEffect(() => {
     if(!userState.loggedIn || !userState.isAdminUser ) {
       return;
     }

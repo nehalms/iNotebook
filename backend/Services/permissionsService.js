@@ -6,11 +6,12 @@ const PERMISSIONS = {
     3: 'images',
     4: 'games',
     5: 'messages',
+    6: 'news',
 }
 
 const getUsers = async (req) => {
     return await new Promise( async (resolve, reject) => {
-        let users = await User.find({email: {$ne: 'inotebook002@gmail.com'}});
+        let users = await User.find();
         let parsedUsers = []
         await Promise.all(
             users.map(async (user, i) => {
@@ -24,6 +25,7 @@ const getUsers = async (req) => {
                     images: user.permissions.includes(PERMISSIONS[3]), 
                     games: user.permissions.includes(PERMISSIONS[4]),
                     messages: user.permissions.includes(PERMISSIONS[5]),
+                    news: user.permissions.includes(PERMISSIONS[6]),
                 }
                 parsedUsers.push(User);
             })

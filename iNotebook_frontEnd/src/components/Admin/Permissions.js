@@ -5,11 +5,12 @@ import AuthContext from '../../context/auth_state/authContext';
 
 export default function Permissions(props) {
     const PERMISSIONS = {
-        'notes': 1,
-        'tasks': 2,
-        'images': 3,
-        'games': 4,
-        'messages': 5,
+      'notes': 1,
+      'tasks': 2,
+      'images': 3,
+      'games': 4,
+      'messages': 5,
+      'news': 6,
     }
   const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [rows, setRows] = useState([]);
@@ -233,6 +234,22 @@ export default function Permissions(props) {
               color="primary"
             />
         ),
+    },
+    {
+      field: 'news',
+      headerName: 'News',
+      minWidth: 80,
+      headerAlign: 'center',
+      headerClassName: 'custom-header',
+      cellClassName: 'text-center',
+      flex: 1,
+      renderCell: (params) => (
+          <Checkbox
+            checked={params.value || false}
+            onChange={() => handlePermissionToggle('news', params.row.userId, params.value)}
+            color="primary"
+          />
+      ),
     },
     {
         field: 'give all',
