@@ -25,7 +25,7 @@ const ScrollToTopButton = () => {
         <button 
         className={`position-fixed btn btn-dark shadow-lg rounded ${isVisible ? "d-block" : "d-none"}`}
             onClick={scrollToTop} 
-            style={{ width: "50px", height: "50px", position: 'fixed', right: '20px', bottom: '20px'}}
+            style={{ width: "50px", height: "50px", position: 'fixed', right: '20px', bottom: '20px', zIndex: '1'}}
         >
             <ArrowUpCircle size={24} />
         </button>

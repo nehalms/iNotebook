@@ -81,7 +81,7 @@ const Home = (props) => {
 
   const fetchPermissions = async () => {
     try {
-      props.setLoader({ showLoader: true, msg: "Setting up things for you..." });
+      permissions.length == 0 && props.setLoader({ showLoader: true, msg: "Setting up things for you..." });
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
         method: "POST",
         headers: {
