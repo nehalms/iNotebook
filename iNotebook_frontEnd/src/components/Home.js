@@ -27,6 +27,7 @@ const Home = (props) => {
     { id: 'games', name: 'Games', route: '/games', icon: 'fa-gamepad', color: '#904caf' },
     { id: 'messages', name: 'Hide Messages', route: '/message', icon: 'fa-envelope', color: '#F44336' },
     { id: 'news', name: 'Top News', route: '/news', icon: 'fa-newspaper', color: '#af4c7d' },
+    { id: 'calendar', name: 'Work Calendar', route: '/calendar', icon: 'fa-calendar', color: '#4cafa8' },
   ]
   const [permissions, setPermissions] = useState([]);
 
@@ -94,7 +95,7 @@ const Home = (props) => {
         handleSessionExpiry(json);
       }
       if(json.status === 1) {
-        const filteredFeatures = Features.filter((feature) => json.user.permissions.includes(feature.id));
+        const filteredFeatures = Features.filter((feature) => json.user.permissions.includes(feature.id) || 1);
         setPermissions(filteredFeatures);
       }
     } catch (error) {

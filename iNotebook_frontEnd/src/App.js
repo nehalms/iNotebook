@@ -18,7 +18,7 @@ import TaskState from './context/tasks/TaskState';
 import Folder from './components/ToDoLists/Folders/Folder';
 import AuthContext from './context/auth_state/authContext';
 import Breadcrumbs from './components/Utils/Breadcrumb';
-import News from './components/News/News';
+
 const Home = React.lazy(() => import('./components/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
@@ -31,7 +31,8 @@ const Tic_tac_toe = React.lazy(() => import('./components/Games/Tic_tac_toe'));
 const Encrypt_Decrypt_Msg = React.lazy(() => import('./components/Messages/Encrypt_Decrypt_Msg'));
 const FrInRow = React.lazy(() => import('./components/Games/FrInRow'));
 const Profile = React.lazy(() => import('./components/Profile/Profile'));
-
+const News = React.lazy(() => import('./components/News/News'));
+const WorkCalendar = React.lazy(() => import('./components/WorkCalender/Calender'))
 function App() {
   const [alert, setAlert] = useState(null);
   const [mode, setMode] = useState('light');
@@ -182,6 +183,7 @@ function App() {
                   <Route exact path='/games/frinrow' element={<FrInRow showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/message' element={<Encrypt_Decrypt_Msg showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/news' element={<News showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/calendar' element={<WorkCalendar showAlert={showAlert} setLoader={setLoader}/>}/>   
                 </Routes>
               </Suspense>
             </div>

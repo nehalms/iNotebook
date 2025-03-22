@@ -7,6 +7,7 @@ const PERMISSIONS = {
     4: 'games',
     5: 'messages',
     6: 'news',
+    7: 'calender',
 }
 
 const getUsers = async (req) => {
@@ -26,6 +27,7 @@ const getUsers = async (req) => {
                     games: user.permissions.includes(PERMISSIONS[4]),
                     messages: user.permissions.includes(PERMISSIONS[5]),
                     news: user.permissions.includes(PERMISSIONS[6]),
+                    calender: user.permissions.includes(PERMISSIONS[7]),
                 }
                 parsedUsers.push(User);
             })

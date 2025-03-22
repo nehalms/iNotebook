@@ -51,7 +51,7 @@ router.post("/createuser", decrypt,
         name: req.body.name,
         email: req.body.email,
         password: secPass,
-        permissions: ['notes', 'tasks', 'games', 'images', 'messages']
+        permissions: ['notes', 'tasks', 'games', 'images', 'messages', 'news', 'calender']
       });
 
       await UserHistory.create({

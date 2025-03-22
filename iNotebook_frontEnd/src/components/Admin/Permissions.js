@@ -11,6 +11,7 @@ export default function Permissions(props) {
       'games': 4,
       'messages': 5,
       'news': 6,
+      'calender': 7,
     }
   const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [rows, setRows] = useState([]);
@@ -222,7 +223,7 @@ export default function Permissions(props) {
     {
         field: 'messages',
         headerName: 'Messages',
-        minWidth: 80,
+        minWidth: 90,
         headerAlign: 'center',
         headerClassName: 'custom-header',
         cellClassName: 'text-center',
@@ -247,6 +248,22 @@ export default function Permissions(props) {
           <Checkbox
             checked={params.value || false}
             onChange={() => handlePermissionToggle('news', params.row.userId, params.value)}
+            color="primary"
+          />
+      ),
+    },
+    {
+      field: 'calender',
+      headerName: 'Calender',
+      minWidth: 80,
+      headerAlign: 'center',
+      headerClassName: 'custom-header',
+      cellClassName: 'text-center',
+      flex: 1,
+      renderCell: (params) => (
+          <Checkbox
+            checked={params.value || false}
+            onChange={() => handlePermissionToggle('calender', params.row.userId, params.value)}
             color="primary"
           />
       ),
@@ -294,10 +311,10 @@ export default function Permissions(props) {
 
     const columnGroupingModel = [
         {
-            groupId: 'permissions',
-            headerName: 'Permissions',
-            headerAlign: 'center',
-            children: [{ field: 'notes' }, { field: 'tasks' }, { field: 'games' }, { field: 'images' }, { field: 'messages' }, { field: 'set' }, { field: 'reset' }],
+          groupId: 'permissions',
+          headerName: 'Permissions',
+          headerAlign: 'center',
+          children: [{ field: 'notes' }, { field: 'tasks' }, { field: 'games' }, { field: 'images' }, { field: 'messages' }, { field: 'news' }, { field: 'calender' }, { field: 'give all' }, { field: 'remove all' }],
         },
     ];
 
