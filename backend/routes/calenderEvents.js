@@ -4,7 +4,7 @@ const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
 const Events = require('../models/Events')
 const UserHistory = require('../models/UserHistory');
-const scope = 'calender';
+const scope = 'calendar';
 
 router.get('/', fetchuser, checkPermission(scope), async (req, res) => {
     try {

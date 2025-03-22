@@ -16,6 +16,7 @@ export default function Profile(props) {
     'Games': 'games',
     'Messages': 'messages',
     'News': 'news',
+    'Calendar': 'calendar',
   }
   const [profile, setProfile] = useState({
     id: '',

@@ -51,6 +51,11 @@ const WorkCalendar = (props) => {
         credentials: 'include',
       });
       let json = await response.json();
+      if(json.error) {
+        handleSessionExpiry(json);
+        props.showAlert(json.error, 'info', 38742);
+        return;
+      }
       if (json.status == 1) {
         let decryptedEvents = [];
         json.data.map((event) => {
