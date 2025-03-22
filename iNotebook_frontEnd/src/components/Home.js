@@ -95,7 +95,7 @@ const Home = (props) => {
         handleSessionExpiry(json);
       }
       if(json.status === 1) {
-        const filteredFeatures = Features.filter((feature) => json.user.permissions.includes(feature.id) || 1);
+        const filteredFeatures = Features.filter((feature) => json.user.permissions.includes(feature.id));
         setPermissions(filteredFeatures);
       }
     } catch (error) {
