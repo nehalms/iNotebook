@@ -32,7 +32,7 @@ const Encrypt_Decrypt_Msg = React.lazy(() => import('./components/Messages/Encry
 const FrInRow = React.lazy(() => import('./components/Games/FrInRow'));
 const Profile = React.lazy(() => import('./components/Profile/Profile'));
 const News = React.lazy(() => import('./components/News/News'));
-const WorkCalendar = React.lazy(() => import('./components/WorkCalender/Calender'))
+const WorkCalendar = React.lazy(() => import('./components/WorkCalendar/Calendar'))
 function App() {
   const [alert, setAlert] = useState(null);
   const [mode, setMode] = useState('light');

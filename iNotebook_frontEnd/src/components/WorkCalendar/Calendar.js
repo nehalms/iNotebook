@@ -42,7 +42,7 @@ const WorkCalendar = (props) => {
   const fetchevents = async () => {
     try {
       let secretKey = await getSecretKey();
-      props.setLoader({ showLoader: true, msg: "Making up the calender..." });
+      props.setLoader({ showLoader: true, msg: "Making up the calendar..." });
       let response = await fetch(`${process.env.REACT_APP_BASE_URL}/calevents`, {
         method: "GET",
         headers: {
@@ -86,7 +86,7 @@ const WorkCalendar = (props) => {
 
     try {
       let secretKey = await getSecretKey();
-      props.setLoader({ showLoader: true, msg: "Making up the calender..." });
+      props.setLoader({ showLoader: true, msg: "Making up the calendar..." });
       let response = await fetch(`${process.env.REACT_APP_BASE_URL}/calevents/add`, {
         method: "POST",
         headers: {

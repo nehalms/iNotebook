@@ -11,7 +11,7 @@ export default function Permissions(props) {
       'games': 4,
       'messages': 5,
       'news': 6,
-      'calender': 7,
+      'calendar': 7,
     }
   const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [rows, setRows] = useState([]);
@@ -253,8 +253,8 @@ export default function Permissions(props) {
       ),
     },
     {
-      field: 'calender',
-      headerName: 'Calender',
+      field: 'calendar',
+      headerName: 'Calendar',
       minWidth: 80,
       headerAlign: 'center',
       headerClassName: 'custom-header',
@@ -263,7 +263,7 @@ export default function Permissions(props) {
       renderCell: (params) => (
           <Checkbox
             checked={params.value || false}
-            onChange={() => handlePermissionToggle('calender', params.row.userId, params.value)}
+            onChange={() => handlePermissionToggle('calendar', params.row.userId, params.value)}
             color="primary"
           />
       ),
@@ -314,7 +314,7 @@ export default function Permissions(props) {
           groupId: 'permissions',
           headerName: 'Permissions',
           headerAlign: 'center',
-          children: [{ field: 'notes' }, { field: 'tasks' }, { field: 'games' }, { field: 'images' }, { field: 'messages' }, { field: 'news' }, { field: 'calender' }, { field: 'give all' }, { field: 'remove all' }],
+          children: [{ field: 'notes' }, { field: 'tasks' }, { field: 'games' }, { field: 'images' }, { field: 'messages' }, { field: 'news' }, { field: 'calendar' }, { field: 'give all' }, { field: 'remove all' }],
         },
     ];
 
