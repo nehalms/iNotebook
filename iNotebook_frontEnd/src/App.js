@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { history } from '../src/components/History';
-import Navbar from './components/Navbar'
+import Navbar from './components/Navbar/Navbar'
 import NoteState from './context/notes/NoteState';
 import Alert from './components/Utils/Alert';
 import Spinner from './components/LoadingScreens/Spinner';
@@ -19,7 +19,7 @@ import Folder from './components/ToDoLists/Folders/Folder';
 import AuthContext from './context/auth_state/authContext';
 import Breadcrumbs from './components/Utils/Breadcrumb';
 
-const Home = React.lazy(() => import('./components/Home'));
+const Home = React.lazy(() => import('./components/Home/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Signup = React.lazy(() => import('./components/Auth/Signup'));
 const Forgot = React.lazy(() => import('./components/Auth/Forgot_'));

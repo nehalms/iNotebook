@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react'
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { history } from './History';
+import { history } from '../History';
 import img from './favicon-32x32.png'
 import './Navbar.css'
-import AuthContext from '../context/auth_state/authContext';
+import AuthContext from '../../context/auth_state/authContext';
 
 const Navbar = (props) => {
     history.navigate = useNavigate();

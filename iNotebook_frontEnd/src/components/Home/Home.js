@@ -1,12 +1,12 @@
 import React, { Suspense, useContext, useEffect, useState } from 'react';
-import { history } from './History';
+import { history } from '../History';
 import './Home.css';
 import loading_gif from './loading.gif';
-import Confirmation from '../components/Utils/Confirmation';
-import { useSecretKey } from '../components/Requests/getSecretKey'
+import Confirmation from '../Utils/Confirmation';
+import { useSecretKey } from '../Requests/getSecretKey'
 import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../context/auth_state/authContext';
-const UserHistoryTable = React.lazy(() => import('./Tables/UserHistorytable'));
+import AuthContext from '../../context/auth_state/authContext';
+const UserHistoryTable = React.lazy(() => import('../Tables/UserHistorytable'));
 
 const Home = (props) => {
   history.navigate = useNavigate();
