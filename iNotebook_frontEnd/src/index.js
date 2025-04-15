@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import { Provider } from 'react-redux';
 import store from './components/SessionState/store';
-import AuthProvider from './context/auth_state/AuthContext';
+import AuthProvider from './context/auth_state/authContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
