@@ -21,7 +21,7 @@ const Forgot_ = (props)=> {
   useEffect(() => {
     if(!divRef.current) return; 
     const resizeObserver = new ResizeObserver(() => {
-        setHeight(divRef.current.clientHeight);
+      setHeight(divRef.current.clientHeight);
     });
     resizeObserver.observe(divRef.current);
     return () => resizeObserver.disconnect();

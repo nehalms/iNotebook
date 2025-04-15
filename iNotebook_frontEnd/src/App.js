@@ -7,6 +7,7 @@ import {
   Routes,
 } from "react-router-dom";
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from "@vercel/analytics/react"
 import { history } from '../src/components/History';
 import Navbar from './components/Navbar/Navbar'
 import NoteState from './context/notes/NoteState';
@@ -176,6 +177,7 @@ function App() {
             <Navbar showAlert={showAlert} mode={mode} toggleMode={toggleMode} setLoader={setLoader} setDialog={setDialog} />
             <Alert alert={alert} setLoader={setLoader} />
             <SpeedInsights/>
+            <Analytics />
             {loader.showLoader && <Spinner msg={loader.msg}/>}
             {dialogInfo.open && <Confirmation open={dialogInfo.open} title={dialogInfo.title} onClose={onClose} onConfirm={onConfirm} />}
             <div className="container" style={{marginTop: '70px'}}>

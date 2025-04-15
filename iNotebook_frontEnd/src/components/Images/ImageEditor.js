@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState } from 'react'
 import OptionsMenu from '../Utils/OptionsMenu'
 import RoundCorners from './RoundCorners';
 import Enhance from './Enhance';

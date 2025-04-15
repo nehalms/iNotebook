@@ -195,9 +195,6 @@ const TaskState = (props)=> {
             }
             if(json.status === 1) {
                 setFolders(json.folders);
-                if(json.folders.length) {
-                    props.showAlert(json.msg, 'success', 10301);
-                }
             }
         } catch (err) {
             console.log("Error**", err);

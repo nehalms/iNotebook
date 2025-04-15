@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext} from 'react'
+import React, { useState, useRef, useEffect} from 'react'
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import './FrInRow.css'
@@ -170,7 +170,7 @@ useEffect(() => {
         })
       });
       const data = await response.json();
-      if(data.statusCode == 400 || data.statusCode == 500) {
+      if(data.statusCode === 400 || data.statusCode === 500) {
         return;
       }
       if(data) {
@@ -216,7 +216,7 @@ useEffect(() => {
         })
       });
       let data = await response.json();
-      if(data.statusCode == 400) {
+      if(data.statusCode === 400) {
         props.showAlert(data.message, 'info', 10071);
         return;
       }
@@ -253,7 +253,7 @@ useEffect(() => {
         })
       });
       let data = await response.json();
-      if(data.statusCode == 400) {
+      if(data.statusCode === 400) {
         props.showAlert(data.message, 'info', 10074);
         return;
       }
@@ -321,7 +321,7 @@ useEffect(() => {
         })
       });
       let data = await response.json();
-      if(data.statusCode == 400) {
+      if(data.statusCode === 400) {
         props.showAlert(data.message, 'info', 10078);
         return;
       }

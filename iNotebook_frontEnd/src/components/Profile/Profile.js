@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { encryptMessage } from '../Utils/Encryption';
 import { history } from '../History';
 import './profile.css'

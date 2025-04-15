@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { history } from '../History';
 import './Home.css';
 import loading_gif from './loading.gif';
@@ -44,7 +44,6 @@ const Home = (props) => {
         !secretKey && dispatch(setSecretKey(await fetchSecretKeyFromServer()));
       }
       fetch();
-      setPermissions(permissions_);
       fetchPermissions();
       fetchHistory();
     }
@@ -72,20 +71,11 @@ const Home = (props) => {
 
   const fetchPermissions = async () => {
     try {
-      permissions.length == 0 && props.setLoader({ showLoader: true, msg: "Setting up things for you..." });
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getuser`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-      });
-      const json = await response.json();
-      if(json.error) {
-      }
-      if(json.status === 1) {
-        const filteredFeatures = Features.filter((feature) => json.user.permissions.includes(feature.id));
+      props.setLoader({ showLoader: true, msg: "Setting up things for you..." });
+      if(permissions_.length) {
+        const filteredFeatures = Features.filter((feature) => permissions_.includes(feature.id));
         setPermissions(filteredFeatures);
+        return;
       }
     } catch (error) {
       console.error('Error fetching Permissions:', error);
