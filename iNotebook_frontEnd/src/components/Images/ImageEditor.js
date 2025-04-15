@@ -7,14 +7,13 @@ import GenerativeBackground from './GenerativeBackground';
 import RotateImage from './RotateImage';
 import Shapen from './Shapen';
 import { history } from '../History';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 export default function ImageEditor(props) {
-  const { handleSessionExpiry } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
-  const { userState } = useContext(AuthContext);
   const [compStr, setCompStr] = useState('roundcorners');
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
+  const { isLoggedIn } = useSession();
   const options =  {
     'Round Corners': 'roundcorners',
     'Enhance image': 'enhance',
@@ -24,11 +23,11 @@ export default function ImageEditor(props) {
   };
 
   useEffect(() => {
-    if (!userState.loggedIn) {
+    if (!isLoggedIn) {
       history.navigate("/");
       return;
     }
-  }, [userState])
+  }, [isLoggedIn])
   
   const toggleNav = () => {
     setIsOpen(!isOpen);
@@ -51,7 +50,6 @@ export default function ImageEditor(props) {
       const json = await response.json();
       if(json.error) {
         props.showAlert(json.error, 'danger', 10131)
-        handleSessionExpiry(json);
         return;
       }
       if(json.success) {

@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState, useContext } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import tictactoe from './images/tic-tac-toe.jpg'
 import { history } from '../History';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 export default function Tic_tac_toe(props) {  
   const socket = new SockJS(process.env.REACT_APP_SOCKET_URL);
-  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const detailsDiv = useRef();
   const [height, setHeight] = useState();
   const [copied, setCopied] = useState(false);
@@ -36,9 +35,10 @@ export default function Tic_tac_toe(props) {
     name: "Searching...",
     played: 0,
   });
+  const { isLoggedIn } = useSession();
 
   useEffect(() => {
-    if (!userState.loggedIn) {
+    if (!isLoggedIn) {
       history.navigate("/");
       return;
     }
@@ -107,7 +107,7 @@ export default function Tic_tac_toe(props) {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [roomDetails.id, player, userState]);
+  }, [roomDetails.id, player, isLoggedIn]);
 
   const getPlayerData = async () => {
     try { 
@@ -134,7 +134,6 @@ export default function Tic_tac_toe(props) {
         }
       }
       if(!data.success){
-        handleSessionExpiry(data)
         props.showAlert(data.error, 'danger', 10086);
       }
     } catch (err) {

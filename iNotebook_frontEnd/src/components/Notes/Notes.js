@@ -6,16 +6,15 @@ import Addnote from './Addnote';
 import { history } from '../History';
 import SortNSerh from '../Utils/SortNSearch/SortNSerh';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 const Notes = (props) => {
     history.navigate = useNavigate();
-    const { userState } = useContext(AuthContext);
     const context = useContext(noteContext);
     const { notes, fetchNotes, updateNote, sort, searchNote } = context;
     const [draggable, setDraggable] = useState(false);
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
-
+    const { isLoggedIn } = useSession();
     const sortingList = [
         { name: 'None', nested: [{name: 'None', type: 'NONE'}] },
         { name: 'Title', nested: [{ name: 'A-Z', type: 'T_ASCE'}, { name: 'Z-A', type: 'T_DESC'}] },
@@ -72,13 +71,13 @@ const Notes = (props) => {
     };
 
     useEffect(() => {
-        if (!userState.loggedIn) {
+        if (!isLoggedIn) {
             history.navigate("/");
             return;
         } else {
             fetchNotes(props);
         }
-    }, [userState])
+    }, [isLoggedIn])
 
     const editNote = (currentNote) => {
         ref.current.click();

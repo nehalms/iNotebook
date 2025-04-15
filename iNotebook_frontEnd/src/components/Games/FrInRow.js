@@ -4,7 +4,7 @@ import Stomp from 'stompjs';
 import './FrInRow.css'
 import connect4 from './images/connect4.png'
 import { history } from '../History';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 const ROWS = 7;
 const COLS = 7;
@@ -23,7 +23,6 @@ export default function FrInRow(props) {
   const [roomId, setRoomId] = useState("");
   const [secondClk, setSecondClk] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
-  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [gameToken, setToken] = useState("");
   const [roomDetails, setRoomDetails] = useState({
     id: '',
@@ -41,9 +40,10 @@ export default function FrInRow(props) {
     name: "Searching...",
     played: 0,
   });
+  const { isLoggedIn } = useSession();
   
 useEffect(() => {
-    if (!userState.loggedIn) {
+    if (!isLoggedIn) {
       history.navigate("/");
       return;
     }
@@ -116,7 +116,7 @@ useEffect(() => {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [roomDetails.id, player, userState]); 
+  }, [roomDetails.id, player, isLoggedIn]); 
 
   const getPlayerData = async () => {
     try { 
@@ -143,7 +143,6 @@ useEffect(() => {
         }
       }
       if(!data.success){
-        handleSessionExpiry(data);
         props.showAlert(data.error, 'danger', 10069);
       }
     } catch (err) {

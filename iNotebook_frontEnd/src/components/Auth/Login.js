@@ -1,8 +1,10 @@
-import React, { Suspense, useContext, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { history } from '../History';
 import { encryptMessage } from '../Utils/Encryption';
-import AuthContext from '../../context/auth_state/authContext';
+import { useDispatch } from 'react-redux';
+import { login } from '../SessionState/sessionSlice';
+import useSession from '../SessionState/useSession';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Login = (props) => {
@@ -14,17 +16,21 @@ const Login = (props) => {
     const [showPassword, setShowPassword] = useState(false);
     const divRef = useRef();
     const [height, setHeight] = useState(0);
-    const { fetchUserState } = useContext(AuthContext);
+    const dispatch = useDispatch();
+    const { isLoggedIn, isAdmin } = useSession();
     history.navigate = useNavigate();
 
     useEffect(() => {
+        if(isLoggedIn) {
+            history.navigate(isAdmin ? '/dashboard' : '/');
+        }
         if (!divRef.current) return;
         const resizeObserver = new ResizeObserver(() => {
             setHeight(divRef.current.clientHeight);
         });
         resizeObserver.observe(divRef.current);
         return () => resizeObserver.disconnect();
-    }, []);
+    }, [isLoggedIn]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,7 +60,11 @@ const Login = (props) => {
                     return;
                 }
                 history.navigate(isAdminUser ? '/dashboard' : '/');
-                await fetchUserState();
+                dispatch(login({
+                    isAdmin: json.isAdminUser,
+                    expiresAt: json.expiresIn,
+                    permissions: json.permissions,
+                }));
                 props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success', 10053);
             } else {
                 props.showAlert(json.errors ? json.errors[0].msg : json.error, 'danger', 10054);

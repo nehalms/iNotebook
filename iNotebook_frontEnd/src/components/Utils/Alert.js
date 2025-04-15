@@ -33,6 +33,16 @@ export default function Alert({ alert }) {
     }
   };
 
+  // useEffect(() => {
+  //   const handleSessionExpiry = (event) => {
+  //     if (event.detail && event.detail.sessionexpired) {
+  //       showToast('danger', event.detail.message || 'Session expired, please log in again', 90000);
+  //     }
+  //   };
+  //   window.addEventListener('sessionExpiry', handleSessionExpiry);
+  //   return () => window.removeEventListener('sessionExpiry', handleSessionExpiry);
+  // }, []);
+
   return (
     <div style={{
       height: '50px',

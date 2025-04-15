@@ -1,6 +1,6 @@
 //'use npm run both' command to run both front end backend server at a time
 import './App.css';
-import React, { Suspense, useContext, useEffect, useState} from "react";
+import React, { Suspense, useEffect, useState} from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,8 +16,11 @@ import ComponentLoader from './components/LoadingScreens/ComponentLoader';
 import Confirmation from './components/Utils/Confirmation';
 import TaskState from './context/tasks/TaskState';
 import Folder from './components/ToDoLists/Folders/Folder';
-import AuthContext from './context/auth_state/authContext';
 import Breadcrumbs from './components/Utils/Breadcrumb';
+import { useDispatch } from 'react-redux';
+import { logout } from './components/SessionState/sessionSlice';
+import restoreSession from './components/SessionState/restoreSession';
+import useSession from './components/SessionState/useSession';
 
 const Home = React.lazy(() => import('./components/Home/Home'));
 const Login = React.lazy(() => import('./components/Auth/Login'));
@@ -33,13 +36,16 @@ const FrInRow = React.lazy(() => import('./components/Games/FrInRow'));
 const Profile = React.lazy(() => import('./components/Profile/Profile'));
 const News = React.lazy(() => import('./components/News/News'));
 const WorkCalendar = React.lazy(() => import('./components/WorkCalendar/Calendar'))
+
+
 function App() {
+  const dispatch = useDispatch();
   const [alert, setAlert] = useState(null);
   const [mode, setMode] = useState('light');
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
   const [dialogInfo, setDialogInfo] = useState({open: false});
-  const { resetUserState } = useContext(AuthContext);
-
+  const { isLoggedIn } = useSession();
+  
   const showAlert = (message, type, id)=> {
     setAlert({
       msg: message,
@@ -52,25 +58,32 @@ function App() {
   }
 
   useEffect(() => {
-    removeBodyClasses();
-    if (localStorage.getItem('theme')) {
-      let theme = localStorage.getItem('theme').split('bg-')[1]
-      if (theme === 'dark') {
-        setMode('dark');
-        document.body.style.backgroundColor = '#042743';
-        document.body.style.color = 'white';
-        document.body.classList.add(theme);
-      } else if (localStorage.getItem('theme') === 'light') {
-        setMode('light');
-        document.body.style.backgroundColor = 'white';
-        document.body.style.color = 'black';
-        document.body.classList.add(theme);
-      } else if (localStorage.getItem('theme').startsWith('bg-')){
-        document.body.classList.add(localStorage.getItem('theme'));
+    const runEffect = async () => {
+      !isLoggedIn && dispatch(restoreSession()); 
+  
+      removeBodyClasses();  
+      if (localStorage.getItem('theme')) {
+        let theme = localStorage.getItem('theme').split('bg-')[1];
+        if (theme === 'dark') {
+          setMode('dark');
+          document.body.style.backgroundColor = '#042743';
+          document.body.style.color = 'white';
+          document.body.classList.add(theme);
+        } else if (localStorage.getItem('theme') === 'light') {
+          setMode('light');
+          document.body.style.backgroundColor = 'white';
+          document.body.style.color = 'black';
+          document.body.classList.add(theme);
+        } else if (localStorage.getItem('theme').startsWith('bg-')) {
+          document.body.classList.add(localStorage.getItem('theme'));
+        }
       }
-    }
-    getEncryptKey();
-  }, []);
+      getEncryptKey();
+    };
+  
+    runEffect();
+  
+  }, [dispatch, isLoggedIn]);
 
   const getEncryptKey = async () => {
     try {
@@ -127,7 +140,7 @@ function App() {
           },
           credentials: 'include',
       });
-      resetUserState();
+      dispatch(logout());
       setLoader({ showLoader: false });
     } catch (err) {
       console.log("Error**" ,err);

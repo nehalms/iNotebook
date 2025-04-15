@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { history } from '../History';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 export default function Encrypt_Decrypt_Msg(props) {
-  const { userState } = useContext(AuthContext);
   const [encrypt, setEncrypt] = useState({
     secretMsg: "",
     coverMsg: "",
     password: "",
   });
+  const { isLoggedIn } = useSession();
   const [encryptedMsg, setEnMsg] = useState("");
 
   const [decrypt, setDecrypt] = useState({
@@ -18,11 +18,11 @@ export default function Encrypt_Decrypt_Msg(props) {
   const [decryptedMsg, setDeMsg] = useState("");
 
   useEffect(() => {
-    if (!userState.loggedIn) {
+    if (!isLoggedIn) {
       history.navigate("/");
       return;
     }
-  }, [encryptedMsg, decryptedMsg, userState]);
+  }, [encryptedMsg, decryptedMsg, isLoggedIn]);
 
   const onEncryptChange = (event) => {
     setEncrypt({ ...encrypt, [event.target.name]: event.target.value });

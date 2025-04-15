@@ -4,12 +4,12 @@ import { Tooltip } from '@mui/material';
 import moment from 'moment';
 import { history } from '../History';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 export default function UserNotesData(props) {
   history.navigate = useNavigate();
-  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [rows, setRows] = useState([]);
+  const { isLoggedIn, isAdmin } = useSession();
   const [totalcount, setTotalCount] = useState({ 
     usersCount: 0, 
     notesCount: 0, 
@@ -19,11 +19,11 @@ export default function UserNotesData(props) {
   });
 
   useEffect(() => {
-    if(!userState.loggedIn || !userState.isAdminUser ) {
+    if(!isLoggedIn || !isAdmin ) {
       return;
     }
     fetchData();
-  }, [userState]);
+  }, [isLoggedIn, isAdmin]);
 
   function CustomToolbar() {
     return (
@@ -47,7 +47,6 @@ export default function UserNotesData(props) {
       const data = await response.json();
       if (data.error) {
         props.showAlert(data.error, 'danger', 10038);
-        handleSessionExpiry(data);
         return;
       }
       setRows(data.users);

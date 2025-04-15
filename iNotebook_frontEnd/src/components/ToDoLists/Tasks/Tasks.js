@@ -5,12 +5,12 @@ import TaskItem from './TaskItem';
 import AddTask from './AddTask';
 import TaskInfo from './TaskInfo';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../../../context/auth_state/authContext';
+import useSession from '../../SessionState/useSession';
 
 function Tasks(props) {
     history.navigate = useNavigate();
-    const { userState } = useContext(AuthContext);
     const { src, showAlert } = props;
+    const { isLoggedIn } = useSession();
     const [showTaskInfo, setTaskInfo] = useState({
         show: false,
         task: null,
@@ -81,13 +81,13 @@ function Tasks(props) {
     };        
 	
 	useEffect(() => {
-        if (!((userState.loggedIn))) {
+        if (!isLoggedIn) {
             history.navigate("/login");
             return;
         } else {
             fetchTasks(src);
         }
-	}, [userState]);
+	}, [isLoggedIn]);
 
 	const onChange = (e) => {
         setTask({...task, [e.target.name]: e.target.value});

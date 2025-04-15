@@ -7,10 +7,10 @@ import Permissions from './Permissions';
 import { history } from '../History';
 import GameStats from './GameStats';
 import Confirmation from '../Utils/Confirmation';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 export default function DashBoard(props) {
-    const { userState, fetchUserState } = useContext(AuthContext);
+    const { isLoggedIn, isAdmin } = useSession();
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
@@ -20,28 +20,17 @@ export default function DashBoard(props) {
     });
 
     useEffect(()=> {
-        const fetchData = async () => {
-            props.setLoader({ showLoader: true, msg: "Getting data..." });
-            let state = userState?.loggedIn ? userState : await fetchUserState();
-            props.setLoader({ showLoader: false});
-            if(state && !state.loggedIn) {
-                props.showAlert('Login Please', 'info', 10284);
-                history.navigate('/login');
-                return;
-            }
-            if(state && state.error && state.sessionexpired) {
-                props.showAlert(state.error, 'info', 10001);
-                history.navigate('/login');
-                return;
-            }
-            if(!(state && state.loggedIn && state.isAdminUser)) {
-                props.showAlert("User not Authorized to access dashboard", 'info', 10036);
-                history.navigate('/');
-                return;
-            }
-        };
-        fetchData();
-    }, [userState]);
+        if(!isLoggedIn) {
+            // props.showAlert('Login Please', 'info', 10284);
+            history.navigate('/login');
+            return;
+        }
+        if(!(isLoggedIn && isAdmin)) {
+            props.showAlert("User not Authorized to access dashboard", 'info', 10036);
+            history.navigate('/');
+            return;
+        }
+    }, [isLoggedIn, isAdmin]);
 
     const setDialogFunc = (open, title, onConfirm, onClose, color='danger') => {
         setDialog({

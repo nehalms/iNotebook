@@ -1,23 +1,20 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import NoteContext from "./noteContext";
 import CryptoJS from 'crypto-js';
-import { useSecretKey } from "../../components/Requests/getSecretKey";
-import AuthContext from "../auth_state/authContext";
+import useSession from '../../components/SessionState/useSession';
 
 const NoteState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL;
     const [sortType, setSortType] = useState('NONE');
     const [serachStr, setSearchStr] = useState('');
-    const { handleSessionExpiry } = useContext(AuthContext);
     const notesInitital = []
     const [initNotes, setInitNotes] = useState(notesInitital);
     const [notes, setNotes] = useState(notesInitital);
-    const { getSecretKey } = useSecretKey();
+    const { secretKey } = useSession();
     
     //get all notes
     const fetchNotes = async ()=> {
         try {
-            let secretKey = await getSecretKey();
             props.setLoader({ showLoader: true, msg: "Fetching Notes"});
             const response = await fetch(`${host}/notes/fetchallnotes`, {
                 method: "GET", 
@@ -30,7 +27,6 @@ const NoteState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10120);
-                handleSessionExpiry(json);
                 return;
             }
             // console.log(json);
@@ -59,7 +55,6 @@ const NoteState = (props)=> {
     //Add a note
     const addNote = async (title, description, tag)=> {
         try {
-            let secretKey = await getSecretKey();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
@@ -76,7 +71,6 @@ const NoteState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10122);
-                handleSessionExpiry(json);
                 return;
             }
             props.showAlert("Note added successfully", 'success', 10106);
@@ -91,7 +85,6 @@ const NoteState = (props)=> {
 
     //Delete a note
     const deleteNote = async (id)=> {
-
         try { 
             props.setLoader({ showLoader: true, msg: "Deleting Notes"});
             const response = await fetch(`${host}/notes/deletenote/${id}`, {
@@ -105,7 +98,6 @@ const NoteState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10124);
-                handleSessionExpiry(json);
                 return;
             }
             props.showAlert("Note deleted successfully", 'success', 10108);
@@ -123,7 +115,6 @@ const NoteState = (props)=> {
     //Edit a note
     const updateNote = async (id, title, description, tag)=> {
         try {
-            let secretKey = await getSecretKey();
             title = CryptoJS.AES.encrypt(title, secretKey).toString();
             description = CryptoJS.AES.encrypt(description, secretKey).toString();
             tag = CryptoJS.AES.encrypt(tag, secretKey).toString();
@@ -140,7 +131,6 @@ const NoteState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10126);
-                handleSessionExpiry(json);
                 return;
             }
             props.showAlert("Notes updated successfully", "success", 10111);

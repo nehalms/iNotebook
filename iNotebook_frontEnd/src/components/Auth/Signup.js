@@ -2,7 +2,9 @@ import React, { Suspense, useState, useRef, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { history } from '../History';
 import { encryptMessage } from '../Utils/Encryption';
-import AuthContext from '../../context/auth_state/authContext';
+import { useDispatch } from 'react-redux';
+import { login } from '../SessionState/sessionSlice';
+import useSession from '../SessionState/useSession';
 const Verification = React.lazy(() => import('../Utils/Verification'));
 
 const Signup = (props) => {
@@ -16,17 +18,21 @@ const Signup = (props) => {
     const[show, setShow] = useState(false);
     const[Verified, setVerified] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const { fetchUserState } = useContext(AuthContext);
+    const dispatch = useDispatch();
+    const { isLoggedIn, isAdmin } = useSession();
     history.navigate = useNavigate();
 
     useEffect(() => {
+      if(isLoggedIn) {
+        history.navigate(isAdmin ? '/dashboard' : '/');
+      }
       if( !divRef.current ) return; 
       const resizeObserver = new ResizeObserver(() => {
           setHeight(divRef.current.clientHeight);
       });
       resizeObserver.observe(divRef.current);
       return () => resizeObserver.disconnect();
-    }, [])
+    }, [isLoggedIn])
 
     const handleSubmit = async (e)=> {
         try {
@@ -61,7 +67,9 @@ const Signup = (props) => {
             // console.log(json); 
             if(json.success){
               history.navigate("/"); // to redirect the page to home page
-              await fetchUserState();
+              dispatch(login({
+                permissions: json.permissions,
+              }));
               props.showAlert("Sign in successfull", "success", 10057);
             }
             else {

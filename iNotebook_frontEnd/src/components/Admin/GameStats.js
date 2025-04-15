@@ -1,25 +1,25 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, } from 'react';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-import { colors, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import { history } from '../History';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 export default function GameStats(props) {
   const [rows, setRows] = useState([]);
+  const { isLoggedIn, isAdmin } = useSession();
   history.navigate = useNavigate();
-  const { userState, handleSessionExpiry } = useContext(AuthContext);
 
   useEffect(() => {
-    if(!userState.loggedIn || !userState.isAdminUser ) {
+    if(!isLoggedIn || !isAdmin ) {
       return;
     }
     fetchData();
-  }, [userState]);
+  }, [isLoggedIn, isAdmin]);
 
   const fetchData = async () => {
     try {
-      if(!(userState.loggedIn) || !(userState.isAdminUser)) {
+      if(!isLoggedIn || !isAdmin ) {
         return;
       }
       props.setLoader({ showLoader: true, msg: 'Loading...' });
@@ -34,7 +34,6 @@ export default function GameStats(props) {
       const data = await response.json();
       if(data.error) {
         props.showAlert(data.error, 'danger', 10122);
-        handleSessionExpiry(data);
         return;
       }
       if (data.status === 'success') {

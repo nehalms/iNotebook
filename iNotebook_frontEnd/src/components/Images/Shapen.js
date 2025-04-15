@@ -2,10 +2,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
 import TryIt from './TryIt';
 import Sharpen from './StaticImages/Sharpen.jpg'
-import AuthContext from '../../context/auth_state/authContext';
 
 export default function Shapen(props) {
-    const { handleSessionExpiry } = useContext(AuthContext);
     const [file, setFile] = useState();
     const [preview, setPreview] = useState();
     const [value, setValue] = useState(0);
@@ -69,7 +67,6 @@ export default function Shapen(props) {
         const json = await response.json();
         if(json.error) {
             props.showAlert(json.error, 'danger', 10135)
-            handleSessionExpiry(json);
             return;
         }
         if(json.success) {

@@ -84,7 +84,7 @@ router.post("/createuser", decrypt,
         html,
         false,
       )
-      res.json({success});
+      res.json({success, permissions: user.permissions});
     } 
     catch (err) {
       console.log("Error in creating user", err.message);
@@ -141,7 +141,7 @@ router.post(
             maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
           });
         }
-        res.json({ success, isAdminUser: user.isAdmin});
+        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions});
       } else {
         res.cookie('authToken', authToken, {
           httpOnly: true,   
@@ -149,7 +149,7 @@ router.post(
           sameSite: 'none',
           maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
         });
-        res.json({ success, isAdminUser: user.isAdmin});
+        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions});
       }
       axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
         .then(response => {
@@ -300,7 +300,6 @@ router.get('/getstate', fetchuser, async (req, res) => {
     res.send({
       status: 1,
       data: {
-        loggedIn: true,
         isAdminUser: user.isAdmin,
         permissions: user.permissions,
       }

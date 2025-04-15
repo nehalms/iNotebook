@@ -5,12 +5,11 @@ import { history } from '../History';
 import moment from 'moment';
 import loading from './loading.gif' 
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
 
 export default function Analytics(props) {
   Chart.register(...registerables);
   history.navigate = useNavigate();
-  const { userState } = useContext(AuthContext)
   const [notesData, setNotesData] = useState({xAxisDates: [], notesData: [], colors: []});
   const [loginData, setLoginData] = useState({xAxisDates: [], loginData: [], colors: []});
   const [showUserLoader, setShowUserLoader] = useState(false);
@@ -23,13 +22,14 @@ export default function Analytics(props) {
     startDate: moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD'),
     endDate: moment(new Date()).format('YYYY-MM-DD'),
   })
+  const { isLoggedIn, isAdmin } = useSession();
 
   useEffect(() => {
-    if(!userState.loggedIn || !userState.isAdminUser ) {
-        return;
+    if(!isLoggedIn || !isAdmin ) {
+      return;
     }
     fetchData();
-  }, [userState])
+  }, [isLoggedIn, isAdmin]);
 
   const fetchData = async (reqType='both') => {
     try {

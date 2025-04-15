@@ -5,18 +5,18 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from "react-infinite-scroll-component";
 import ScrollToTopButton from '../Utils/ScrollToTop';
-import AuthContext from '../../context/auth_state/authContext';
 import { history } from '../History';
+import useSession from '../SessionState/useSession';
 
 const News = (props)=>{
     history.navigate = useNavigate();
-    const { userState, handleSessionExpiry } = useContext(AuthContext);
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState('');
     const [totalResults, setTotalResults] = useState(0);
     const [country, setCountry] = useState('in');
     const [category, setCategory] = useState('top');
+    const { isLoggedIn } = useSession();
     const [selectedCountry, setSelectedCountry] = useState('India');
     const [selectedCategory, setSelectedCategory] = useState('Top');
     const countries = {
@@ -79,7 +79,6 @@ const News = (props)=>{
             });
             let data = await response.json();
             if(data.error) {
-                handleSessionExpiry(data);
                 props.showAlert(data.error, 'info', 10324);
                 return;
             }
@@ -99,13 +98,13 @@ const News = (props)=>{
     }
 
     useEffect(() => {
-        if (!userState.loggedIn) {
+        if (!isLoggedIn) {
             history.navigate("/");
             return;
         } else {
             updateNews();
         }
-    }, [userState])
+    }, [isLoggedIn])
 
     const fetchMoreData = ()=> {
         updateNews(country, category, true);

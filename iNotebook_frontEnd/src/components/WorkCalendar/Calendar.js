@@ -12,17 +12,15 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import AuthContext from '../../context/auth_state/authContext';
-import { useSecretKey } from "../Requests/getSecretKey";
 import { history } from "../History";
+import useSession from '../SessionState/useSession';
 const localizer = momentLocalizer(moment);
 
 const WorkCalendar = (props) => {
   const [events, setEvents] = useState([]);
-  const { getSecretKey } = useSecretKey();
-  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const { isLoggedIn, secretKey } = useSession();
   const [newEvent, setNewEvent] = useState({
     title: "",
     start: "",
@@ -31,17 +29,16 @@ const WorkCalendar = (props) => {
   });
 
   useEffect(() => {
-    if (!userState.loggedIn) {
+    if (!isLoggedIn) {
       history.navigate("/");
       return;
     } else {
       fetchevents();
     }
-  }, [userState]);
+  }, [isLoggedIn]);
 
   const fetchevents = async () => {
     try {
-      let secretKey = await getSecretKey();
       props.setLoader({ showLoader: true, msg: "Making up the calendar..." });
       let response = await fetch(`${process.env.REACT_APP_BASE_URL}/calevents`, {
         method: "GET",
@@ -52,7 +49,6 @@ const WorkCalendar = (props) => {
       });
       let json = await response.json();
       if(json.error) {
-        handleSessionExpiry(json);
         props.showAlert(json.error, 'info', 38742);
         return;
       }
@@ -90,7 +86,6 @@ const WorkCalendar = (props) => {
     }
 
     try {
-      let secretKey = await getSecretKey();
       props.setLoader({ showLoader: true, msg: "Making up the calendar..." });
       let response = await fetch(`${process.env.REACT_APP_BASE_URL}/calevents/add`, {
         method: "POST",
@@ -107,7 +102,6 @@ const WorkCalendar = (props) => {
       });
       let json = await response.json();
       if(json.error) {
-        handleSessionExpiry(json);
         props.showAlert(json.error, 'info', 38742);
         return;
       }
@@ -137,7 +131,6 @@ const WorkCalendar = (props) => {
       });
       let json = await response.json();
       if(json.error) {
-        handleSessionExpiry(json);
         props.showAlert(json.error, 'info', 38742);
         return;
       }

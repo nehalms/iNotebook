@@ -3,10 +3,8 @@ import './inputNumber.css'
 import { saveAs } from 'file-saver'
 import Roundcorners from './StaticImages/Roundcorners.png';
 import TryIt from './TryIt';
-import AuthContext from '../../context/auth_state/authContext';
 
 export default function RoundCorners(props) {
-  const { handleSessionExpiry } = useContext(AuthContext);
   const [file, setFile] = useState();
   const [preview, setPreview] = useState();
   const imgRef = useRef();
@@ -73,7 +71,6 @@ export default function RoundCorners(props) {
         // console.log(json);
         if(json.error) {
             props.showAlert(json.error, 'danger', 10135)
-            handleSessionExpiry(json);
             return;
         }
         if(json.success) {

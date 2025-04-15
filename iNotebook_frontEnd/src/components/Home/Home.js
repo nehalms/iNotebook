@@ -3,17 +3,20 @@ import { history } from '../History';
 import './Home.css';
 import loading_gif from './loading.gif';
 import Confirmation from '../Utils/Confirmation';
-import { useSecretKey } from '../Requests/getSecretKey'
+import { fetchSecretKeyFromServer } from '../Requests/getSecretKey'
 import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../../context/auth_state/authContext';
+import useSession from '../SessionState/useSession';
+import { useDispatch } from 'react-redux';
+import { setSecretKey } from '../SessionState/sessionSlice';
+
 const UserHistoryTable = React.lazy(() => import('../Tables/UserHistorytable'));
 
 const Home = (props) => {
   history.navigate = useNavigate();
-  const { userState, fetchUserState, handleSessionExpiry } = useContext(AuthContext);
-  const { getSecretKey } = useSecretKey();
+  const dispatch = useDispatch();
   const [userHistory, setHistory] = useState();
   const [loading, setLoading] = useState(false);
+  const { isLoggedIn, permissions_, secretKey } = useSession();
   const [dialog, setDialog] = useState({
     open: false,
     title: '',
@@ -32,33 +35,20 @@ const Home = (props) => {
   const [permissions, setPermissions] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!userState?.loggedIn) {
-        props.setLoader({ showLoader: true, msg: "Getting data..." });
-        const data = await fetchUserState();
-        props.setLoader({ showLoader: false});
-        if (data.error && data.sessionexpired) {
-          props.showAlert(data.error, 'danger', 10304);
-          return;
-        } else if (!data?.loggedIn) {
-          props.showAlert('Login Please', 'info', 10284);
-          history.navigate('/login');
-          return;
-        }
+    if (!isLoggedIn) {
+      // props.showAlert('Login Please', 'info', 10284);
+      history.navigate('/login');
+      return;
+    } else {
+      const fetch = async () => {
+        !secretKey && dispatch(setSecretKey(await fetchSecretKeyFromServer()));
       }
-  
-      try {
-        await Promise.all([
-          fetchPermissions(),
-          fetchHistory(),
-        ]);
-        getSecretKey();
-      } catch (error) {
-        props.showAlert('Error fetching data', 'danger', 10005);
-      }
-    };
-    fetchData();
-  }, [userState]);
+      fetch();
+      setPermissions(permissions_);
+      fetchPermissions();
+      fetchHistory();
+    }
+  }, [isLoggedIn]);
 
 
   const fetchHistory = async () => {
@@ -69,7 +59,7 @@ const Home = (props) => {
       });
       const data = await response.json();
       if (data.error) {
-        props.showAlert(data.error, 'danger');
+        props.showAlert(data.error, 'danger', 36959);
         return;
       }
       setHistory(data);
@@ -92,7 +82,6 @@ const Home = (props) => {
       });
       const json = await response.json();
       if(json.error) {
-        handleSessionExpiry(json);
       }
       if(json.status === 1) {
         const filteredFeatures = Features.filter((feature) => json.user.permissions.includes(feature.id));

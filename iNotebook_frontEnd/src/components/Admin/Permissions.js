@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-import { Button, Checkbox, Tooltip } from '@mui/material';
-import AuthContext from '../../context/auth_state/authContext';
+import { Button, Checkbox } from '@mui/material';
+import useSession from '../SessionState/useSession';
 
 export default function Permissions(props) {
     const PERMISSIONS = {
@@ -13,15 +13,15 @@ export default function Permissions(props) {
       'news': 6,
       'calendar': 7,
     }
-  const { userState, handleSessionExpiry } = useContext(AuthContext);
-  const [rows, setRows] = useState([]);
+    const [rows, setRows] = useState([]);
+    const { isLoggedIn, isAdmin } = useSession();
 
     useEffect(() => {
-      if(!userState.loggedIn || !userState.isAdminUser ) {
+      if(!isLoggedIn || !isAdmin ) {
         return;
       }
       fetchData();
-    }, [userState]);
+    }, [isLoggedIn, isAdmin]);
 
   function CustomToolbar() {
     return (
@@ -33,7 +33,7 @@ export default function Permissions(props) {
 
   const fetchData = async () => {
     try {
-      if(!(userState.loggedIn) || !(userState.isAdminUser)) {
+      if(!isLoggedIn || !isAdmin ) {
         return;
       }
       props.setLoader({ showLoader: true, msg: 'Loading...' });
@@ -47,7 +47,6 @@ export default function Permissions(props) {
       const data = await response.json();
       if (data.error) {
         props.showAlert(data.error, 'danger', 10038);
-        handleSessionExpiry(data);
         return;
       }
       setRows(data.users);
@@ -75,7 +74,6 @@ export default function Permissions(props) {
             const data = await response.json();
             if (data && data.error) {
                 props.showAlert(data.msg, 'info');
-                handleSessionExpiry(data);
                 return;
             }
             if (data.status === 1) {
@@ -108,7 +106,6 @@ export default function Permissions(props) {
             const data = await response.json();
             if (data && data.error) {
                 props.showAlert(data.msg, 'info');
-                handleSessionExpiry(data);
                 return;
             }
             if (data.status === 1) {

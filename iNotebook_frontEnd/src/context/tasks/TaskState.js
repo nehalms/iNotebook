@@ -1,9 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import TaskContext from "./taskContext";
 import CryptoJS from 'crypto-js';
-import { useSecretKey } from "../../components/Requests/getSecretKey";
 import { encryptMessage } from "../../components/Utils/Encryption";
-import AuthContext from "../auth_state/authContext";
+import useSession from '../../components/SessionState/useSession';
 
 const TaskState = (props)=> {
     const host = process.env.REACT_APP_BASE_URL
@@ -11,15 +10,13 @@ const TaskState = (props)=> {
     const [sortType, setSortType] = useState('NONE');
     const [serachStr, setSearchStr] = useState('');
     const [tasks, setTasks] = useState(tasksInitial);
-    const { handleSessionExpiry } = useContext(AuthContext);
     const foldersInitial = [];
     const [initTasks, setInitTasks] = useState(foldersInitial);
     const [folders, setFolders] = useState(foldersInitial);
-    const { getSecretKey } = useSecretKey();
+    const { secretKey } = useSession();
 
     const fetchTasks = async (src)=> {
         try {
-            const secretKey = await getSecretKey();
             props.setLoader({ showLoader: true, msg: "Fetching tasks"});
             const response = await fetch(`${host}/tasks?src=${src}`, {
                 method: "GET", 
@@ -31,7 +28,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10120);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -62,7 +58,6 @@ const TaskState = (props)=> {
 
     const addTask = async (src, taskDesc)=> {
         try {
-            const secretKey = await getSecretKey();
             props.setLoader({ showLoader: true, msg: "Adding task"});
             const response = await fetch(`${host}/tasks/addtask`, {
                 method: "POST", 
@@ -78,7 +73,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.errors && json.errors.length) {
                 props.showAlert(json.errors[0].msg, 'warning', 10122);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -107,7 +101,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10124);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -125,7 +118,6 @@ const TaskState = (props)=> {
 
     const updateTask = async (id, src, taskDesc)=> {
         try {
-            const secretKey = await getSecretKey();
             props.setLoader({ showLoader: true, msg: "Updating Task"});
             const response = await fetch(`${host}/tasks/updatetask/${id}`, {
                 method: "PUT", 
@@ -145,7 +137,6 @@ const TaskState = (props)=> {
             }
             if(json.status === 1) {
                 props.showAlert(json.msg, 'success', 10303);
-                handleSessionExpiry(json);
                 fetchTasks(json.task.src);
             }
         } catch (err) {
@@ -169,7 +160,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10306);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -201,7 +191,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'danger', 10120);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -232,7 +221,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10122);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -261,7 +249,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10122);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {
@@ -290,7 +277,6 @@ const TaskState = (props)=> {
             const json = await response.json();
             if(json.error) {
                 props.showAlert(json.error, 'warning', 10122);
-                handleSessionExpiry(json);
                 return;
             }
             if(json.status === 1) {

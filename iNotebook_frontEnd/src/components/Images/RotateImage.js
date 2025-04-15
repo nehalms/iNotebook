@@ -2,10 +2,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
 import TryIt from './TryIt';
 import Rotate from './StaticImages/Rotate.png'
-import AuthContext from '../../context/auth_state/authContext';
 
 export default function RotateImage(props) {
-    const { handleSessionExpiry } = useContext(AuthContext);
     const [file, setFile] = useState();
     const [preview, setPreview] = useState();
     const [angle, setAngle] = useState(0);
@@ -67,7 +65,6 @@ export default function RotateImage(props) {
         const json = await response.json();
         if(json.error) {
             props.showAlert(json.error, 'danger', 10135)
-            handleSessionExpiry(json);
             return;
         }
         if(json.success) {

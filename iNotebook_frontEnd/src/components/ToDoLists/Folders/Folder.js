@@ -8,17 +8,17 @@ import AddFolder from './AddFolder';
 import Tasks from '../Tasks/Tasks';
 import SortNSerh from '../../Utils/SortNSearch/SortNSerh';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../../../context/auth_state/authContext';
+import useSession from '../../SessionState/useSession';
 
 export default function Folder(props) {
     history.navigate = useNavigate();
-    const { userState } = useContext(AuthContext);
     const content = useContext(taskContext);
     const {folders, fetchFolders, addFolder, updateFolder, sort, searchTask} = content
     const editFoldNameRef = useRef();
     const crtFolRefClose = useRef();
     const [showTasks, setShowTasks] = useState(false);
     const [currSrc, setCurrSrc] = useState(null);
+    const { isLoggedIn } = useSession();
     const [updFold, setUpdFold] = useState({
         src: "",
         dest: ""
@@ -88,14 +88,14 @@ export default function Folder(props) {
     };
 
     useEffect(() => {
-        if (!userState.loggedIn) {
+        if (!isLoggedIn) {
             history.navigate("/");
             return;
         } else {
             fetchFolders();
         }
         
-    }, [userState]);
+    }, [isLoggedIn]);
 
 
     const editFolderName = (src, dest) => {

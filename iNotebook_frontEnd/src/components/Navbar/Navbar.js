@@ -1,15 +1,18 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { history } from '../History';
 import img from './favicon-32x32.png'
 import './Navbar.css'
-import AuthContext from '../../context/auth_state/authContext';
+import { useDispatch } from 'react-redux';
+import useSession from '../SessionState/useSession';
+import { logout } from '../SessionState/sessionSlice';
 
 const Navbar = (props) => {
     history.navigate = useNavigate();
-    const { userState, resetUserState } = useContext(AuthContext);
     const [showNavBar, setShowNavbar] = useState(false);
     const [modeEnabled, setEnabled] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') === 'bg-dark' : false);
+    const dispatch = useDispatch();
+    const { isLoggedIn, isAdmin } = useSession();
 
     let location = useLocation(); //helps to get the exact location i,e the path where exactly the we are(url)
     useEffect(() => {       
@@ -29,7 +32,7 @@ const Navbar = (props) => {
             const data = await response.json();
             if(data.success === true) {
                 props.showAlert(data.msg, "success", 10031); 
-                resetUserState();
+                dispatch(logout());
                 sessionStorage.removeItem('AesKey');
                 history.navigate('/login');
             }
@@ -89,18 +92,18 @@ const Navbar = (props) => {
                                     </div>
                                 </div>
                             </li>
-                            { ((userState?.loggedIn) || (userState?.loggedIn && userState?.isAdminUser)) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
+                            { ((isLoggedIn) || (isLoggedIn && isAdmin)) && ((location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/forgot')) ?
                                 <>
                                     <div className='my-2 profile'>
                                         <Link className={`mx-3 my-2 ${location.pathname === '/profile' && 'active'}`} to="/profile" role='button' onClick={() => {setShowNavbar(!showNavBar)}}>Profile<i className="fa-solid fa-user mx-2"></i></Link>
                                     </div>
                                     <Link className={`px-3 my-2 logout`} role='button' onClick={handleLogout}>Logout <i className="fa-solid fa-arrow-right-from-bracket mx-2"></i></Link>
-                                    {(userState?.loggedIn) && !(userState?.loggedIn && userState?.isAdminUser) && <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>}
                                     { 
-                                        (userState?.loggedIn && userState?.isAdminUser) && 
+                                        (isLoggedIn && isAdmin) ? 
                                         <div className='my-2 mx-1'>
                                             <Link className={`px-3 my-2 ${location.pathname === '/dashboard' && 'active'}`} to='/dashboard' role='button'>DashBoard<i className="mx-2 fa-solid fa-gauge"></i></Link>
-                                        </div>
+                                        </div> :
+                                        <Link className='px-3 my-2' onClick={() => {props.setDialog(true, '/login', 'Delete Account') }} role='button'>Delete Account <i className="mx-2 fa-solid fa-trash-can"></i></Link>
                                     }
                                 </> :
                                 <>

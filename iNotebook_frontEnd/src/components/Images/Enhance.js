@@ -2,10 +2,8 @@ import React, { useRef, useState, useEffect, useContext } from 'react'
 import { saveAs } from 'file-saver'
 import Enhance from './StaticImages/Enhance.jpg'
 import TryIt from './TryIt';
-import AuthContext from '../../context/auth_state/authContext';
 
 export default function RoundCorners(props) {
-  const { handleSessionExpiry } = useContext(AuthContext);
   const [file, setFile] = useState();
   const imgRef = useRef();
   const divRef = useRef();
@@ -67,7 +65,6 @@ export default function RoundCorners(props) {
       // console.log(json);
       if(json.error) {
           props.showAlert(json.error, 'danger', 10128);
-          handleSessionExpiry(json);
           return;
       }
       if(json.success) {

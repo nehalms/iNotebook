@@ -2,13 +2,13 @@ import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { encryptMessage } from '../Utils/Encryption';
 import { history } from '../History';
-import AuthContext from '../../context/auth_state/authContext';
 import './profile.css'
+import useSession from '../SessionState/useSession';
 
 export default function Profile(props) {
-  const { userState, handleSessionExpiry } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [permissions, setPermissions] = useState([]);
+  const { isLoggedIn } = useSession();
   const permissionsArray = {
     'Notes': 'notes',
     'Tasks': 'tasks',
@@ -35,14 +35,14 @@ export default function Profile(props) {
   });
 
   useEffect(() => {
-    if (!userState.loggedIn) {
+    if (!isLoggedIn) {
       history.navigate("/");
       return;
     } else {
       getUserProfile();
     }
     
-  }, [userState]);
+  }, [isLoggedIn]);
 
   const getUserProfile = async () => {
     try {
@@ -56,7 +56,6 @@ export default function Profile(props) {
       });
       const resp = await response.json();
       if(resp.error) {
-        handleSessionExpiry(resp);
       }
       if(resp.status === 1) {
         let json = resp.user;
@@ -98,7 +97,6 @@ export default function Profile(props) {
         setProfile({ ...profile, name: json.user.name });
         props.showAlert("Name updated successfully", 'success', 10113);
       } else {
-        handleSessionExpiry(json);
         props.showAlert("Something went wrong", 'danger', 10114);
       }
     } catch (err) {
@@ -133,7 +131,6 @@ export default function Profile(props) {
         props.showAlert("Password updated successfully", 'success', 10117);
         setPass({ password: '', cpassword: '' });
       } else {
-        handleSessionExpiry(json);
         props.showAlert("Something went wrong", 'danger', 10118);
       }
     } catch (err) {
