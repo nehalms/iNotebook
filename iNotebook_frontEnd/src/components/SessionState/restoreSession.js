@@ -1,9 +1,10 @@
 import { fetchSecretKeyFromServer } from '../Requests/getSecretKey';
-import { login, logout, setSecretKey } from './sessionSlice';
+import { login, logout, setSecretKey, setLoading } from './sessionSlice';
 
 const restoreSession = () => {
   return async (dispatch) => {
     try {
+      dispatch(setLoading(true));
       const res = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/getstate`, {
         method: 'GET',
         headers: {

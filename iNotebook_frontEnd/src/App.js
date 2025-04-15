@@ -45,7 +45,7 @@ function App() {
   const [mode, setMode] = useState('light');
   const [loader, setLoader] = useState({ showLoader: false, msg: ""});
   const [dialogInfo, setDialogInfo] = useState({open: false});
-  const { isLoggedIn } = useSession();
+  const { isLoggedIn, isLoading } = useSession();
   
   const showAlert = (message, type, id)=> {
     setAlert({
@@ -60,7 +60,14 @@ function App() {
 
   useEffect(() => {
     const runEffect = async () => {
-      !isLoggedIn && dispatch(restoreSession()); 
+
+      !isLoggedIn && dispatch(restoreSession());
+      if(isLoading) {
+        setLoader({ showLoader: true, msg: "Loading..." }); 
+      } 
+      if(!isLoading) {
+        setLoader({ showLoader: false });
+      }
   
       removeBodyClasses();  
       if (localStorage.getItem('theme')) {
@@ -84,7 +91,7 @@ function App() {
   
     runEffect();
   
-  }, [dispatch, isLoggedIn]);
+  }, [dispatch, isLoggedIn, isLoading]);
 
   const getEncryptKey = async () => {
     try {
