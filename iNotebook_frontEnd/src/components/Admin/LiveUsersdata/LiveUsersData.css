@@ -1,0 +1,39 @@
+.lu-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.lu-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.lu-thead {
+    position: sticky;
+    top: 0;
+    background-color: #baffea;
+    z-index: 1;
+}
+
+.lu-th {
+    padding: 10px;
+    border-bottom: 1px solid #baffea;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lu-td {
+    padding: 8px;
+    border-bottom: 1px solid #baffea;
+}
+
+.lu-row-even {
+    background-color: #ffffff;
+}
+
+.lu-row-odd {
+    background-color: #eefdf6;
+}

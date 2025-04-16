@@ -167,6 +167,9 @@ router.post(
           console.error("Error in waking connect4 server:", error.message);
         });
       
+      if(user.isAdmin && req.query.verified != 'true') {
+        return;
+      }
       await LoginHistory.create({
         userId: user.id,
         name: user.name,

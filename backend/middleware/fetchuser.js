@@ -27,6 +27,7 @@ const fetchuser = (req, res, next) => {
         } else {
             res.status(401).send({error: 'Pleaze authenticate using valid token'});
         }
+        return;
     }
 }
 

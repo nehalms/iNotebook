@@ -204,8 +204,8 @@ export default function Profile(props) {
             <table className='profTable'>
               <thead>
                 <tr>
-                  <th className='profth' ><h4 className='m-0'>Feature</h4></th>
-                  <th className='profth' ><h4 className='m-0'>Status</h4></th>
+                  <th className='profth'><h4 className='m-0'>Feature</h4></th>
+                  <th className='profth'><h4 className='m-0'>Status</h4></th>
                 </tr>
               </thead>
               <tbody>

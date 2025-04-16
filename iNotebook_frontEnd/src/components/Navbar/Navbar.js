@@ -33,7 +33,7 @@ const Navbar = (props) => {
             if(data.success === true) {
                 props.showAlert(data.msg, "success", 10031); 
                 dispatch(logout());
-                sessionStorage.removeItem('AesKey');
+                sessionStorage.clear();
                 history.navigate('/login');
             }
         } catch (err) {

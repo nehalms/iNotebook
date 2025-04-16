@@ -6,6 +6,7 @@ import moment from 'moment';
 import loading from './loading.gif' 
 import { useNavigate } from 'react-router-dom';
 import useSession from '../SessionState/useSession';
+import LiveUsersData from './LiveUsersdata/LiveUsersData';
 
 export default function Analytics(props) {
   Chart.register(...registerables);
@@ -103,7 +104,7 @@ export default function Analytics(props) {
 
   return (
     <div className="row align-items-center justify-content-center">
-      <div className='col-md-6'>
+      <div className='col-lg-6'>
           <div className="card shadow-lg my-3 py-2">
               <div className="card-body">
                 <h4 className='text-center'>No. of Login's ({loginData.loginData.length} days)</h4>
@@ -162,7 +163,7 @@ export default function Analytics(props) {
               </div>
           </div>
       </div>
-      <div className='col-md-6'>
+      <div className='col-lg-6'>
           <div className="card shadow-lg my-3 py-2">
               <div className="card-body">
                 <h4 className='text-center'>No. Users online ({onlineUsersData.onlineData.length} days)</h4>
@@ -220,6 +221,13 @@ export default function Analytics(props) {
                 </div>
               </div>
           </div>
+      </div>
+      <div className='col-lg-6'>
+            <div className="card shadow-lg my-3 py-2">
+                <div className="card-body p-2">
+                    <LiveUsersData showAlert={props.showAlert}/>
+                </div>
+            </div>
       </div>
       {/* <div className='col-md-6'>
           <div className="card my-3 py-2" style={{backgroundColor: '#89faba', height: '400px'}}>

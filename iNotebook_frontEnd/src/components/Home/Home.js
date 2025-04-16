@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import useSession from '../SessionState/useSession';
 import { useDispatch } from 'react-redux';
 import { setSecretKey } from '../SessionState/sessionSlice';
+import { v4 as uuidv4 } from 'uuid';
 
 const UserHistoryTable = React.lazy(() => import('../Tables/UserHistorytable'));
 
@@ -16,7 +17,7 @@ const Home = (props) => {
   const dispatch = useDispatch();
   const [userHistory, setHistory] = useState();
   const [loading, setLoading] = useState(false);
-  const { isLoggedIn, permissions_, secretKey } = useSession();
+  const { isLoggedIn, permissions_, secretKey, isAdmin } = useSession();
   const [dialog, setDialog] = useState({
     open: false,
     title: '',
@@ -44,10 +45,51 @@ const Home = (props) => {
         !secretKey && dispatch(setSecretKey(await fetchSecretKeyFromServer()));
       }
       fetch();
+      !sessionStorage.getItem('deviceId') && !isAdmin && sendHeartBeat();
       fetchPermissions();
       fetchHistory();
     }
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (!isLoggedIn || isAdmin) return;
+    const heartBeat = setInterval(async () => {
+      sendHeartBeat(heartBeat);
+    }, 25000);
+
+    return () => {
+      clearInterval(heartBeat);
+    }
+  }, [isLoggedIn]);
+
+  const getOrCreateDeviceId = () => {
+    let id = sessionStorage.getItem('deviceId');
+    if (!id) {
+      id = uuidv4();
+      sessionStorage.setItem('deviceId', id);
+    }
+    return id;
+  }
+
+  const sendHeartBeat = async (heartBeat=null) => {
+    const id = getOrCreateDeviceId();
+    try {
+      let respones = await fetch(`${process.env.REACT_APP_BASE_URL}/heartbeat/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await respones.json();
+      if (data.status == 0) {
+        clearInterval(heartBeat);
+        return;
+      }
+    } catch (error) {
+      console.error('Error in heartbeat:', error);
+    }
+  }
 
 
   const fetchHistory = async () => {
