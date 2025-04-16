@@ -193,9 +193,11 @@ const Login = (props) => {
                                 <Verification verify={verify} sendEmail={sendEmail} msg="Enter Admin Passkey" showGif={showGif}/>
                             </Suspense>
                         )}
-                        <button type="submit" className="btn btn-primary w-100 mt-4">
-                            Login <i className="fa-solid fa-right-to-bracket ms-2"></i>
-                        </button>
+                        { (!isAdminUser || (isAdminUser && Verified)) && 
+                            <button type="submit" className="btn btn-primary w-100 mt-4">
+                                Login <i className="fa-solid fa-right-to-bracket ms-2"></i>
+                            </button>
+                        }
                         
                     </form>
                 </div>

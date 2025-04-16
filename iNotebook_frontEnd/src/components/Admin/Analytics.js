@@ -10,15 +10,15 @@ import useSession from '../SessionState/useSession';
 export default function Analytics(props) {
   Chart.register(...registerables);
   history.navigate = useNavigate();
-  const [notesData, setNotesData] = useState({xAxisDates: [], notesData: [], colors: []});
+  const [onlineUsersData, setOnlineUsersData] = useState({xAxisDates: [], onlineData: [], colors: []});
   const [loginData, setLoginData] = useState({xAxisDates: [], loginData: [], colors: []});
   const [showUserLoader, setShowUserLoader] = useState(false);
-  const [showNoteLoader, setShowNoteLoader] = useState(false);
+  const [showOnlineLoader, setShowOnlineLoader] = useState(false);
   const [userDates, setUserDates] = useState({
     startDate: moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD'),
     endDate: moment(new Date()).format('YYYY-MM-DD'),
   });
-  const [notesDates, setNotesDates] = useState({
+  const [onlineUsersDates, setOnlineUsersDates] = useState({
     startDate: moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD'),
     endDate: moment(new Date()).format('YYYY-MM-DD'),
   })
@@ -43,8 +43,8 @@ export default function Analytics(props) {
       else if(reqType === 'user') {
         dates = {...userDates};
       }
-      else if(reqType === 'notes') {
-        dates = {...notesDates};
+      else if(reqType === 'online') {
+        dates = {...onlineUsersDates};
       }
       if(
         dates.endDate > moment(new Date()).format('YYYY-MM-DD') || 
@@ -64,7 +64,7 @@ export default function Analytics(props) {
         ? props.setLoader({ showLoader: true, msg: "Loading..."}) 
         : reqType === 'user' 
             ? setShowUserLoader(true) 
-            : setShowNoteLoader(true);
+            : setShowOnlineLoader(true);
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}/getData/graphData?reqType=${reqType}&startDate=${dates.startDate}&endDate=${dates.endDate}`, {
           method: "GET", 
           headers: {
@@ -79,7 +79,7 @@ export default function Analytics(props) {
       }
       props.setLoader({ showLoader: false});
       setShowUserLoader(false);
-      setShowNoteLoader(false);
+      setShowOnlineLoader(false);
       if(reqType === 'both' || reqType === 'user') {
         setLoginData({
             xAxisDates: data.xAxisDates,
@@ -87,10 +87,10 @@ export default function Analytics(props) {
             colors: data.colors,
         });
       }
-      if(reqType === 'both' || reqType === 'notes') {
-        setNotesData({
+      if(reqType === 'both' || reqType === 'online') {
+        setOnlineUsersData({
             xAxisDates: data.xAxisDates,
-            notesData: data.notesData,
+            onlineData: data.onlineUsersData,
             colors: data.colors,
         });
       }
@@ -142,19 +142,17 @@ export default function Analytics(props) {
                         options={{
                             maintainAspectRatio: false,
                             scales: {
-                                yAxes: [
-                                    {
-                                        ticks: {
-                                            beginAtZero: true,
-                                        },
+                              y: {
+                                beginAtZero: true,
+                              },
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        fontSize: 15,
                                     },
-                                ],
-                            },
-                            legend: {
-                                labels: {
-                                    fontSize: 15,
                                 },
-                            },
+                            }
                         }}
                     />}
                     {showUserLoader && <div className="text-center">
@@ -167,34 +165,34 @@ export default function Analytics(props) {
       <div className='col-md-6'>
           <div className="card shadow-lg my-3 py-2">
               <div className="card-body">
-                <h4 className='text-center'>No. Notes of created ({notesData.notesData.length} days)</h4>
+                <h4 className='text-center'>No. Users online ({onlineUsersData.onlineData.length} days)</h4>
                 <div className='d-flex align-items-center justify-content-end'>
                     <div>
                         <p className='m-0'>From</p>
-                        <input className='rounded p-1' type="date" name="fromDateNote" value={notesDates.startDate} onChange={(e) => {setNotesDates({startDate: e.target.value, endDate: notesDates.endDate})} }/>
+                        <input className='rounded p-1' type="date" name="fromDateNote" value={onlineUsersDates.startDate} onChange={(e) => {setOnlineUsersDates({startDate: e.target.value, endDate: onlineUsersDates.endDate})} }/>
                     </div>
                     <div className='mx-2'>
                         <p className='m-0'>To</p>
-                        <input className='rounded p-1' type="date" name="toDateNote" value={notesDates.endDate} onChange={(e) => {setNotesDates({startDate: notesDates.startDate, endDate: e.target.value})}}/>
+                        <input className='rounded p-1' type="date" name="toDateNote" value={onlineUsersDates.endDate} onChange={(e) => {setOnlineUsersDates({startDate: onlineUsersDates.startDate, endDate: e.target.value})}}/>
                     </div>
                     <div>
                         <p className='m-0' style={{visibility: 'hidden'}}>Hide</p>
-                        <div className='p-2 rounded' style={{backgroundColor: '#f5a52c', cursor: 'pointer'}} onClick={() => {fetchData('notes')}}>
+                        <div className='p-2 rounded' style={{backgroundColor: '#f5a52c', cursor: 'pointer'}} onClick={() => {fetchData('online')}}>
                             <i className="fa-solid fa-magnifying-glass"></i>
                         </div>
                     </div>
                 </div>
-                <h6>Total count : {notesData.notesData.length > 1 ? notesData.notesData.reduce((val, sum) => {return sum + val}) : notesData.notesData}</h6>
+                <h6>Total count : {onlineUsersData.onlineData.length > 1 ? onlineUsersData.onlineData.reduce((val, sum) => {return sum + val}) : onlineUsersData.onlineData}</h6>
                 <div style={{ maxWidth: "650px" }}>
-                    {!showNoteLoader && <Bar
+                    {!showOnlineLoader && <Bar
                         data={{
-                            labels: notesData.xAxisDates,
+                            labels: onlineUsersData.xAxisDates,
                             datasets: [
                                 {
                                     label: `total count/value`,
-                                    data: notesData.notesData,
-                                    backgroundColor: notesData.colors,
-                                    borderColor: notesData.colors,
+                                    data: onlineUsersData.onlineData,
+                                    backgroundColor: onlineUsersData.colors,
+                                    borderColor: onlineUsersData.colors,
                                     borderWidth: 0.5,
                                 },
                             ],
@@ -203,22 +201,20 @@ export default function Analytics(props) {
                         options={{
                             maintainAspectRatio: false,
                             scales: {
-                                yAxes: [
-                                    {
-                                        ticks: {
-                                            beginAtZero: true,
-                                        },
+                              y: {
+                                beginAtZero: true,
+                              },
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        fontSize: 15,
                                     },
-                                ],
-                            },
-                            legend: {
-                                labels: {
-                                    fontSize: 15,
                                 },
-                            },
+                            }
                         }}
                     />}
-                    {showNoteLoader && <div className="text-center">
+                    {showOnlineLoader && <div className="text-center">
                         <img src={loading} alt="loading" />
                     </div>}
                 </div>

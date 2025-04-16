@@ -87,7 +87,7 @@ router.get('/graphData', fetchuser, async (req, res) => {
         let response = {};
         let xAxisValues = [];
         let loginData = [];
-        let notesData = [];
+        let onlineUsersData = [];
         let colors = ["aqua", "green", "red", "yellow", "coral", "aquamarine", "deeppink"];
         let reqStartDate = moment(req.query.startDate 
             ? new Date(req.query.startDate) 
@@ -114,13 +114,16 @@ router.get('/graphData', fetchuser, async (req, res) => {
                 .format('MMM-DD');
             xAxisValues.push(xAxisDate);
             
+            var logins = await LoginHistory.find({date: {$gte: new Date(startDate), $lt: new Date(endDate)}});
             if(req.query.reqType === 'user' || req.query.reqType === 'both') {
-                let logins = await LoginHistory.find({date: {$gte: new Date(startDate), $lt: new Date(endDate)}});
                 loginData.push(logins && logins.length ? logins.length : 0);
             }
-            if(req.query.reqType === 'notes' || req.query.reqType === 'both') {
-                let noteData = await Notes.find({date: {$gte: startDate, $lt: endDate}});
-                notesData.push(noteData && noteData.length ? noteData.length : 0);
+            if(req.query.reqType === 'online' || req.query.reqType === 'both') {
+                let onlineUsers = [];
+                logins.map((user) => {
+                    !onlineUsers.includes(user.userId.toString()) && onlineUsers.push(user.userId.toString());
+                });
+                onlineUsersData.push(onlineUsers && onlineUsers.length ? onlineUsers.length : 0);
             }
 
             reqStartDate = moment(new Date(reqStartDate))
@@ -131,8 +134,8 @@ router.get('/graphData', fetchuser, async (req, res) => {
         if(req.query.reqType === 'user' || req.query.reqType === 'both') {
             response.loginData = loginData;
         }
-        if(req.query.reqType === 'notes' || req.query.reqType === 'both') {
-            response.notesData = notesData;
+        if(req.query.reqType === 'online' || req.query.reqType === 'both') {
+            response.onlineUsersData = onlineUsersData;
         }
         res.send(response);
 

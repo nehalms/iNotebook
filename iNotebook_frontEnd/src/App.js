@@ -62,12 +62,6 @@ function App() {
     const runEffect = async () => {
 
       !isLoggedIn && dispatch(restoreSession());
-      if(isLoading) {
-        setLoader({ showLoader: true, msg: "Loading..." }); 
-      } 
-      if(!isLoading) {
-        setLoader({ showLoader: false });
-      }
   
       removeBodyClasses();  
       if (localStorage.getItem('theme')) {
@@ -91,7 +85,16 @@ function App() {
   
     runEffect();
   
-  }, [dispatch, isLoggedIn, isLoading]);
+  }, [dispatch, isLoggedIn]);
+
+  useEffect(() => {
+    if(isLoading) {
+      setLoader({ showLoader: true, msg: "Loading..." }); 
+    } 
+    if(!isLoading) {
+      setLoader({ showLoader: false });
+    }
+  }, [isLoading]);
 
   const getEncryptKey = async () => {
     try {

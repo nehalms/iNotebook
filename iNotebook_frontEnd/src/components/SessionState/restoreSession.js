@@ -29,6 +29,8 @@ const restoreSession = () => {
     } catch (err) {
       console.error("Session fetch failed:", err);
       dispatch(logout());
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 };
