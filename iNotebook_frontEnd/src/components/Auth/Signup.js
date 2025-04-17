@@ -143,9 +143,11 @@ const Signup = (props) => {
           method: "POST", 
           headers: {
             "Content-Type": "application/json",
-            "email": credentials.email,
-            "code": code,
           },
+          body: JSON.stringify({
+            email: encryptMessage(credentials.email),
+            code: encryptMessage(code.toString()),
+          }),
         });
         const res = await response.json();
         if(res.success === true) {

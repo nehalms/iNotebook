@@ -44,7 +44,7 @@ router.post("/createuser", decrypt,
       //await helps to make processor to wait further processing next line till the current line is resolved and take data of this line n move
       // to use await the function must be async
       const salt = await bcrpyt.genSalt(10); //for generating salt
-      secPass = await bcrpyt.hash(req.body.password, salt); // convert password to hasj value
+      secPass = await bcrpyt.hash(req.body.password, salt); // convert password to hash value
       //Create new user
       user = await User.create({
         // adds data to database
@@ -210,7 +210,7 @@ router.post("/getPassword", decrypt,
     try{
       let found = true;
       const email = req.body.email;
-      const user = await User.findOne({email: email});
+      const user = await User.findOne({email: email}).select("-password");
       if (!user) {
         found = false;
         return res.status(400).json({found, error: "No user found with the given mail" });
@@ -276,7 +276,6 @@ router.post('/updateName', fetchuser, decrypt, async (req, res) => {
 router.post("/changestatus", fetchuser,  async (req, res) => {
   try {
     const userEmail = await User.findById(req.user.id);
-    console.log(userEmail);
     let email = `${userEmail.email}__${req.user.id}`;
     const user = await User.findByIdAndUpdate(req.user.id, {isActive: false, email : email}, {new: true});
     await UserHistory.create({
@@ -289,7 +288,10 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
       secure: true, 
       sameSite: "none",
     });
-    res.send(user);
+    res.send({
+      ...user,
+      password: undefined,
+    });
   } 
   catch (err) {
     console.log(err.message);
@@ -299,7 +301,7 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
 
 router.get('/getstate', fetchuser, async (req, res) => {
   try {
-    let user = await User.findById(req.user.id);
+    let user = await User.findById(req.user.id).select("-password");
     res.send({
       status: 1,
       data: {

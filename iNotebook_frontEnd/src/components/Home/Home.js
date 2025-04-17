@@ -45,7 +45,7 @@ const Home = (props) => {
         !secretKey && dispatch(setSecretKey(await fetchSecretKeyFromServer()));
       }
       fetch();
-      !sessionStorage.getItem('deviceId') && !isAdmin && sendHeartBeat();
+      !isAdmin && sendHeartBeat();
       fetchPermissions();
       fetchHistory();
     }

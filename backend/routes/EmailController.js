@@ -1,8 +1,10 @@
 const express = require('express')
 const { Email } = require('../Services/Email');
-const { getForgotPasshtml, getAdminhtml, getAdminNotifyhtml, getSignUphtml } = require('../Services/getEmailHtml');
+const { getForgotPasshtml, getAdminhtml, getSignUphtml } = require('../Services/getEmailHtml');
+const { updateOTP, getOTP } = require('../store/dataStore');
+const bcrpyt = require("bcryptjs");
+const decrypt = require('../middleware/decrypt');
 const router = express.Router()
-const otpManager = {};
 
 router.post('/send', async (req, res) => {
     try {
@@ -15,10 +17,12 @@ router.post('/send', async (req, res) => {
         } else if(req.body.subject == 'Create Account') {
             html = getSignUphtml(val);
         }
-        otpManager[req.query.toAdmin == 'true' ? process.env.ADMIN_EMAIL : req.body.email] = {
-            code: val,
+        const salt = await bcrpyt.genSalt(10); 
+        const hashedVal = await bcrpyt.hash(val.toString(), salt);
+        await updateOTP(req.query.toAdmin == 'true' ? process.env.ADMIN_EMAIL : req.body.email, {
+            code: hashedVal,
             expiryTime: (Date.now() + 10 * 60 * 1000),
-        };
+        });
         Email(
             req.body.email,
             req.body.cc,
@@ -39,12 +43,13 @@ router.post('/send', async (req, res) => {
     }
 });
 
-router.post('/verify', async(req, res) => {
+router.post('/verify', decrypt, async(req, res) => {
     try {
-        let email = req.header('email');
-        let code = req.header('code');
-        if(otpManager[email] && otpManager[email].code == code) {
-            if(Date.now() > otpManager[email].expiryTime) {
+        let email = req.body['email'];
+        let code = req.body['code'];
+        let otpManager = await getOTP(email);
+        if(otpManager && bcrpyt.compareSync(code.toString(), otpManager.code)) {
+            if(Date.now() > otpManager.expiryTime) {
                 res.send({success: true, verified: false, msg: 'OTP expired'});
                 return;
             }

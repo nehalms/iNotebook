@@ -112,9 +112,11 @@ const Login = (props) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    email: credentials.email,
-                    code,
                 },
+                body: JSON.stringify({
+                    email: encryptMessage(credentials.email),
+                    code: encryptMessage(code.toString()),
+                }),
             });
             const res = await response.json();
             setVerified(res.success && res.verified);
