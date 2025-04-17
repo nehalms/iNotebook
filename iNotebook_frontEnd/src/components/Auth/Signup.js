@@ -69,6 +69,8 @@ const Signup = (props) => {
               history.navigate("/"); // to redirect the page to home page
               dispatch(login({
                 permissions: json.permissions,
+                email: credentials.email,
+                isPinSet: json.isPinSet,
               }));
               props.showAlert("Sign in successfull", "success", 10057);
             }

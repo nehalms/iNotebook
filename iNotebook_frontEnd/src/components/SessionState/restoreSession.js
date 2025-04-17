@@ -19,8 +19,10 @@ const restoreSession = () => {
       }
       if (json.status === 1) {
         dispatch(login({
+          email: json.data.email,
           isAdmin: json.data.isAdminUser,
           permissions: json.data.permissions,
+          isPinSet: json.data.isPinSet,
         }));
         dispatch(setSecretKey(await fetchSecretKeyFromServer()));
       } else {

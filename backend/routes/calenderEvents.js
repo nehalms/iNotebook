@@ -4,10 +4,15 @@ const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
 const Events = require('../models/Events')
 const UserHistory = require('../models/UserHistory');
+const SecurityPin = require('../models/SecurityPin')
 const scope = 'calendar';
 
 router.get('/', fetchuser, checkPermission(scope), async (req, res) => {
     try {
+        const securityPin = await SecurityPin.findOne({user: req.user.id});
+        if(!securityPin || !securityPin.isPinVerified) {
+            return res.status(401).json({ error: "Security pin not verified" });
+        }
         let events = await Events.find({user: req.user.id});
         res.send({
             status: 1,

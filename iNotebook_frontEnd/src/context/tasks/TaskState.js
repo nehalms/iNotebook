@@ -13,9 +13,12 @@ const TaskState = (props)=> {
     const foldersInitial = [];
     const [initTasks, setInitTasks] = useState(foldersInitial);
     const [folders, setFolders] = useState(foldersInitial);
-    const { secretKey } = useSession();
+    const { secretKey, isPinSet, isPinVerified } = useSession();
 
     const fetchTasks = async (src)=> {
+        if(!isPinSet || !isPinVerified) {
+            return;
+        }
         try {
             props.setLoader({ showLoader: true, msg: "Fetching tasks"});
             const response = await fetch(`${host}/tasks?src=${src}`, {
@@ -179,6 +182,9 @@ const TaskState = (props)=> {
 
 
     const fetchFolders = async ()=> {
+        if(!isPinSet || !isPinVerified) {
+            return;
+        }
         try {
             props.setLoader({ showLoader: true, msg: "Fetching folders"});
             const response = await fetch(`${host}/tasks/folders`, {

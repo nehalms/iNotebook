@@ -6,16 +6,16 @@ const { body, validationResult } = require("express-validator"); //to validate t
 const bcrpyt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
+const decrypt = require("../middleware/decrypt");
 const UserHistory = require("../models/UserHistory");
 const GameDetails = require("../models/GameDetails");
+const SecurityPin = require("../models/SecurityPin");
+const Keys = require("../models/Keys");
 const { Email } = require("../Services/Email");
 const { getAdminNotifyhtml } = require("../Services/getEmailHtml");
-const Keys = require("../models/Keys");
-const decrypt = require("../middleware/decrypt");
 const axios = require("axios");
 const JWT_SCERET = process.env.JWT_SCERET;
 const SESSION_EXPIRY_TIME = parseInt(process.env.SESSION_EXPIRY_TIME);
-
 //Route-1 : Create user using : POST "/api/auth/CreateUser => no login required
 
 router.post("/createuser", decrypt,
@@ -84,7 +84,7 @@ router.post("/createuser", decrypt,
         html,
         false,
       )
-      res.json({success, permissions: user.permissions});
+      res.json({success, permissions: user.permissions, isPinSet: false});
     } 
     catch (err) {
       console.log("Error in creating user", err.message);
@@ -132,6 +132,8 @@ router.post(
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
       success = true;
 
+      const isPinSet = await SecurityPin.findOne({user: user.id});
+
       if(user.isAdmin == true) {
         if(req.query.verified == 'true') {
           res.cookie('authToken', authToken, {
@@ -141,7 +143,7 @@ router.post(
             maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
           });
         }
-        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions});
+        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet: isPinSet ? true : false});
       } else {
         res.cookie('authToken', authToken, {
           httpOnly: true,   
@@ -149,7 +151,7 @@ router.post(
           sameSite: 'none',
           maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
         });
-        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions});
+        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet: isPinSet ? true : false});
       }
       axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
         .then(response => {
@@ -302,13 +304,17 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
 router.get('/getstate', fetchuser, async (req, res) => {
   try {
     let user = await User.findById(req.user.id).select("-password");
+    let isPinSet = await SecurityPin.findOne({user: user.id});
     res.send({
       status: 1,
       data: {
+        email: user.email,
         isAdminUser: user.isAdmin,
         permissions: user.permissions,
+        isPinSet: isPinSet ? true : false,
       }
     });
+    await SecurityPin.findOneAndUpdate({user: req.user.id}, {isPinVerified: false});
   }  catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");
@@ -321,6 +327,7 @@ router.post('/logout', fetchuser, async (req, res) => {
       userId: req.user.id,
       action: "Logged out",
     });
+    await SecurityPin.findOneAndUpdate({user: req.user.id}, {isPinVerified: false});
     res.clearCookie("authToken", {
       path: "/",     
       httpOnly: true, 

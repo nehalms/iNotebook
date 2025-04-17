@@ -7,6 +7,7 @@ import { history } from '../History';
 import SortNSerh from '../Utils/SortNSearch/SortNSerh';
 import { useNavigate } from 'react-router-dom';
 import useSession from '../SessionState/useSession';
+import Security from '../SecurityPin/Security';
 
 const Notes = (props) => {
     history.navigate = useNavigate();
@@ -14,7 +15,7 @@ const Notes = (props) => {
     const { notes, fetchNotes, updateNote, sort, searchNote } = context;
     const [draggable, setDraggable] = useState(false);
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
-    const { isLoggedIn } = useSession();
+    const { isLoggedIn, isPinSet, isPinVerified } = useSession();
     const sortingList = [
         { name: 'None', nested: [{name: 'None', type: 'NONE'}] },
         { name: 'Title', nested: [{ name: 'A-Z', type: 'T_ASCE'}, { name: 'Z-A', type: 'T_DESC'}] },
@@ -77,7 +78,7 @@ const Notes = (props) => {
         } else {
             fetchNotes(props);
         }
-    }, [isLoggedIn])
+    }, [isLoggedIn, isPinVerified])
 
     const editNote = (currentNote) => {
         ref.current.click();
@@ -98,7 +99,7 @@ const Notes = (props) => {
     }
 
     return (
-        <>
+        <div style={{ position: 'relative'}}>
             <Addnote showAlert={props.showAlert} />
             <button type="button" className="btn" ref={ref} hidden={true} data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Launch demo modal
@@ -169,6 +170,7 @@ const Notes = (props) => {
                     </div>
                     <div className='container mx-2'>
                         {notes.length === 0 && "No Notes to display"}
+                        {(!isPinSet || (isPinSet && !isPinVerified)) && <Security toVerify={isPinSet} showAlert={props.showAlert}/>}
                     </div>
                 </div>
                 <SortNSerh sortingList={sortingList} sort={sort} search={searchNote}/>
@@ -178,7 +180,7 @@ const Notes = (props) => {
                     );
                 })}
             </div>
-        </>
+        </div>
     );
 }
 

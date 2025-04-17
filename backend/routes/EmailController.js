@@ -10,7 +10,7 @@ router.post('/send', async (req, res) => {
     try {
         var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
         let html;
-        if(req.body.subject == 'Reset Password') {
+        if(req.body.subject == 'Reset Password' || req.body.subject == 'Reset security pin') {
             html = getForgotPasshtml(val);
         } else if(req.body.subject == 'Admin Login') {
             html = getAdminhtml(val);
@@ -50,7 +50,7 @@ router.post('/verify', decrypt, async(req, res) => {
         let otpManager = await getOTP(email);
         if(otpManager && bcrpyt.compareSync(code.toString(), otpManager.code)) {
             if(Date.now() > otpManager.expiryTime) {
-                res.send({success: true, verified: false, msg: 'OTP expired'});
+                res.send({status: 0, success: true, verified: false, msg: 'OTP expired'});
                 return;
             }
             res.send({success: true, verified: true, msg: 'OTP verified'});

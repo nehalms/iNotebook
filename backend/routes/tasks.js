@@ -6,11 +6,17 @@ const { body, validationResult } = require("express-validator"); //to validate t
 const UserHistory = require('../models/UserHistory');
 const Task = require('../models/Task');
 const Folder = require('../models/Folder');
+const SecurityPin = require('../models/SecurityPin')
+
 const decrypt = require('../middleware/decrypt');
 const scope = 'tasks';
 
 router.get('/', fetchuser, checkPermission(scope),  async (req, res)=> {
     try{
+        const securityPin = await SecurityPin.findOne({user: req.user.id});
+        if(!securityPin || !securityPin.isPinVerified) {
+            return res.status(401).json({ error: "Security pin not verified" });
+        }
         if( !req.query.src || req.query.src.toString().trim() == "" ) {
             return res.status(404).send({ error: "Missing folder name" });
         }
@@ -161,6 +167,10 @@ router.delete('/deletetask/:id', fetchuser, checkPermission(scope),  async (req,
 
 router.get('/folders', fetchuser, checkPermission(scope),  async (req, res) => {
     try {
+        const securityPin = await SecurityPin.findOne({user: req.user.id});
+        if(!securityPin || !securityPin.isPinVerified) {
+            return res.status(401).json({ error: "Security pin not verified" });
+        }
         let folder = await Folder.findOne({user: req.user.id});
         if(!folder) {
             return res.send({error: "No folders found for the given user id"});

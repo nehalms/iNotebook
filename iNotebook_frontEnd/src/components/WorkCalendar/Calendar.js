@@ -14,13 +14,14 @@ import {
 } from "react-bootstrap";
 import { history } from "../History";
 import useSession from '../SessionState/useSession';
+import Security from "../SecurityPin/Security";
 const localizer = momentLocalizer(moment);
 
 const WorkCalendar = (props) => {
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const { isLoggedIn, secretKey } = useSession();
+  const { isLoggedIn, secretKey, isPinSet, isPinVerified } = useSession();
   const [newEvent, setNewEvent] = useState({
     title: "",
     start: "",
@@ -35,9 +36,12 @@ const WorkCalendar = (props) => {
     } else {
       fetchevents();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isPinVerified]);
 
   const fetchevents = async () => {
+    if(!isPinSet || !isPinVerified) {
+      return;
+    }
     try {
       props.setLoader({ showLoader: true, msg: "Making up the calendar..." });
       let response = await fetch(`${process.env.REACT_APP_BASE_URL}/calevents`, {
@@ -157,7 +161,8 @@ const WorkCalendar = (props) => {
   }
 
   return (
-    <Container fluid="lg" className="py-2 pb-5">
+    <Container fluid="lg" className="py-2 pb-5" style={{ position: 'relative'}}>
+      {(!isPinSet || (isPinSet && !isPinVerified)) && <Security toVerify={isPinSet} showAlert={props.showAlert}/>}
       <h2 className="text-center mb-4">
         <i className="mx-2 fa-solid fa-calendar-days"></i>Work Calendar
       </h2>

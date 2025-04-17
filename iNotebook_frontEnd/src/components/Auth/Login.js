@@ -61,9 +61,11 @@ const Login = (props) => {
                 }
                 history.navigate(isAdminUser ? '/dashboard' : '/');
                 dispatch(login({
+                    email: credentials.email,
                     isAdmin: json.isAdminUser,
                     expiresAt: json.expiresIn,
                     permissions: json.permissions,
+                    isPinset: json.isPinSet,
                 }));
                 props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success', 10053);
             } else {

@@ -2,6 +2,7 @@ const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
 const checkPermission = require('../middleware/checkPermission')
 const router = express.Router()
+const SecurityPin = require('../models/SecurityPin')
 const Notes = require('../models/Notes')
 const { body, validationResult } = require("express-validator"); //to validate the inputs
 const UserHistory = require('../models/UserHistory');
@@ -10,6 +11,10 @@ const scope = 'notes';
 //Route-1 : Get all the notes : POST "/api/notes/fetchallnotes" => Login required
 router.get('/fetchallnotes', fetchuser, checkPermission(scope), async (req, res)=> {
     try{
+        const securityPin = await SecurityPin.findOne({user: req.user.id});
+        if(!securityPin || !securityPin.isPinVerified) {
+            return res.status(401).json({ error: "Security pin not verified" });
+        }
         const notes = await Notes.find({user: req.user.id});
         res.json(notes);
     }

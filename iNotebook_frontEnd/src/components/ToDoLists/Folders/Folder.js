@@ -9,6 +9,7 @@ import Tasks from '../Tasks/Tasks';
 import SortNSerh from '../../Utils/SortNSearch/SortNSerh';
 import { useNavigate } from 'react-router-dom';
 import useSession from '../../SessionState/useSession';
+import Security from '../../SecurityPin/Security';
 
 export default function Folder(props) {
     history.navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function Folder(props) {
     const crtFolRefClose = useRef();
     const [showTasks, setShowTasks] = useState(false);
     const [currSrc, setCurrSrc] = useState(null);
-    const { isLoggedIn } = useSession();
+    const { isLoggedIn, isPinSet, isPinVerified } = useSession();
     const [updFold, setUpdFold] = useState({
         src: "",
         dest: ""
@@ -95,7 +96,7 @@ export default function Folder(props) {
             fetchFolders();
         }
         
-    }, [isLoggedIn]);
+    }, [isLoggedIn, isPinVerified]);
 
 
     const editFolderName = (src, dest) => {
@@ -141,7 +142,7 @@ export default function Folder(props) {
     }
 
   return (
-    <div className='my-5'> 
+    <div className='my-5' style={{ position: 'relative'}}> 
         {!showTasks && <AddFolder addFolder={addFolder}/>}
         <button type="button" className="btn" ref={editFoldNameRef} hidden={true} data-bs-toggle="modal" data-bs-target="#editfolderModal">
             Launch demo modal
@@ -220,6 +221,7 @@ export default function Folder(props) {
             <div className="row my-1">
                 <div className='container mx-2'>
                     {folders.length === 0 && "No Folder to display"}
+                    {(!isPinSet || (isPinSet && !isPinVerified)) && <Security toVerify={isPinSet} showAlert={props.showAlert}/>}
                 </div>
                 {folders.length > 0 && folders.map((folder) => {
                     return (

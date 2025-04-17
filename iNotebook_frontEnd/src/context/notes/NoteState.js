@@ -10,11 +10,14 @@ const NoteState = (props)=> {
     const notesInitital = []
     const [initNotes, setInitNotes] = useState(notesInitital);
     const [notes, setNotes] = useState(notesInitital);
-    const { secretKey } = useSession();
+    const { secretKey, isPinSet, isPinVerified } = useSession();
     
     //get all notes
     const fetchNotes = async ()=> {
         try {
+            if(!isPinSet || !isPinVerified) {
+                return;
+            }
             props.setLoader({ showLoader: true, msg: "Fetching Notes"});
             const response = await fetch(`${host}/notes/fetchallnotes`, {
                 method: "GET", 
