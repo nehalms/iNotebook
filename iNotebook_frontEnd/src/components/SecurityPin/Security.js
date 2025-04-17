@@ -245,7 +245,6 @@ function Security({ toVerify, showAlert }) {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 100,
       }}
     >
 
