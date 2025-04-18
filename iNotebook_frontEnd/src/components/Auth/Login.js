@@ -65,7 +65,7 @@ const Login = (props) => {
                     isAdmin: json.isAdminUser,
                     expiresAt: json.expiresIn,
                     permissions: json.permissions,
-                    isPinset: json.isPinSet,
+                    isPinSet: json.isPinSet,
                 }));
                 props.showAlert(`Logged in successfully ${isAdminUser ? ' as Admin' : ''}`,'success', 10053);
             } else {
