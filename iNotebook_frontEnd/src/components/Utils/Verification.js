@@ -12,6 +12,9 @@ function Verification(props) {
     if (element.nextSibling && element.value) {
       element.nextSibling.focus();
     }
+    if (index === 5 && element.value) {
+      handleVerify();
+    }
   }
 
   const handleKeyDown = (event, index) => {
@@ -31,32 +34,32 @@ function Verification(props) {
   return (
     <div className='mt-3'>
       <label htmlFor="exampleInputEmail1" className="form-label">{props.msg ? props.msg : 'Enter the verification code'}</label> <br />
-      <div style={{ display: 'flex', gap: '10px' }}>
-        {otp.map((value, index) => (
-          <input
+      <div className="d-flex align-items-center justify-content-between flex-wrap">
+        <div className="align-items-center justify-content-center ms-2" style={{ display: 'flex', gap: '10px' }}>
+          {otp.map((value, index) => (
+            <input
             key={index}
-            type="text"
-            maxLength="1"
-            value={value}
-            onChange={(e) => handleChange(e.target, index)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            style={{
-              width: '40px',
-              height: '40px',
-              textAlign: 'center',
-              fontSize: '20px',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-            }}
-          />
-        ))}
-      </div>
-      { props.showGif && 
-        <img src={otpLoading} alt="Loading..." style={{width: '126px', height: '40px', marginLeft: '80px'}}/>
-      }
-      <div className="d-flex my-3">
-        <button type="button" onClick={props.sendEmail} className="btn btn-warning mx-2 ms-0">Resend <i className="fa-solid fa-paper-plane mx-2"></i></button>
-        <button type="button" onClick={handleVerify} className="btn btn-success mx-2">Verify <i className="fa-solid fa-certificate mx-2"></i></button>
+              type="password"
+              maxLength="1"
+              value={value}
+              onChange={(e) => handleChange(e.target, index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              style={{
+                width: '40px',
+                height: '40px',
+                textAlign: 'center',
+                fontSize: '20px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+              }}
+              />
+            ))}
+        </div>
+        { props.showGif ?
+          <img className='m-2' src={otpLoading} alt="Loading..." style={{width: '126px', height: '40px', marginLeft: '80px'}}/> :
+          <button type="button" onClick={props.sendEmail} className="btn btn-warning m-2">Resend <i className="fa-solid fa-paper-plane mx-2"></i></button>
+        }
+        {/* <button type="button" onClick={handleVerify} className="btn btn-success mx-2">Verify <i className="fa-solid fa-certificate mx-2"></i></button> */}
       </div>
     </div>
   )

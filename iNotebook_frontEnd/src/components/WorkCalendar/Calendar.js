@@ -162,52 +162,57 @@ const WorkCalendar = (props) => {
 
   return (
     <Container fluid="lg" className="py-2 pb-5" style={{ position: 'relative'}}>
-      {(!isPinSet || (isPinSet && !isPinVerified)) && <Security toVerify={isPinSet} showAlert={props.showAlert}/>}
       <h2 className="text-center mb-4">
         <i className="mx-2 fa-solid fa-calendar-days"></i>Work Calendar
       </h2>
 
-      <Button
-        className="btn btn-warning"
-        style={{position: 'fixed', zIndex: '1', right: '25px', bottom: '25px'}}
-        onClick={() => setShowModal(true)}
-      >
-        <i className="me-2 fa-solid fa-plus"></i> Add Event
-      </Button>
+      {
+        (!isPinSet || (isPinSet && !isPinVerified)) ?
+          <Security toVerify={isPinSet} showAlert={props.showAlert}/> :
+          <>
+            <Button
+              className="btn btn-warning"
+              style={{position: 'fixed', zIndex: '1', right: '25px', bottom: '25px'}}
+              onClick={() => setShowModal(true)}
+            >
+              <i className="me-2 fa-solid fa-plus"></i> Add Event
+            </Button>
 
-      <Card className="shadow-lg border-0">
-        <Card.Body className="p-2 p-md-3">
-          <div style={{ height: "70vh", minHeight: "400px" }}>
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              defaultView="month"
-              views={["month", "week", "day", "agenda"]}
-              components={{
-                event: ({ event }) => (
-                  <div>
-                    <strong>{event.title}</strong>
-                  </div>
-                ),
-              }}
-              onSelectEvent={(event) => setSelectedEvent(event)}
-              eventPropGetter={(event) => ({
-                style: {
-                  backgroundColor: `${event.end < new Date() ? "#6b93cf" : "#3686ff"}`,
-                  borderRadius: "0.25rem",
-                  color: "white",
-                  fontSize: "0.9rem",
-                  padding: "2px 2px",
-                },
-              })}
-              className="bg-light rounded"
-              popup
-            />
-          </div>
-        </Card.Body>
-      </Card>
+            <Card className="shadow-lg border-0">
+              <Card.Body className="p-2 p-md-3">
+                <div style={{ height: "70vh", minHeight: "400px" }}>
+                  <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    defaultView="month"
+                    views={["month", "week", "day", "agenda"]}
+                    components={{
+                      event: ({ event }) => (
+                        <div>
+                          <strong>{event.title}</strong>
+                        </div>
+                      ),
+                    }}
+                    onSelectEvent={(event) => setSelectedEvent(event)}
+                    eventPropGetter={(event) => ({
+                      style: {
+                        backgroundColor: `${event.end < new Date() ? "#6b93cf" : "#3686ff"}`,
+                        borderRadius: "0.25rem",
+                        color: "white",
+                        fontSize: "0.9rem",
+                        padding: "2px 2px",
+                      },
+                    })}
+                    className="bg-light rounded"
+                    popup
+                  />
+                </div>
+              </Card.Body>
+            </Card>
+          </>
+      }
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton className="bg-dark text-white">

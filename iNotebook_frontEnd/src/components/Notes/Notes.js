@@ -100,7 +100,9 @@ const Notes = (props) => {
 
     return (
         <div style={{ position: 'relative'}}>
-            <Addnote showAlert={props.showAlert} />
+            { isPinVerified &&
+                <Addnote showAlert={props.showAlert} />
+            }
             <button type="button" className="btn" ref={ref} hidden={true} data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Launch demo modal
             </button>

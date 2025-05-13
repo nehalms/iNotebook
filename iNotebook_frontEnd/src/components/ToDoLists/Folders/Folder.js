@@ -143,7 +143,7 @@ export default function Folder(props) {
 
   return (
     <div className='my-5' style={{ position: 'relative'}}> 
-        {!showTasks && <AddFolder addFolder={addFolder}/>}
+        {!showTasks && isPinVerified && <AddFolder addFolder={addFolder}/>}
         <button type="button" className="btn" ref={editFoldNameRef} hidden={true} data-bs-toggle="modal" data-bs-target="#editfolderModal">
             Launch demo modal
         </button>

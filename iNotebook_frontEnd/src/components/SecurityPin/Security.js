@@ -42,7 +42,6 @@ function Security({ toVerify, showAlert }) {
 
   const handleKeyDown = (e, index) => {
     if (e.key === 'Backspace' && !pin[index] && index > 0) {
-      e.preventDefault();
       e.target.previousSibling?.focus();
     }
   };
@@ -269,7 +268,7 @@ function Security({ toVerify, showAlert }) {
         {pin.map((value, index) => (
           <input
             key={index}
-            type="text"
+            type="password"
             maxLength="1"
             value={value}
             ref={index === 0 ? focusRef : null}

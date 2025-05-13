@@ -20,6 +20,7 @@ const TaskState = (props)=> {
             return;
         }
         try {
+            setTasks([]);
             props.setLoader({ showLoader: true, msg: "Fetching tasks"});
             const response = await fetch(`${host}/tasks?src=${src}`, {
                 method: "GET", 
