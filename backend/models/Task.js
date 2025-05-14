@@ -6,20 +6,30 @@ const TasksSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
-    taskDesc: {
+    title: {
         type: String,
         required: true
     },
-    src: {
+    priority: {
         type: String,
+        required: true,
     },
-    completed: {
-        type: Boolean,
-        default: false
-    },
-    completedDate: {
-        type: Date,
-    },
+    subtasks: [
+        {
+            name: {
+                type: String,
+                required: true
+            },
+            description: {
+                type: String,
+                required: true
+            },
+            completed: {
+                type: Boolean,
+                default: false
+            }
+        }
+    ],
     createdDate : {
         type: Date,
         default: Date.now

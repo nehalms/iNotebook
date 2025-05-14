@@ -16,7 +16,7 @@ import Spinner from './components/LoadingScreens/Spinner';
 import ComponentLoader from './components/LoadingScreens/ComponentLoader';
 import Confirmation from './components/Utils/Confirmation';
 import TaskState from './context/tasks/TaskState';
-import Folder from './components/ToDoLists/Folders/Folder';
+import Tasks from './components/Tasks/Tasks';
 import Breadcrumbs from './components/Utils/Breadcrumb';
 import { useDispatch } from 'react-redux';
 import { logout } from './components/SessionState/sessionSlice';
@@ -201,7 +201,7 @@ function App() {
                   <Route exact path='/dashboard' element={<DashBoard showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/profile' element={<Profile showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/notes' element={<Notes showAlert={showAlert} setLoader={setLoader}/>}/>   
-                  <Route exact path='/tasks' element={<Folder showAlert={showAlert} setLoader={setLoader}/>}/>   
+                  <Route exact path='/tasks' element={<Tasks showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/images' element={<ImageEditor showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/games' element={<Menu showAlert={showAlert} setLoader={setLoader}/>}/>   
                   <Route exact path='/games/tictactoe' element={<Tic_tac_toe showAlert={showAlert} setLoader={setLoader}/>}/>   

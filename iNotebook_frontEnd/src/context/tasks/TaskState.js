@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import TaskContext from "./taskContext";
 import CryptoJS from 'crypto-js';
-import { encryptMessage } from "../../components/Utils/Encryption";
 import useSession from '../../components/SessionState/useSession';
 
 const TaskState = (props)=> {
@@ -10,19 +9,16 @@ const TaskState = (props)=> {
     const [sortType, setSortType] = useState('NONE');
     const [serachStr, setSearchStr] = useState('');
     const [tasks, setTasks] = useState(tasksInitial);
-    const foldersInitial = [];
-    const [initTasks, setInitTasks] = useState(foldersInitial);
-    const [folders, setFolders] = useState(foldersInitial);
+    const [initTasks, setInitTasks] = useState([]);
     const { secretKey, isPinSet, isPinVerified } = useSession();
 
-    const fetchTasks = async (src)=> {
+    const fetchTasks = async ()=> {
         if(!isPinSet || !isPinVerified) {
             return;
         }
         try {
-            setTasks([]);
             props.setLoader({ showLoader: true, msg: "Fetching tasks"});
-            const response = await fetch(`${host}/tasks?src=${src}`, {
+            const response = await fetch(`${host}/tasks`, {
                 method: "GET", 
                 headers: {
                     "Content-Type": "application/json",
@@ -39,7 +35,15 @@ const TaskState = (props)=> {
                 json.tasks.map((task) => {
                     task = {
                         ...task,
-                        taskDesc: CryptoJS.AES.decrypt(task.taskDesc, secretKey).toString(CryptoJS.enc.Utf8),
+                        title: CryptoJS.AES.decrypt(task.title, secretKey).toString(CryptoJS.enc.Utf8),
+                        priority: CryptoJS.AES.decrypt(task.priority, secretKey).toString(CryptoJS.enc.Utf8),
+                        subtasks: task.subtasks.map((subtask) => {
+                            return {
+                                ...subtask,
+                                name: CryptoJS.AES.decrypt(subtask.name, secretKey).toString(CryptoJS.enc.Utf8),
+                                description: CryptoJS.AES.decrypt(subtask.description, secretKey).toString(CryptoJS.enc.Utf8),
+                            }
+                        })
                     }
                     decryptedTasks.push(task);
                 });
@@ -60,19 +64,25 @@ const TaskState = (props)=> {
     }
 
 
-    const addTask = async (src, taskDesc)=> {
+    const addTask = async (task)=> {
         try {
             props.setLoader({ showLoader: true, msg: "Adding task"});
+            let encryptedTask = {
+                title: CryptoJS.AES.encrypt(task.title, secretKey).toString(),
+                priority: CryptoJS.AES.encrypt(task.priority, secretKey).toString(),
+                subtasks: task.subtasks.map(subtask => ({
+                    ...subtask,
+                    name: CryptoJS.AES.encrypt(subtask.name, secretKey).toString(),
+                    description: CryptoJS.AES.encrypt(subtask.description, secretKey).toString(),
+                }))
+            }
             const response = await fetch(`${host}/tasks/addtask`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: 'include',
-                body: JSON.stringify({
-                    src: encryptMessage(src),
-                    taskDesc: encryptMessage(CryptoJS.AES.encrypt(taskDesc, secretKey).toString())
-                })
+                body: JSON.stringify({data: encryptedTask}),
             });
             const json = await response.json();
             if(json.errors && json.errors.length) {
@@ -81,7 +91,7 @@ const TaskState = (props)=> {
             }
             if(json.status === 1) {
                 props.showAlert(json.msg, 'success', 10301);
-                fetchTasks(json.task.src);
+                fetchTasks();
             }
         } catch (err) {
             console.log("Error**", err);
@@ -91,6 +101,43 @@ const TaskState = (props)=> {
         }
     }
 
+    const updateTask = async (task)=> {
+        try {
+            props.setLoader({ showLoader: true, msg: "Updating Task"});
+            let encryptedTask = {
+                title: CryptoJS.AES.encrypt(task.title, secretKey).toString(),
+                priority: CryptoJS.AES.encrypt(task.priority, secretKey).toString(),
+                subtasks: task.subtasks.map(subtask => ({
+                    ...subtask,
+                    name: CryptoJS.AES.encrypt(subtask.name, secretKey).toString(),
+                    description: CryptoJS.AES.encrypt(subtask.description, secretKey).toString(),
+                }))
+            }
+            const response = await fetch(`${host}/tasks/updatetask/${task._id}`, {
+                method: "PUT", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: 'include',
+                body: JSON.stringify({data: encryptedTask}),
+
+            });
+            const json = await response.json();
+            if(json.error) {
+                props.showAlert(json.error, 'warning', 10126);
+                return;
+            }
+            if(json.status === 1) {
+                props.showAlert(json.msg, 'success', 10303);
+                fetchTasks();
+            }
+        } catch (err) {
+            console.log("Error**", err);
+            props.showAlert("Some error Occured", 'danger', 10127);
+        } finally {
+            props.setLoader({ showLoader: false });
+        }
+    }
 
     const deleteTask = async (id)=> {
         try { 
@@ -109,7 +156,7 @@ const TaskState = (props)=> {
             }
             if(json.status === 1) {
                 props.showAlert(json.msg, 'success', 10302);
-                fetchTasks(json.task.src);
+                fetchTasks();
             }
         } catch (err) {
             console.log("Error**", err);
@@ -118,186 +165,7 @@ const TaskState = (props)=> {
             props.setLoader({ showLoader: false });
         }
     }
-
-
-    const updateTask = async (id, src, taskDesc)=> {
-        try {
-            props.setLoader({ showLoader: true, msg: "Updating Task"});
-            const response = await fetch(`${host}/tasks/updatetask/${id}`, {
-                method: "PUT", 
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    src: encryptMessage(src),
-                    taskDesc: encryptMessage(CryptoJS.AES.encrypt(taskDesc, secretKey).toString())
-                }),
-            });
-            const json = await response.json();
-            if(json.error) {
-                props.showAlert(json.error, 'warning', 10126);
-                return;
-            }
-            if(json.status === 1) {
-                props.showAlert(json.msg, 'success', 10303);
-                fetchTasks(json.task.src);
-            }
-        } catch (err) {
-            console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger', 10127);
-        } finally {
-            props.setLoader({ showLoader: false });
-        }
-    }
-
-    const updateTaskStatus = async (id, completed)=> {
-        try {
-            props.setLoader({ showLoader: true, msg: "Updating task status"});
-            const response = await fetch(`${host}/tasks/updatestatus/${id}?comp=${completed}`, {
-                method: "PUT", 
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-            });
-            const json = await response.json();
-            if(json.error) {
-                props.showAlert(json.error, 'warning', 10306);
-                return;
-            }
-            if(json.status === 1) {
-                props.showAlert(json.msg, 'success', 10307);
-                fetchTasks(json.task.src);
-            }
-        } catch (err) {
-            console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger', 10308);
-        } finally {
-            props.setLoader({ showLoader: false });
-        }
-    }
-
-
-
-
-
-    const fetchFolders = async ()=> {
-        if(!isPinSet || !isPinVerified) {
-            return;
-        }
-        try {
-            props.setLoader({ showLoader: true, msg: "Fetching folders"});
-            const response = await fetch(`${host}/tasks/folders`, {
-                method: "GET", 
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-            });
-            const json = await response.json();
-            if(json.error) {
-                props.showAlert(json.error, 'danger', 10120);
-                return;
-            }
-            if(json.status === 1) {
-                setFolders(json.folders);
-            }
-        } catch (err) {
-            console.log("Error**", err);
-            props.showAlert("Error in fetching notes", 'danger', 10121);
-        } finally {
-            props.setLoader({ showLoader: false });
-        }
-    }
-
-
-    const addFolder = async (src)=> {
-        try {
-            props.setLoader({ showLoader: true, msg: "Adding folder"});
-            const response = await fetch(`${host}/tasks/addfolder?src=${src}`, {
-                method: "POST", 
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-            });
-            const json = await response.json();
-            if(json.error) {
-                props.showAlert(json.error, 'warning', 10122);
-                return;
-            }
-            if(json.status === 1) {
-                props.showAlert(json.msg, 'success', 10301);
-                fetchFolders();
-            }
-        } catch (err) {
-            console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger', 10123);
-        } finally {
-            props.setLoader({ showLoader: false });
-        }
-    }
-
-
-    const updateFolder = async (src, dest)=> {
-        try {
-            props.setLoader({ showLoader: true, msg: "Updating folder"});
-            const response = await fetch(`${host}/tasks/updatefolder?src=${src}&dest=${dest}`, {
-                method: "POST", 
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-            });
-            const json = await response.json();
-            if(json.error) {
-                props.showAlert(json.error, 'warning', 10122);
-                return;
-            }
-            if(json.status === 1) {
-                props.showAlert(json.msg, 'success', 10301);
-                fetchFolders();
-            }
-        } catch (err) {
-            console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger', 10123);
-        } finally {
-            props.setLoader({ showLoader: false });
-        }
-    }
-
     
-    const deleteFolder = async (src)=> {
-        try {
-            props.setLoader({ showLoader: true, msg: "Deleting folder"});
-            const response = await fetch(`${host}/tasks/rmvfolder?src=${src}`, {
-                method: "DELETE", 
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-            });
-            const json = await response.json();
-            if(json.error) {
-                props.showAlert(json.error, 'warning', 10122);
-                return;
-            }
-            if(json.status === 1) {
-                props.showAlert(json.msg, 'success', 10301);
-                fetchFolders();
-            }
-        } catch (err) {
-            console.log("Error**", err);
-            props.showAlert("Some error Occured", 'danger', 10123);
-        } finally {
-            props.setLoader({ showLoader: false });
-        }
-    }
-
-
-    
-
     // sorting and searching function
     const searchTask = (str, currTask=null) => {
         try {
@@ -311,7 +179,11 @@ const TaskState = (props)=> {
             }
             let tempTasks = currTask ? [...currTask] : [...initTasks];
             tempTasks = tempTasks.filter((task) => {
-                return task.taskDesc && task.taskDesc.toString().toLowerCase().includes(str.toLowerCase());
+                return task.title && task.title.toString().toLowerCase().includes(str.toLowerCase())
+                    || task.subtasks.some((subtask) => {
+                        return subtask.name && subtask.name.toString().toLowerCase().includes(str.toLowerCase())
+                        || subtask.description && subtask.description.toString().toLowerCase().includes(str.toLowerCase())
+                    });
             });            
             setTasks(tempTasks);
         } catch (err) {
@@ -324,6 +196,11 @@ const TaskState = (props)=> {
 
     const sort = (type, currTask = null) => {
         try {
+            const priorityOrder = {
+                'Low': 1,
+                'Medium': 2,
+                'High': 3
+            };
             let tempTasks = currTask ? [...currTask] : [...tasks];
             if(type === 'NONE') {
                 setSortType('NONE');
@@ -331,13 +208,13 @@ const TaskState = (props)=> {
             } else if (type === 'ASCE') {
                 setSortType('ASCE');
                 tempTasks.sort((t1, t2) => {
-                    return t1.taskDesc.toLowerCase() > t2.taskDesc.toLowerCase() ? 1 : -1;
+                    return t1.title.toLowerCase() > t2.title.toLowerCase() ? 1 : -1;
                 })
                 setTasks(tempTasks);
             } else if (type === 'DESC') {
                 setSortType('DESC');
                 tempTasks.sort((t1, t2) => {
-                    return t1.taskDesc.toLowerCase() < t2.taskDesc.toLowerCase() ? 1 : -1;
+                    return t1.title.toLowerCase() < t2.title.toLowerCase() ? 1 : -1;
                 })
                 setTasks(tempTasks);
             } else if (type === 'DATE_ASCE') {
@@ -352,22 +229,28 @@ const TaskState = (props)=> {
                     return t1.createdDate < t2.createdDate ? 1 : -1;
                 })
                 setTasks(tempTasks);
-            } else if (type === 'COMP_ASCE') {
-                setSortType('COMP_ASCE');
+            } else if (type === 'PRT_ASCE') {
+                setSortType('PRT_ASCE');
                 tempTasks.sort((t1, t2) => {
-                    return t1.completed < t2.completed ? 1 : -1;
+                    return priorityOrder[t1.priority] - priorityOrder[t2.priority];
                 })
                 setTasks(tempTasks);
-            } else if (type === 'COMP_DESC') {
-                setSortType('COMP_DESC');
+            } else if (type === 'PRT_DESC') {
+                setSortType('PRT_DESC');
                 tempTasks.sort((t1, t2) => {
-                    return t1.completed > t2.completed ? 1 : -1;
+                    return priorityOrder[t2.priority] - priorityOrder[t1.priority];
                 })
                 setTasks(tempTasks);
-            } else if (type === 'LEN') {
-                setSortType('LEN');
+            } else if (type === 'SL_ASCE') {
+                setSortType('SL_ASCE');
                 tempTasks.sort((t1, t2) => {
-                    return t1.taskDesc.length > t2.taskDesc.length ? 1 : -1;
+                    return t1.subtasks.length - t2.subtasks.length;
+                })
+                setTasks(tempTasks);
+            } else if (type === 'SL_DESC') {
+                setSortType('SL_DESC');
+                tempTasks.sort((t1, t2) => {
+                    return t2.subtasks.length - t1.subtasks.length;
                 })
                 setTasks(tempTasks);
             }
@@ -378,7 +261,7 @@ const TaskState = (props)=> {
     }
 
     return (
-        <TaskContext.Provider value={{tasks, fetchTasks, addTask, deleteTask, updateTask, updateTaskStatus, folders, fetchFolders, addFolder, updateFolder, deleteFolder, sort, searchTask}}>
+        <TaskContext.Provider value={{tasks, fetchTasks, addTask, updateTask, deleteTask, sort, searchTask}}>
             {props.children}
         </TaskContext.Provider>
     )
