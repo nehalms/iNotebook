@@ -13,7 +13,7 @@ function Verification(props) {
       element.nextSibling.focus();
     }
     if (index === 5 && element.value) {
-      handleVerify();
+      handleVerify(newOtp);
     }
   }
 
@@ -23,7 +23,7 @@ function Verification(props) {
     }
   }
 
-  const handleVerify = () => {
+  const handleVerify = (otp) => {
     let code = '';
     code = otp.reduce((code, num) => {
       return code + num;
