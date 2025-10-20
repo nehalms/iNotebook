@@ -262,8 +262,18 @@ router.post("/updatePassword", decrypt,
 
 router.post('/updateName', fetchuser, decrypt, async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.user.id, {name: req.body.name}, {new: true});
-    const userStats = await GameDetails.findOneAndUpdate({userId: req.user.id}, {userName: req.body.name}, {new: true});
+    const [user, userStats] = await Promise.all([
+      User.findByIdAndUpdate(
+        req.user.id,
+        { name: req.body.name },
+        { new: true }
+      ),
+      GameDetails.findOneAndUpdate(
+        { userId: req.user.id },
+        { userName: req.body.name },
+        { new: true }
+      )
+    ]);
     await UserHistory.create({
       userId: user.id,
       action: "Username updated",
@@ -303,8 +313,10 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
 
 router.get('/getstate', fetchuser, async (req, res) => {
   try {
-    let user = await User.findById(req.user.id).select("-password");
-    let isPinSet = await SecurityPin.findOne({user: user.id});
+    const [user, isPinSet] = await Promise.all([
+      User.findById(req.user.id).select("-password").lean(),
+      SecurityPin.exists({ user: req.user.id }).lean()
+    ]);
     res.send({
       status: 1,
       data: {

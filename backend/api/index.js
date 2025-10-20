@@ -1,3 +1,4 @@
+require('newrelic');
 require('dotenv').config();
 const connectToMongo = require('../db');
 const express = require('express');
