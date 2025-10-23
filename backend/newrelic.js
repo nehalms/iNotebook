@@ -6,6 +6,7 @@ exports.config = {
   host: 'collector.newrelic.com',
   logging: {
     level: 'info',
+    filepath: 'stdout',
   },
   allow_all_headers: false,
   attributes: {
