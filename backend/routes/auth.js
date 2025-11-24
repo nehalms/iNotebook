@@ -417,25 +417,27 @@ router.post('/checkuserandsendotp', decrypt, async (req, res) => {
                 expiryTime: (Date.now() + 10 * 60 * 1000),
             });
             
-            await Email(
+            res.json({ 
+                success: true, 
+                message: "OTP has been sent to your email",
+                user: type === 'forgot-password' ? { _id: user._id } : undefined
+            });
+            
+            Email(
                 email,
                 [],
                 subject,
                 '',
                 html,
                 false,
-            );
-            
-            res.json({ 
-                success: true, 
-                message: "OTP has been sent to your email",
-                user: type === 'forgot-password' ? { _id: user._id } : undefined
+            ).catch((emailError) => {
+                console.log("Error sending OTP email (non-blocking):", emailError);
             });
-        } catch (emailError) {
-            console.log("Error sending OTP:", emailError);
+        } catch (error) {
+            console.log("Error in OTP generation/storage:", error);
             return res.status(500).json({ 
                 success: false, 
-                error: "Failed to send OTP" 
+                error: "Failed to generate OTP" 
             });
         }
     } catch (err) {
