@@ -223,4 +223,98 @@ router.get('/delstats/:statsId', fetchuser, async (req, res) => {
     }
 });
 
+router.get('/dashboard', fetchuser, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        // Get notes count
+        const notesCount = await Notes.countDocuments({user: userId});
+        
+        // Get tasks count
+        const tasks = await Task.find({user: userId});
+        const totalTasks = tasks.length;
+        
+        // Calculate completion rate based on subtasks
+        let totalSubtasks = 0;
+        let completedSubtasks = 0;
+        tasks.forEach(task => {
+            if (task.subtasks && task.subtasks.length > 0) {
+                totalSubtasks += task.subtasks.length;
+                completedSubtasks += task.subtasks.filter(subtask => subtask.completed).length;
+            }
+        });
+        
+        const activeSubtasks = totalSubtasks - completedSubtasks;
+        
+        const completionRate = totalSubtasks > 0 
+            ? Math.round((completedSubtasks / totalSubtasks) * 100) 
+            : 0;
+        
+        const gameStats = await GameDetails.findOne({userId: userId});
+        let gamesPlayed = 0;
+        let tttStats = { played: 0, won: 0, lost: 0 };
+        let con4Stats = { played: 0, won: 0, lost: 0 };
+        if (gameStats) {
+            tttStats = {
+                played: gameStats.tttStats.get('played') || 0,
+                won: gameStats.tttStats.get('won') || 0,
+                lost: gameStats.tttStats.get('lost') || 0
+            };
+            con4Stats = {
+                played: gameStats.frnRowStats.get('played') || 0,
+                won: gameStats.frnRowStats.get('won') || 0,
+                lost: gameStats.frnRowStats.get('lost') || 0
+            };
+            gamesPlayed = (tttStats.played || 0) + (con4Stats.played || 0);
+        }
+        
+        const Events = require('../models/Events');
+        const eventsCount = await Events.countDocuments({user: userId});
+        
+        // Get recent activity (last 5 activities)
+        const recentActivity = await UserHistory.find({userId: userId})
+            .sort({date: -1})
+            .limit(5)
+            .select('action date')
+            .lean();
+        
+        // Format recent activity
+        const formattedActivity = recentActivity.map(activity => ({
+            id: activity._id.toString(),
+            type: activity.action,
+            title: activity.action,
+            timestamp: moment(activity.date).fromNow(),
+            date: activity.date
+        }));
+        
+        res.json({
+            status: 1,
+            data: {
+                notes: {
+                    total: notesCount
+                },
+                tasks: {
+                    total: totalTasks,
+                    totalSubtasks: totalSubtasks,
+                    completedSubtasks: completedSubtasks,
+                    activeSubtasks: activeSubtasks,
+                    completionRate: completionRate
+                },
+                games: {
+                    totalPlayed: gamesPlayed,
+                    ticTacToe: tttStats,
+                    connect4: con4Stats
+                },
+                calendar: {
+                    eventsCount: eventsCount
+                },
+                recentActivity: formattedActivity
+            }
+        });
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).send("Internal Server Error!!");
+    }
+});
+
 module.exports = router
