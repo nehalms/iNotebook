@@ -9,9 +9,8 @@ const connectToMongo = async () => {
       minPoolSize: 5,
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
-      connectTimeoutMS: 10000,
     });
-    console.log("Connected to MongoDB (optimized pooled connection)");
+    console.log("Connected to MongoDB (pooled connection)");
   } catch (err) {
     console.error("MongoDB connection error:", err.message);
   }
