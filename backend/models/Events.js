@@ -27,4 +27,7 @@ const EventsSchema = new Schema({
     },
 });
 
+EventsSchema.index({ user: 1 });
+EventsSchema.index({ user: 1, createdAt: -1 });
+
 module.exports = mongoose.model('events', EventsSchema);

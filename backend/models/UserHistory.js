@@ -15,5 +15,9 @@ const UserHistorySchema = new Schema({
         default: Date.now
     }
 });
+
+UserHistorySchema.index({ userId: 1 });
+UserHistorySchema.index({ userId: 1, date: -1 });
+
 const UserHistory = mongoose.model('userhistory', UserHistorySchema);
 module.exports = UserHistory;

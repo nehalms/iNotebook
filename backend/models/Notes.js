@@ -32,4 +32,7 @@ const NotesSchema = new Schema({
     }
 });
 
+NotesSchema.index({ user: 1 });
+NotesSchema.index({ user: 1, date: -1 });
+
 module.exports = mongoose.model('notes', NotesSchema);

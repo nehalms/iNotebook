@@ -20,4 +20,8 @@ const LoginHistorySchema = new Schema({
     }
 });
 
+LoginHistorySchema.index({ userId: 1 });
+LoginHistorySchema.index({ date: 1 });
+LoginHistorySchema.index({ date: 1, userId: 1 });
+
 module.exports = mongoose.model('loginhistory', LoginHistorySchema);

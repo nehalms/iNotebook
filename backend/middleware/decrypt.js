@@ -1,9 +1,24 @@
 const crypto = require('crypto');
 const Keys = require('../models/Keys');
 
+// Cache the private key to avoid repeated database queries
+let cachedPrivateKey = null;
+let keyCacheTime = null;
+const KEY_CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache
+
 const getKey = async () => {
     try {
-        let key = await Keys.findOne();
+        // Return cached key if still valid
+        if (cachedPrivateKey && keyCacheTime && (Date.now() - keyCacheTime) < KEY_CACHE_TTL) {
+            return { privateKey: cachedPrivateKey };
+        }
+        
+        // Fetch and cache the key
+        let key = await Keys.findOne().select('privateKey').lean();
+        if (key && key.privateKey) {
+            cachedPrivateKey = key.privateKey;
+            keyCacheTime = Date.now();
+        }
         return key;
     } catch (error) {
         console.error('Decryption failed:', error.message);

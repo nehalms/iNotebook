@@ -9,11 +9,12 @@ const scope = 'calendar';
 
 router.get('/', fetchuser, checkPermission(scope), async (req, res) => {
     try {
-        const securityPin = await SecurityPin.findOne({user: req.user.id});
+        // Use lean() for read-only query and select only needed fields
+        const securityPin = await SecurityPin.findOne({user: req.user.id}).select('isPinVerified').lean();
         if(!securityPin || !securityPin.isPinVerified) {
             return res.status(401).json({ error: "Security pin not verified" });
         }
-        let events = await Events.find({user: req.user.id});
+        const events = await Events.find({user: req.user.id}).lean();
         res.send({
             status: 1,
             data: events,
@@ -28,19 +29,22 @@ router.post('/add', fetchuser, checkPermission(scope), async (req, res) => {
     try {
         let body = req.body;
         if(!body) {
-            res.status(404).send({error: "Please send the request body"});
+            return res.status(404).send({error: "Please send the request body"});
         }
-        let event = await Events.create({
-            user: req.user.id,
-            title: body.title,
-            start: body.start,
-            end: body.end,
-            desc: body.desc,
-        });
-        await UserHistory.create({
-            userId: req.user.id,
-            action: "Event added",
-        });
+        // Parallelize event creation and history
+        const [event] = await Promise.all([
+            Events.create({
+                user: req.user.id,
+                title: body.title,
+                start: body.start,
+                end: body.end,
+                desc: body.desc,
+            }),
+            UserHistory.create({
+                userId: req.user.id,
+                action: "Event added",
+            })
+        ]);
         res.send({
             status: 1,
             msg: 'New Event added',

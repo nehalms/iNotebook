@@ -19,5 +19,8 @@ const PinSchema = new Schema({
         default: Date.now
     },
 });
+
+PinSchema.index({ user: 1 });
+
 const SecurityPin = mongoose.model('securitypin', PinSchema);
 module.exports = SecurityPin;

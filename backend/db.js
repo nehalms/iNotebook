@@ -5,12 +5,14 @@ const MONGO_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MON
 const connectToMongo = async () => {
   try {
     await mongoose.connect(MONGO_URI, {
-      maxPoolSize: 10,
-      minPoolSize: 3,
+      maxPoolSize: 20,
+      minPoolSize: 5,
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+      bufferCommands: false,
     });
-    console.log("Connected to MongoDB (pooled connection)");
+    console.log("Connected to MongoDB (optimized pooled connection)");
   } catch (err) {
     console.error("MongoDB connection error:", err.message);
   }

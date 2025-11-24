@@ -11,11 +11,12 @@ const scope = 'notes';
 //Route-1 : Get all the notes : POST "/api/notes/fetchallnotes" => Login required
 router.get('/fetchallnotes', fetchuser, checkPermission(scope), async (req, res)=> {
     try{
-        const securityPin = await SecurityPin.findOne({user: req.user.id});
+        // Use lean() for read-only query and select only needed fields
+        const securityPin = await SecurityPin.findOne({user: req.user.id}).select('isPinVerified').lean();
         if(!securityPin || !securityPin.isPinVerified) {
             return res.status(401).json({ error: "Security pin not verified" });
         }
-        const notes = await Notes.find({user: req.user.id});
+        const notes = await Notes.find({user: req.user.id}).lean();
         res.json(notes);
     }
     catch(err){
@@ -69,20 +70,23 @@ router.put('/updatenote/:id', fetchuser, checkPermission(scope),  async (req, re
         if(tag){newNote.tag = tag};
 
         //Find the note to be updated and update it
-        let note = await Notes.findById(req.params.id) //fetch note based on id sent in url
+        let note = await Notes.findById(req.params.id).select('user').lean(); //fetch note based on id sent in url
         if(!note){
-            res.status(404).send("Not Found");
+            return res.status(404).send("Not Found");
         }
 
         if(note.user.toString() !== req.user.id){  // see that user id in note fetched and user id in request body is same
             return res.status(401).send("Not allowed");
         }
-        note = await Notes.findByIdAndUpdate(req.params.id, {$set: newNote}, {new: true})
-        await UserHistory.create({
-            userId: req.user.id,
-            action: "Updated note",
-        });
-        res.json({note});
+        // Parallelize update and history creation
+        const [updatedNote] = await Promise.all([
+            Notes.findByIdAndUpdate(req.params.id, {$set: newNote}, {new: true}),
+            UserHistory.create({
+                userId: req.user.id,
+                action: "Updated note",
+            })
+        ]);
+        res.json({note: updatedNote});
     }
     catch(err){
         console.log(err.message);
@@ -96,21 +100,24 @@ router.put('/updatenote/:id', fetchuser, checkPermission(scope),  async (req, re
 router.put('/deletenote/:id', fetchuser, checkPermission(scope),  async (req, res)=> {
     try{
         //Find the note to be deleted
-        let note = await Notes.findById(req.params.id) //fetch note based on id sent in url
+        let note = await Notes.findById(req.params.id).select('user').lean(); //fetch note based on id sent in url
         if(!note){
-            res.status(404).send("Not Found");
+            return res.status(404).send("Not Found");
         }
 
         if(note.user.toString() !== req.user.id){  // see that user id in note fetched and user id in request body is same
             return res.status(401).send("Not allowed");
         }  
 
-        note = await Notes.findByIdAndDelete(req.params.id)
-        await UserHistory.create({
-            userId: req.user.id,
-            action: "Deleted note",
-        });
-        res.json({"Success" : "Note has been deleted", "note": note});
+        // Parallelize delete and history creation
+        const [deletedNote] = await Promise.all([
+            Notes.findByIdAndDelete(req.params.id),
+            UserHistory.create({
+                userId: req.user.id,
+                action: "Deleted note",
+            })
+        ]);
+        res.json({"Success" : "Note has been deleted", "note": deletedNote});
     }
     catch(err){
         console.log(err.message);

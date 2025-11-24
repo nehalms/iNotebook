@@ -23,4 +23,6 @@ const gameDetails = new Schema({
     }
 });
 
+gameDetails.index({ userId: 1 });
+
 module.exports = mongoose.model('gameDetails', gameDetails);

@@ -12,17 +12,17 @@ router.get("/authenticateUser/:token/:apikey", async (req, res) => {
     const token = req.params.token;
     const apiKey = req.params.apikey;
     if(!token || !apiKey){
-        res.send(false);
+        return res.send(false);
     }
-    const data = jwt.verify(apiKey, JWT_SCERET);
-    let adminUser = await User.findById(data.user.id);
-    if(!adminUser || !adminUser.isAdmin) {
-        res.status(404).send({ status: 'Error', message: 'Not Authorized'});
-        return;
-    }
-    try{
-        const data = jwt.verify(token, JWT_SCERET);
-        if(data && data.user) {
+    try {
+        const apiData = jwt.verify(apiKey, JWT_SCERET);
+        // Use lean() and select only needed field
+        const adminUser = await User.findById(apiData.user.id).select('isAdmin').lean();
+        if(!adminUser || !adminUser.isAdmin) {
+            return res.status(404).send({ status: 'Error', message: 'Not Authorized'});
+        }
+        const tokenData = jwt.verify(token, JWT_SCERET);
+        if(tokenData && tokenData.user) {
             res.send(true);
         } else {
             res.send(false);
@@ -36,10 +36,14 @@ router.get("/authenticateUser/:token/:apikey", async (req, res) => {
 
 router.post('/getStats', fetchuser, checkPermission(scope),  async (req, res) => {
     try { 
-        let userName = await User.findById(req.user.id);
-        let userStats = await GameDetails.findOne({userId: req.user.id});
+        // Parallelize user and stats fetch
+        const [userName, userStats] = await Promise.all([
+            User.findById(req.user.id).select('name').lean(),
+            GameDetails.findOne({userId: req.user.id}).lean()
+        ]);
+        
         if(!userStats) {
-            userStats = await GameDetails.create({
+            const newStats = await GameDetails.create({
                 userId: req.user.id,
                 userName: userName.name,
                 tttStats: {
@@ -53,6 +57,7 @@ router.post('/getStats', fetchuser, checkPermission(scope),  async (req, res) =>
                     lost: 0,
                 }
             });
+            return res.send({stats: newStats, authToken: req.cookies.authToken});
         }
         res.send({stats: userStats, authToken: req.cookies.authToken});
     } catch (err) {
@@ -67,15 +72,19 @@ router.get('/tttsave/:player1/:p1Stat/:player2/:p2Stat/:apikey', async (req, res
             res.status(400).send({status: 'Not found', message: 'No request body found'});
         }
         const data = jwt.verify(req.params.apikey, JWT_SCERET);
-        let adminUser = await User.findById(data.user.id);
+        // Use lean() and select only needed field
+        const adminUser = await User.findById(data.user.id).select('isAdmin').lean();
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;
         }
         let p1Id = req.params.player1;
         let p2Id = req.params.player2;
-        let userStats1 = await GameDetails.findOne({userId: p1Id});
-        let userStats2 = await GameDetails.findOne({userId: p2Id});
+        // Parallelize stats fetch
+        const [userStats1, userStats2] = await Promise.all([
+            GameDetails.findOne({userId: p1Id}),
+            GameDetails.findOne({userId: p2Id})
+        ]);
         if(!userStats1 || ! userStats2) {
             res.send({success: false, msg: "No User stats found"});
             return;
@@ -94,8 +103,11 @@ router.get('/tttsave/:player1/:p1Stat/:player2/:p2Stat/:apikey', async (req, res
         userStats2.tttStats.set('won', userStats2.tttStats.get('won') + won_2);
         userStats2.tttStats.set('lost', userStats2.tttStats.get('lost') + lost_2);
 
-        let player1 = await userStats1.save();
-        let player2 = await userStats2.save();
+        // Parallelize saves
+        const [player1, player2] = await Promise.all([
+            userStats1.save(),
+            userStats2.save()
+        ]);
         res.send({success: true, message: 'Stats updated for both users', data: {player1: player1, player2: player2}});
     } catch (err) {
         console.log("Error**", err);
@@ -109,15 +121,19 @@ router.get('/frnrsave/:player1/:p1Stat/:player2/:p2Stat/:apikey', async (req, re
             res.status(400).send({status: 'Not found', message: 'No request body found'});
         }
         const data = jwt.verify(req.params.apikey, JWT_SCERET);
-        let adminUser = await User.findById(data.user.id);
+        // Use lean() and select only needed field
+        const adminUser = await User.findById(data.user.id).select('isAdmin').lean();
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;
         }
         let p1Id = req.params.player1;
         let p2Id = req.params.player2;
-        let userStats1 = await GameDetails.findOne({userId: p1Id});
-        let userStats2 = await GameDetails.findOne({userId: p2Id});
+        // Parallelize stats fetch
+        const [userStats1, userStats2] = await Promise.all([
+            GameDetails.findOne({userId: p1Id}),
+            GameDetails.findOne({userId: p2Id})
+        ]);
         if(!userStats1 || ! userStats2) {
             res.send({success: false, msg: "No User stats found"});
             return;
@@ -136,8 +152,11 @@ router.get('/frnrsave/:player1/:p1Stat/:player2/:p2Stat/:apikey', async (req, re
         userStats2.frnRowStats.set('won', userStats2.frnRowStats.get('won') + won_2);
         userStats2.frnRowStats.set('lost', userStats2.frnRowStats.get('lost') + lost_2);
 
-        let player1 = await userStats1.save();
-        let player2 = await userStats2.save();
+        // Parallelize saves
+        const [player1, player2] = await Promise.all([
+            userStats1.save(),
+            userStats2.save()
+        ]);
         res.send({success: true, message: 'Stats updated for both users', data: {player1: player1, player2: player2}});
     } catch (err) {
         console.log("Error**", err);

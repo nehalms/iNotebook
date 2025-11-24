@@ -11,44 +11,68 @@ const UserHistory = require('../models/UserHistory');
 
 router.get('/users', fetchuser, async (req, res)=> {
     try{
-        let adminUser = await User.findById(req.user.id);
+        // Parallelize admin check and user fetch
+        const [adminUser, Users] = await Promise.all([
+            User.findById(req.user.id).select('isAdmin').lean(),
+            User.find({email: {$ne: 'inotebook002@gmail.com'}}).select('_id name email date lastLogIn isActive').lean()
+        ]);
+        
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;
         }
-        const Users = await User.find({email: {$ne: 'inotebook002@gmail.com'}});
-        const notes = await Notes.find();
-        const tasks = await Task.find();
-        const loginHistories = await LoginHistory.find();
-        const userHistories = await UserHistory.find();
-        Users.sort((user1, user2) => {return user1.name.toLowerCase() > user2.name.toLowerCase() ? 1 : -1})
-        let response = {};
-        let data = [];
-        await Promise.all(
-            Users.map(async (user, i) => {
-                let User = {
-                    id: i + 1,
-                    userId: user.id,
-                    name: user.name,
-                    email: user.email,
-                    date: user.date,
-                    lastLoggedOn: user.lastLogIn,
-                    isActive: user.isActive,
-                }
-                const countOfUserNotes = await Notes.find({user: user.id});
-                User.notesCount = countOfUserNotes.length;
-                const countOfUserTasks = await Task.find({user: user.id});
-                User.tasksCount = countOfUserTasks.length;
-                data.push(User);  
-            })
-        );
-        response.users = data;
-        response.usersCount = Users.length;
-        response.notesCount = notes.length;
-        response.tasksCount = tasks.length;
-        response.loginHistoryCount = loginHistories.length;
-        response.userHistoryCount = userHistories.length;
-        res.json(response);
+        
+        // Parallelize all count queries
+        const [notes, tasks, loginHistories, userHistories] = await Promise.all([
+            Notes.countDocuments().lean(),
+            Task.countDocuments().lean(),
+            LoginHistory.countDocuments().lean(),
+            UserHistory.countDocuments().lean()
+        ]);
+        
+        // Get user IDs for aggregation
+        const userIds = Users.map(u => u._id);
+        
+        // Use aggregation to get counts in a single query instead of N+1
+        const [notesCounts, tasksCounts] = await Promise.all([
+            Notes.aggregate([
+                { $match: { user: { $in: userIds } } },
+                { $group: { _id: '$user', count: { $sum: 1 } } }
+            ]),
+            Task.aggregate([
+                { $match: { user: { $in: userIds } } },
+                { $group: { _id: '$user', count: { $sum: 1 } } }
+            ])
+        ]);
+        
+        // Create maps for O(1) lookup
+        const notesMap = new Map(notesCounts.map(item => [item._id.toString(), item.count]));
+        const tasksMap = new Map(tasksCounts.map(item => [item._id.toString(), item.count]));
+        
+        // Sort users
+        Users.sort((user1, user2) => user1.name.toLowerCase() > user2.name.toLowerCase() ? 1 : -1);
+        
+        // Build response data
+        const data = Users.map((user, i) => ({
+            id: i + 1,
+            userId: user._id,
+            name: user.name,
+            email: user.email,
+            date: user.date,
+            lastLoggedOn: user.lastLogIn,
+            isActive: user.isActive,
+            notesCount: notesMap.get(user._id.toString()) || 0,
+            tasksCount: tasksMap.get(user._id.toString()) || 0
+        }));
+        
+        res.json({
+            users: data,
+            usersCount: Users.length,
+            notesCount: notes,
+            tasksCount: tasks,
+            loginHistoryCount: loginHistories,
+            userHistoryCount: userHistories
+        });
     }
     catch(err){
         console.log(err.message);
@@ -58,17 +82,18 @@ router.get('/users', fetchuser, async (req, res)=> {
 
 router.get('/deluser/:userId', fetchuser, async (req, res) => {
     try {
-        let adminUser = await User.findById(req.user.id);
+        // Use lean() and select only needed field
+        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;
         }
         if(!req.params.userId) {
-            res.send({success: false, msg: 'Please send the user Id'});
+            return res.send({success: false, msg: 'Please send the user Id'});
         }
-        let user = await User.findOneAndDelete({_id: req.params.userId});
+        const user = await User.findOneAndDelete({_id: req.params.userId});
         if(!user) {
-            res.send({success: false, msg: 'No user found with the given Id'});
+            return res.send({success: false, msg: 'No user found with the given Id'});
         }
         res.send(user);
     } catch (err) {
@@ -79,7 +104,8 @@ router.get('/deluser/:userId', fetchuser, async (req, res) => {
 
 router.get('/graphData', fetchuser, async (req, res) => {
     try {
-        let adminUser = await User.findById(req.user.id);
+        // Use lean() and select only needed field
+        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;
@@ -106,29 +132,51 @@ router.get('/graphData', fetchuser, async (req, res) => {
         reqEndDate.seconds(0);
         reqEndDate.milliseconds(0);
 
-        while(reqStartDate < reqEndDate) {
-            let startDate = reqStartDate;
-            let endDate =  moment(reqStartDate)
-                .add(1, 'days');
-            let xAxisDate = moment(new Date(reqStartDate))
-                .format('MMM-DD');
-            xAxisValues.push(xAxisDate);
+        // Build date ranges array
+        const dateRanges = [];
+        let currentDate = moment(reqStartDate);
+        while(currentDate < reqEndDate) {
+            const startDate = moment(currentDate);
+            const endDate = moment(currentDate).add(1, 'days');
+            dateRanges.push({
+                start: new Date(startDate),
+                end: new Date(endDate),
+                label: startDate.format('MMM-DD')
+            });
+            currentDate = moment(currentDate).add(1, 'days');
+        }
+
+        // Fetch all login histories in one query with date range
+        const allLogins = await LoginHistory.find({
+            date: {
+                $gte: new Date(reqStartDate),
+                $lt: new Date(reqEndDate)
+            }
+        }).select('userId date').lean();
+
+        // Process data for each date range
+        dateRanges.forEach((range) => {
+            xAxisValues.push(range.label);
             
-            var logins = await LoginHistory.find({date: {$gte: new Date(startDate), $lt: new Date(endDate)}});
+            // Filter logins for this date range
+            const dayLogins = allLogins.filter(login => {
+                const loginDate = new Date(login.date);
+                return loginDate >= range.start && loginDate < range.end;
+            });
+
             if(req.query.reqType === 'user' || req.query.reqType === 'both') {
-                loginData.push(logins && logins.length ? logins.length : 0);
+                loginData.push(dayLogins.length);
             }
             if(req.query.reqType === 'online' || req.query.reqType === 'both') {
-                let onlineUsers = [];
-                logins.map((user) => {
-                    !onlineUsers.includes(user.userId.toString()) && onlineUsers.push(user.userId.toString());
+                // Use Set for O(1) lookup instead of array includes
+                const onlineUsersSet = new Set();
+                dayLogins.forEach(login => {
+                    onlineUsersSet.add(login.userId.toString());
                 });
-                onlineUsersData.push(onlineUsers && onlineUsers.length ? onlineUsers.length : 0);
+                onlineUsersData.push(onlineUsersSet.size);
             }
+        });
 
-            reqStartDate = moment(new Date(reqStartDate))
-                .add(1, 'days');
-        }
         response.xAxisDates = xAxisValues;
         response.colors = colors;
         if(req.query.reqType === 'user' || req.query.reqType === 'both') {
@@ -147,12 +195,10 @@ router.get('/graphData', fetchuser, async (req, res) => {
 
 router.get('/userhistory', fetchuser, async (req, res) => {
     try{
-        let userHistory = await UserHistory.find({userId: req.user.id});
-        await Promise.all(
-            userHistory.sort((ob1, ob2) => {
-                return new Date(ob1.date) > new Date(ob2.date) ? -1 : 1;
-            })
-        )
+        // Use lean() and sort in query for better performance
+        const userHistory = await UserHistory.find({userId: req.user.id})
+            .sort({ date: -1 })
+            .lean();
         res.send(userHistory);
     } catch (err) {
         console.log(err.message);
@@ -178,26 +224,24 @@ router.delete('/userhistory', fetchuser, async (req, res) => {
 
 router.get('/gamestats', fetchuser, async (req, res) => {
     try {
-        let adminUser = await User.findById(req.user.id);
+        // Use lean() and select only needed fields
+        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;
         }
-        let stats = await GameDetails.find();
-        let data = [];
-        await Promise.all(
-            stats.map(async (stat, i) => {
-                let Stat = {
-                    id: i + 1,
-                    statsId: stat._id,
-                    userId: stat.userId,
-                    name: stat.userName,
-                    tttStats: stat.tttStats,
-                    con4Stats: stat.frnRowStats,
-                }
-                data.push(Stat);
-            })
-        );
+        const stats = await GameDetails.find()
+            .select('_id userId userName tttStats frnRowStats')
+            .lean();
+        
+        const data = stats.map((stat, i) => ({
+            id: i + 1,
+            statsId: stat._id,
+            userId: stat.userId,
+            name: stat.userName,
+            tttStats: stat.tttStats,
+            con4Stats: stat.frnRowStats,
+        }));
         res.send({status: 'success', stats: data});
     } catch(err){
         console.log(err.message);
@@ -226,15 +270,23 @@ router.get('/delstats/:statsId', fetchuser, async (req, res) => {
 router.get('/dashboard', fetchuser, async (req, res) => {
     try {
         const userId = req.user.id;
+        const Events = require('../models/Events');
         
-        // Get notes count
-        const notesCount = await Notes.countDocuments({user: userId});
+        // Parallelize all independent queries
+        const [notesCount, tasks, gameStats, eventsCount, recentActivity] = await Promise.all([
+            Notes.countDocuments({user: userId}),
+            Task.find({user: userId}).select('subtasks').lean(),
+            GameDetails.findOne({userId: userId}).select('tttStats frnRowStats').lean(),
+            Events.countDocuments({user: userId}),
+            UserHistory.find({userId: userId})
+                .sort({date: -1})
+                .limit(5)
+                .select('action date')
+                .lean()
+        ]);
         
-        // Get tasks count
-        const tasks = await Task.find({user: userId});
+        // Calculate task statistics
         const totalTasks = tasks.length;
-        
-        // Calculate completion rate based on subtasks
         let totalSubtasks = 0;
         let completedSubtasks = 0;
         tasks.forEach(task => {
@@ -245,38 +297,26 @@ router.get('/dashboard', fetchuser, async (req, res) => {
         });
         
         const activeSubtasks = totalSubtasks - completedSubtasks;
-        
         const completionRate = totalSubtasks > 0 
             ? Math.round((completedSubtasks / totalSubtasks) * 100) 
             : 0;
         
-        const gameStats = await GameDetails.findOne({userId: userId});
         let gamesPlayed = 0;
         let tttStats = { played: 0, won: 0, lost: 0 };
         let con4Stats = { played: 0, won: 0, lost: 0 };
         if (gameStats) {
             tttStats = {
-                played: gameStats.tttStats.get('played') || 0,
-                won: gameStats.tttStats.get('won') || 0,
-                lost: gameStats.tttStats.get('lost') || 0
+                played: gameStats.tttStats.played || 0,
+                won: gameStats.tttStats.won || 0,
+                lost: gameStats.tttStats.lost || 0
             };
             con4Stats = {
-                played: gameStats.frnRowStats.get('played') || 0,
-                won: gameStats.frnRowStats.get('won') || 0,
-                lost: gameStats.frnRowStats.get('lost') || 0
+                played: gameStats.frnRowStats.played || 0,
+                won: gameStats.frnRowStats.won || 0,
+                lost: gameStats.frnRowStats.lost || 0
             };
             gamesPlayed = (tttStats.played || 0) + (con4Stats.played || 0);
         }
-        
-        const Events = require('../models/Events');
-        const eventsCount = await Events.countDocuments({user: userId});
-        
-        // Get recent activity (last 5 activities)
-        const recentActivity = await UserHistory.find({userId: userId})
-            .sort({date: -1})
-            .limit(5)
-            .select('action date')
-            .lean();
         
         // Format recent activity
         const formattedActivity = recentActivity.map(activity => ({

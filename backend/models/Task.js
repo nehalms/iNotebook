@@ -36,4 +36,7 @@ const TasksSchema = new Schema({
     }
 });
 
+TasksSchema.index({ user: 1 });
+TasksSchema.index({ user: 1, createdDate: -1 });
+
 module.exports = mongoose.model('tasks', TasksSchema);

@@ -109,9 +109,10 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+      const { email, password } = req.body;
     try {
-      let user = await User.findOne({ email: email, isActive: true });
+      // Select only needed fields for login (including name and email for LoginHistory)
+      let user = await User.findOne({ email: email, isActive: true }).select('_id password permissions isAdmin name email');
       if (!user) {
         success = false;
         return res.status(400).json({success, error: "Sorry no user found with this email" });
@@ -132,7 +133,7 @@ router.post(
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
       success = true;
 
-      const isPinSet = await SecurityPin.findOne({user: user.id});
+      const isPinSet = await SecurityPin.findOne({user: user.id}).select('_id').lean();
 
       if(user.isAdmin == true) {
         if(req.query.verified == 'true') {
@@ -172,16 +173,19 @@ router.post(
       if(user.isAdmin && req.query.verified != 'true') {
         return;
       }
-      await LoginHistory.create({
-        userId: user.id,
-        name: user.name,
-        email: user.email,
-      });
-      await UserHistory.create({
-        userId: user.id,
-        action: "Logged In",
-      });
-      await User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
+      // Parallelize history and user update operations
+      await Promise.all([
+        LoginHistory.create({
+          userId: user.id,
+          name: user.name,
+          email: user.email,
+        }),
+        UserHistory.create({
+          userId: user.id,
+          action: "Logged In",
+        }),
+        User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
+      ]);
     } 
     catch (err) {
       console.log("Error in logging in", err.message);
@@ -272,12 +276,12 @@ router.post('/updateName', fetchuser, decrypt, async (req, res) => {
         { userId: req.user.id },
         { userName: req.body.name },
         { new: true }
-      )
+      ),
+      UserHistory.create({
+        userId: req.user.id,
+        action: "Username updated",
+      })
     ]);
-    await UserHistory.create({
-      userId: user.id,
-      action: "Username updated",
-    });
     res.send({success: true, user: user, stats: userStats});
   } catch (err) {
     console.log(err.message);
@@ -287,22 +291,18 @@ router.post('/updateName', fetchuser, decrypt, async (req, res) => {
 
 router.post("/changestatus", fetchuser,  async (req, res) => {
   try {
-    const userEmail = await User.findById(req.user.id);
+    // Get email first, then parallelize update and history
+    const userEmail = await User.findById(req.user.id).select('email').lean();
     let email = `${userEmail.email}__${req.user.id}`;
-    const user = await User.findByIdAndUpdate(req.user.id, {isActive: false, email : email}, {new: true});
-    await UserHistory.create({
-      userId: user.id,
-      action: "Account deleted",
-    });
-    res.clearCookie("authToken", {
-      path: "/",     
-      httpOnly: true, 
-      secure: true, 
-      sameSite: "none",
-    });
+    await Promise.all([
+      User.findByIdAndUpdate(req.user.id, {isActive: false, email : email}, {new: true}),
+      UserHistory.create({
+        userId: req.user.id,
+        action: "Account deleted",
+      })
+    ]);
     res.send({
-      ...user,
-      password: undefined,
+      message: "Account deleted successfully",
     });
   } 
   catch (err) {
@@ -365,8 +365,8 @@ router.post('/checkuserandsendotp', decrypt, async (req, res) => {
             });
         }
 
-        // Check if user with this email exists
-        let user = await User.findOne({ email: email, isActive: true });
+        // Check if user with this email exists - use lean() for read-only check
+        let user = await User.findOne({ email: email, isActive: true }).select('_id').lean();
         
         // Different logic based on type
         if (type === 'signup') {
@@ -451,7 +451,11 @@ router.post('/checkuserandsendotp', decrypt, async (req, res) => {
 
 router.get('/getpubKey', async (req, res) => {
   try {
-    let key = await Keys.findOne();
+    // Use lean() and select only needed field
+    let key = await Keys.findOne().select('publicKey').lean();
+    if (!key) {
+      return res.status(404).send({success: false, error: "Public key not found"});
+    }
     res.send({success: true, key: key.publicKey});
   }  catch (err) {
     console.log(err.message);

@@ -29,9 +29,13 @@ let corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
-app.use(compression());
+app.use(compression({ 
+    level: 6,
+    threshold: 1024
+}));
 
 // const logStream = fs.createWriteStream(path.join(__dirname, 'requests.log'), { flags: 'a' });
 // app.use(morgan('common', { stream: logStream }));
