@@ -10,7 +10,6 @@ const connectToMongo = async () => {
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       connectTimeoutMS: 10000,
-      bufferCommands: false,
     });
     console.log("Connected to MongoDB (optimized pooled connection)");
   } catch (err) {
