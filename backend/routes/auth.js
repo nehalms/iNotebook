@@ -353,6 +353,100 @@ router.post('/logout', fetchuser, async (req, res) => {
   }
 });
 
+router.post('/checkuserandsendotp', decrypt, async (req, res) => {
+    try {
+        const { email } = req.body;
+        const type = req.query.type || req.body.type || 'signup';
+        
+        if (!email) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Email is required" 
+            });
+        }
+
+        // Check if user with this email exists
+        let user = await User.findOne({ email: email, isActive: true });
+        
+        // Different logic based on type
+        if (type === 'signup') {
+            // For signup: user should NOT exist
+            if (user) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: "A user with this email already exists" 
+                });
+            }
+        } else if (type === 'forgot-password') {
+            // For forgot password: user MUST exist
+            if (!user) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: "No user found with this email" 
+                });
+            }
+        } else {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Invalid type. Must be 'signup' or 'forgot-password'" 
+            });
+        }
+
+        // User check passed, send OTP
+        try {
+            const { Email } = require("../Services/Email");
+            const { getForgotPasshtml, getSignUphtml } = require("../Services/getEmailHtml");
+            const { updateOTP } = require("../store/dataStore");
+            
+            var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+            let html, subject;
+            
+            if (type === 'forgot-password') {
+                html = getForgotPasshtml(val);
+                subject = 'Reset Password';
+            } else {
+                html = getSignUphtml(val);
+                subject = 'Create Account';
+            }
+            
+            const salt = await bcrpyt.genSalt(10);
+            const hashedVal = await bcrpyt.hash(val.toString(), salt);
+            
+            await updateOTP(email, {
+                code: hashedVal,
+                expiryTime: (Date.now() + 10 * 60 * 1000),
+            });
+            
+            await Email(
+                email,
+                [],
+                subject,
+                '',
+                html,
+                false,
+            );
+            
+            res.json({ 
+                success: true, 
+                message: "OTP has been sent to your email",
+                user: type === 'forgot-password' ? { _id: user._id } : undefined
+            });
+        } catch (emailError) {
+            console.log("Error sending OTP:", emailError);
+            return res.status(500).json({ 
+                success: false, 
+                error: "Failed to send OTP" 
+            });
+        }
+    } catch (err) {
+        console.log("Error in checkuserandsendotp:", err.message);
+        return res.status(500).json({ 
+            success: false, 
+            error: "Internal Server Error" 
+        });
+    }
+});
+
 router.get('/getpubKey', async (req, res) => {
   try {
     let key = await Keys.findOne();
