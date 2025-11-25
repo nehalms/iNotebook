@@ -514,14 +514,15 @@ router.post('/sendadminotp', decrypt, async (req, res) => {
             const salt = await bcrpyt.genSalt(10);
             const hashedVal = await bcrpyt.hash(val.toString(), salt);
             
-            await updateOTP(process.env.ADMIN_EMAIL, {
+            // Store OTP with user's email instead of ADMIN_EMAIL
+            await updateOTP(email, {
                 code: hashedVal,
                 expiryTime: (Date.now() + 10 * 60 * 1000),
             });
             
-            // Send email and wait for it to complete (blocking)
+            // Send email to user's email instead of ADMIN_EMAIL
             await Email(
-                process.env.ADMIN_EMAIL,
+                email,
                 [],
                 'Admin Login',
                 '',

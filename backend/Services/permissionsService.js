@@ -12,7 +12,19 @@ const PERMISSIONS = {
 
 const getUsers = async (req) => {
     return await new Promise( async (resolve, reject) => {
-        let users = await User.find();
+        // Get current admin user to check if they are root admin
+        const adminUser = await User.findById(req.user.id).select('email').lean();
+        const rootAdminEmail = process.env.ADMIN_EMAIL || 'inotebook002@gmail.com';
+        
+        // If current admin is not root admin, filter out root admin from results
+        let users;
+        if(adminUser && adminUser.email !== rootAdminEmail) {
+            users = await User.find({ email: { $ne: rootAdminEmail } });
+        } else {
+            // Root admin can see all users
+            users = await User.find();
+        }
+        
         let parsedUsers = []
         await Promise.all(
             users.map(async (user, i) => {

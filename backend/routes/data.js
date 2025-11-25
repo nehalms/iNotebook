@@ -230,14 +230,35 @@ router.delete('/userhistory', fetchuser, async (req, res) => {
 router.get('/gamestats', fetchuser, async (req, res) => {
     try {
         // Use lean() and select only needed fields
-        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
+        const adminUser = await User.findById(req.user.id).select('isAdmin email').lean();
         if(!adminUser || !adminUser.isAdmin) {
             res.status(404).send({ status: 'Error', message: 'Not Authorized'});
             return;
         }
-        const stats = await GameDetails.find()
-            .select('_id userId userName tttStats frnRowStats')
-            .lean();
+        
+        // Get root admin email to filter out
+        const rootAdminEmail = process.env.ADMIN_EMAIL || 'inotebook002@gmail.com';
+        
+        // If current admin is not root admin, filter out root admin from results
+        let stats;
+        if(adminUser.email !== rootAdminEmail) {
+            // Get root admin user ID to exclude
+            const rootAdminUser = await User.findOne({ email: rootAdminEmail }).select('_id').lean();
+            if(rootAdminUser) {
+                stats = await GameDetails.find({ userId: { $ne: rootAdminUser._id } })
+                    .select('_id userId userName tttStats frnRowStats')
+                    .lean();
+            } else {
+                stats = await GameDetails.find()
+                    .select('_id userId userName tttStats frnRowStats')
+                    .lean();
+            }
+        } else {
+            // Root admin can see all stats
+            stats = await GameDetails.find()
+                .select('_id userId userName tttStats frnRowStats')
+                .lean();
+        }
         
         const data = stats.map((stat, i) => ({
             id: i + 1,
