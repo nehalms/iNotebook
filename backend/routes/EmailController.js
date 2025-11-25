@@ -29,20 +29,22 @@ router.post('/send', async (req, res) => {
             code: hashedVal,
             expiryTime: (Date.now() + 10 * 60 * 1000),
         });
-        Email(
-            req.body.email,
-            req.body.cc,
-            req.body.subject,
-            req.body.text,
-            html,
-            req.query.toAdmin,
-        )
-        .then((data) => {
+        
+        // Send email and wait for it to complete (blocking)
+        try {
+            const data = await Email(
+                req.body.email,
+                req.body.cc,
+                req.body.subject,
+                req.body.text,
+                html,
+                req.query.toAdmin,
+            );
             res.send({success: true, data: data});
-        })
-        .catch((err) => {
-            res.status(500).send(err);
-        })
+        } catch (err) {
+            console.log("Error sending email:", err);
+            res.status(500).send({success: false, error: 'Failed to send email'});
+        }
     } catch (err) {
         console.log("Error**", err);
         res.status(500).send(err);

@@ -6,7 +6,7 @@ const SecurityPin = require('../models/SecurityPin');
 const { updateOTP, getOTP } = require('../store/dataStore');
 const { Email } = require('../Services/Email');
 const UserModel = require('../models/User');
-const { getSecurityPinEnablehtml, getSecurityPinDisablehtml } = require('../Services/getEmailHtml');
+const { getSecurityPinEnablehtml, getSecurityPinDisablehtml, getForgotPasshtml } = require('../Services/getEmailHtml');
 const router = express.Router();
 
 // Set security pin (after OTP verification)
@@ -92,18 +92,22 @@ router.post('/enable/otp', fetchuser, async (req, res) => {
             code: hashedVal,
             expiryTime: (Date.now() + 10 * 60 * 1000),
         });
-        Email(
-            user.email,
-            [],
-            'Enable Security Pin',
-            '',
-            html,
-            false,
-        ).catch((emailError) => {
-            console.log("Error sending OTP email (non-blocking):", emailError);
-        });
         
-        res.json({ status: 1, msg: 'OTP has been sent to your email' });
+        // Send email and wait for it to complete (blocking)
+        try {
+            await Email(
+                user.email,
+                [],
+                'Enable Security Pin',
+                '',
+                html,
+                false,
+            );
+            res.json({ status: 1, msg: 'OTP has been sent to your email' });
+        } catch (emailError) {
+            console.log("Error sending OTP email:", emailError);
+            return res.status(500).json({ status: 0, error: 'Failed to send OTP email' });
+        }
     } catch (error) {
         console.error('Error sending enable OTP:', error.message);
         return res.status(500).json({ status: 0, error: 'Internal server error' });
@@ -134,20 +138,68 @@ router.post('/disable/otp', fetchuser, async (req, res) => {
             expiryTime: (Date.now() + 10 * 60 * 1000),
         });
         
-        Email(
-            user.email,
-            [],
-            'Disable Security Pin',
-            '',
-            html,
-            false,
-        ).catch((emailError) => {
-            console.log("Error sending OTP email (non-blocking):", emailError);
-        });
-        
-        res.json({ status: 1, msg: 'OTP has been sent to your email' });
+        // Send email and wait for it to complete (blocking)
+        try {
+            await Email(
+                user.email,
+                [],
+                'Disable Security Pin',
+                '',
+                html,
+                false,
+            );
+            res.json({ status: 1, msg: 'OTP has been sent to your email' });
+        } catch (emailError) {
+            console.log("Error sending OTP email:", emailError);
+            return res.status(500).json({ status: 0, error: 'Failed to send OTP email' });
+        }
     } catch (error) {
         console.error('Error sending disable OTP:', error.message);
+        return res.status(500).json({ status: 0, error: 'Internal server error' });
+    }
+});
+
+// Send OTP for forgot security pin
+router.post('/forgot/otp', fetchuser, async (req, res) => {
+    try {
+        // Check if pin exists
+        const existingPin = await SecurityPin.findOne({ user: req.user.id }).select('_id').lean();
+        if (!existingPin) {
+            return res.status(400).json({ status: 0, error: 'Security pin is not enabled' });
+        }
+
+        const val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+        const html = getForgotPasshtml(val); // Use forgot password html for reset security pin
+        
+        const salt = await bcrpyt.genSalt(10);
+        const hashedVal = await bcrpyt.hash(val.toString(), salt);
+        const user = await UserModel.findOne({ _id: req.user.id }).select('email').lean();
+        if (!user) {
+            return res.status(400).json({ status: 0, error: 'User not found' });
+        }
+        
+        await updateOTP(user.email, {
+            code: hashedVal,
+            expiryTime: (Date.now() + 10 * 60 * 1000),
+        });
+        
+        // Send email and wait for it to complete (blocking)
+        try {
+            await Email(
+                user.email,
+                [],
+                'Reset security pin',
+                '',
+                html,
+                false,
+            );
+            res.json({ status: 1, msg: 'OTP has been sent to your email' });
+        } catch (emailError) {
+            console.log("Error sending OTP email:", emailError);
+            return res.status(500).json({ status: 0, error: 'Failed to send OTP email' });
+        }
+    } catch (error) {
+        console.error('Error sending forgot pin OTP:', error.message);
         return res.status(500).json({ status: 0, error: 'Internal server error' });
     }
 });

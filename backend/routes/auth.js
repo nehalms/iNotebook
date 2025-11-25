@@ -436,22 +436,28 @@ router.post('/checkuserandsendotp', decrypt, async (req, res) => {
                 expiryTime: (Date.now() + 10 * 60 * 1000),
             });
             
-            res.json({ 
-                success: true, 
-                message: "OTP has been sent to your email",
-                user: type === 'forgot-password' ? { _id: user._id } : undefined
-            });
-            
-            Email(
-                email,
-                [],
-                subject,
-                '',
-                html,
-                false,
-            ).catch((emailError) => {
-                console.log("Error sending OTP email (non-blocking):", emailError);
-            });
+            // Send email and wait for it to complete (blocking)
+            try {
+                await Email(
+                    email,
+                    [],
+                    subject,
+                    '',
+                    html,
+                    false,
+                );
+                res.json({ 
+                    success: true, 
+                    message: "OTP has been sent to your email",
+                    user: type === 'forgot-password' ? { _id: user._id } : undefined
+                });
+            } catch (emailError) {
+                console.log("Error sending OTP email:", emailError);
+                return res.status(500).json({ 
+                    success: false, 
+                    error: "Failed to send OTP email" 
+                });
+            }
         } catch (error) {
             console.log("Error in OTP generation/storage:", error);
             return res.status(500).json({ 
@@ -461,6 +467,81 @@ router.post('/checkuserandsendotp', decrypt, async (req, res) => {
         }
     } catch (err) {
         console.log("Error in checkuserandsendotp:", err.message);
+        return res.status(500).json({ 
+            success: false, 
+            error: "Internal Server Error" 
+        });
+    }
+});
+
+// Send admin OTP for login
+router.post('/sendadminotp', decrypt, async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Email is required" 
+            });
+        }
+
+        // Check if user exists and is admin
+        let user = await User.findOne({ email: email, isActive: true }).select('_id isAdmin').lean();
+        if (!user) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "No user found with this email" 
+            });
+        }
+        
+        if (!user.isAdmin) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "User is not an admin" 
+            });
+        }
+
+        // Generate OTP and send email
+        try {
+            const { Email } = require("../Services/Email");
+            const { getAdminhtml } = require("../Services/getEmailHtml");
+            const { updateOTP } = require("../store/dataStore");
+            
+            var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+            const html = getAdminhtml(val);
+            
+            const salt = await bcrpyt.genSalt(10);
+            const hashedVal = await bcrpyt.hash(val.toString(), salt);
+            
+            await updateOTP(process.env.ADMIN_EMAIL, {
+                code: hashedVal,
+                expiryTime: (Date.now() + 10 * 60 * 1000),
+            });
+            
+            // Send email and wait for it to complete (blocking)
+            await Email(
+                process.env.ADMIN_EMAIL,
+                [],
+                'Admin Login',
+                '',
+                html,
+                true, // toAdmin = true
+            );
+            
+            res.json({ 
+                success: true, 
+                message: "Admin OTP has been sent to your email"
+            });
+        } catch (error) {
+            console.log("Error in admin OTP generation/sending:", error);
+            return res.status(500).json({ 
+                success: false, 
+                error: "Failed to send admin OTP" 
+            });
+        }
+    } catch (err) {
+        console.log("Error in sendadminotp:", err.message);
         return res.status(500).json({ 
             success: false, 
             error: "Internal Server Error" 
