@@ -441,6 +441,210 @@ const getSecurityPinDisablehtml = (otp) => {
   return html;
 }
 
+const getSecurityPinNotificationhtml = (userName) => {
+  let html = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Set Security Pin - iNotebook</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">iNotebook</h1>
+                  </td>
+                </tr>
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Set Your Security Pin</h2>
+                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Hello ${userName},
+                    </p>
+                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      For enhanced security of your account, we recommend setting up a 6-digit security pin. This pin will be required when accessing sensitive data.
+                    </p>
+                    <!-- Steps -->
+                    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                      <h3 style="margin: 0 0 15px; color: #333333; font-size: 18px; font-weight: 600;">How to Set Your Security Pin:</h3>
+                      <ol style="margin: 0; padding-left: 20px; color: #666666; font-size: 16px; line-height: 1.8;">
+                        <li>Log in to your iNotebook account</li>
+                        <li>Go to your Profile page</li>
+                        <li>Find the "Security Pin" section</li>
+                        <li>Click on the toggle to enable security pin</li>
+                        <li>Follow the on-screen instructions to set your 6-digit pin</li>
+                      </ol>
+                    </div>
+                    <!-- Important Notice -->
+                    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
+                      <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
+                        <strong>🔒 Security Tip:</strong> Choose a pin that is easy for you to remember but hard for others to guess. Never share your security pin with anyone.
+                      </p>
+                    </div>
+                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      If you have any questions or need assistance, please don't hesitate to contact our support team.
+                    </p>
+                  </td>
+                </tr>
+                <!-- Footer -->
+                <tr>
+                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
+                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
+                      Best Regards,<br>
+                      <strong>The iNotebook Team</strong>
+                    </p>
+                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6; text-align: center;">
+                      This is an automated email. Please do not reply to this message.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>`
+  return html;
+}
+
+const getPermissionRequesthtml = (userName, userEmail, permission) => {
+  const permissionNames = {
+    notes: 'Notes',
+    tasks: 'Tasks',
+    images: 'Images',
+    games: 'Games',
+    messages: 'Messages',
+    news: 'News',
+    calendar: 'Calendar'
+  };
+  
+  let html = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Permission Request - iNotebook</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+                <tr>
+                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">iNotebook</h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">New Permission Request</h2>
+                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      A user has requested access to a feature:
+                    </p>
+                    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                      <p style="margin: 0 0 10px; color: #333333; font-size: 16px;"><strong>User:</strong> ${userName}</p>
+                      <p style="margin: 0 0 10px; color: #333333; font-size: 16px;"><strong>Email:</strong> ${userEmail}</p>
+                      <p style="margin: 0; color: #333333; font-size: 16px;"><strong>Requested Feature:</strong> ${permissionNames[permission] || permission}</p>
+                    </div>
+                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      Please log in to the admin dashboard to review and respond to this request.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
+                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      Best Regards,<br>
+                      <strong>The iNotebook Team</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>`
+  return html;
+}
+
+const getPermissionResponsehtml = (userName, permission, approved, adminComment) => {
+  const permissionNames = {
+    notes: 'Notes',
+    tasks: 'Tasks',
+    images: 'Images',
+    games: 'Games',
+    messages: 'Messages',
+    news: 'News',
+    calendar: 'Calendar'
+  };
+  
+  let html = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Permission Request Response - iNotebook</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+                <tr>
+                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, ${approved ? '#10b981' : '#ef4444'} 0%, ${approved ? '#059669' : '#dc2626'} 100%); border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">iNotebook</h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Permission Request ${approved ? 'Approved' : 'Declined'}</h2>
+                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Hello ${userName},
+                    </p>
+                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Your request for access to <strong>${permissionNames[permission] || permission}</strong> has been <strong>${approved ? 'approved' : 'declined'}</strong>.
+                    </p>
+                    ${adminComment ? `
+                    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                      <p style="margin: 0 0 10px; color: #333333; font-size: 14px; font-weight: 600;">Admin Comment:</p>
+                      <p style="margin: 0; color: #666666; font-size: 16px; line-height: 1.6;">${adminComment}</p>
+                    </div>
+                    ` : ''}
+                    ${approved ? `
+                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      You can now access this feature. Please refresh your browser if needed.
+                    </p>
+                    ` : `
+                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      If you have any questions, please contact the administrator.
+                    </p>
+                    `}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
+                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      Best Regards,<br>
+                      <strong>The iNotebook Team</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>`
+  return html;
+}
+
 module.exports = {
   getForgotPasshtml,
   getSignUphtml,
@@ -448,4 +652,7 @@ module.exports = {
   getAdminhtml,
   getSecurityPinEnablehtml,
   getSecurityPinDisablehtml,
+  getSecurityPinNotificationhtml,
+  getPermissionRequesthtml,
+  getPermissionResponsehtml,
 }

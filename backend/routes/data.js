@@ -8,13 +8,14 @@ const GameDetails = require('../models/GameDetails')
 const Task = require('../models/Task')
 const moment = require('moment');
 const UserHistory = require('../models/UserHistory');
+const SecurityPin = require('../models/SecurityPin');
 
 router.get('/users', fetchuser, async (req, res)=> {
     try{
         // Parallelize admin check and user fetch
         const [adminUser, Users] = await Promise.all([
             User.findById(req.user.id).select('isAdmin').lean(),
-            User.find({email: {$ne: 'inotebook002@gmail.com'}}).select('_id name email date lastLogIn isActive').lean()
+            User.find({email: {$ne: 'inotebook002@gmail.com'}}).select('_id name email date lastLogIn isActive isAdmin').lean()
         ]);
         
         if(!adminUser || !adminUser.isAdmin) {
@@ -34,7 +35,7 @@ router.get('/users', fetchuser, async (req, res)=> {
         const userIds = Users.map(u => u._id);
         
         // Use aggregation to get counts in a single query instead of N+1
-        const [notesCounts, tasksCounts] = await Promise.all([
+        const [notesCounts, tasksCounts, securityPins] = await Promise.all([
             Notes.aggregate([
                 { $match: { user: { $in: userIds } } },
                 { $group: { _id: '$user', count: { $sum: 1 } } }
@@ -42,12 +43,14 @@ router.get('/users', fetchuser, async (req, res)=> {
             Task.aggregate([
                 { $match: { user: { $in: userIds } } },
                 { $group: { _id: '$user', count: { $sum: 1 } } }
-            ])
+            ]),
+            SecurityPin.find({ user: { $in: userIds } }).select('user').lean()
         ]);
         
         // Create maps for O(1) lookup
         const notesMap = new Map(notesCounts.map(item => [item._id.toString(), item.count]));
         const tasksMap = new Map(tasksCounts.map(item => [item._id.toString(), item.count]));
+        const pinMap = new Set(securityPins.map(pin => pin.user.toString()));
         
         // Sort users
         Users.sort((user1, user2) => user1.name.toLowerCase() > user2.name.toLowerCase() ? 1 : -1);
@@ -61,6 +64,8 @@ router.get('/users', fetchuser, async (req, res)=> {
             date: user.date,
             lastLoggedOn: user.lastLogIn,
             isActive: user.isActive,
+            isAdmin: user.isAdmin || false,
+            isPinSet: pinMap.has(user._id.toString()),
             notesCount: notesMap.get(user._id.toString()) || 0,
             tasksCount: tasksMap.get(user._id.toString()) || 0
         }));
@@ -354,6 +359,86 @@ router.get('/dashboard', fetchuser, async (req, res) => {
     } catch (err) {
         console.log(err.message);
         return res.status(500).send("Internal Server Error!!");
+    }
+});
+
+// Toggle admin status
+router.put('/toggleadmin/:userId', fetchuser, async (req, res) => {
+    try {
+        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(403).json({ success: false, error: 'Not Authorized' });
+            return;
+        }
+        
+        const targetUser = await User.findById(req.params.userId);
+        if(!targetUser) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        
+        // Prevent removing admin from self
+        if(targetUser._id.toString() === req.user.id) {
+            return res.status(400).json({ success: false, error: 'Cannot change your own admin status' });
+        }
+        
+        targetUser.isAdmin = !targetUser.isAdmin;
+        await targetUser.save();
+        
+        await UserHistory.create({
+            userId: targetUser._id,
+            action: targetUser.isAdmin ? "Made admin" : "Admin status revoked",
+        });
+        
+        res.json({ success: true, isAdmin: targetUser.isAdmin, msg: `User ${targetUser.isAdmin ? 'made' : 'removed from'} admin successfully` });
+    } catch (err) {
+        console.log("Error toggling admin:", err.message);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
+
+// Notify user to set security pin
+router.post('/notifypinset/:userId', fetchuser, async (req, res) => {
+    try {
+        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(403).json({ success: false, error: 'Not Authorized' });
+            return;
+        }
+        
+        const targetUser = await User.findById(req.params.userId).select('email name').lean();
+        if(!targetUser) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        
+        // Check if pin is already set
+        const existingPin = await SecurityPin.findOne({ user: req.params.userId }).lean();
+        if(existingPin) {
+            return res.status(400).json({ success: false, error: 'User already has security pin set' });
+        }
+        
+        const { Email } = require('../Services/Email');
+        const { getSecurityPinNotificationhtml } = require('../Services/getEmailHtml');
+        
+        const html = getSecurityPinNotificationhtml(targetUser.name);
+        
+        // Send email and wait for it to complete (blocking)
+        try {
+            await Email(
+                targetUser.email,
+                [],
+                'Set Your Security Pin',
+                '',
+                html,
+                false,
+            );
+            res.json({ success: true, msg: 'Notification email sent successfully' });
+        } catch (emailError) {
+            console.log("Error sending notification email:", emailError);
+            return res.status(500).json({ success: false, error: 'Failed to send notification email' });
+        }
+    } catch (err) {
+        console.log("Error notifying user:", err.message);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
     }
 });
 

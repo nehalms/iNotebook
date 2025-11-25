@@ -64,6 +64,7 @@ app.use('/api/news', require('../routes/news'));
 app.use('/api/calevents', require('../routes/calenderEvents'));
 app.use('/api/heartbeat', require('../routes/liveUsers'));
 app.use('/api/pin', require('../routes/securityPin'));
+app.use('/api/permissionrequests', require('../routes/permissionRequests'));
 
 app.listen(port, () => {
   console.log(`iNotebook backend listening at port: ${port}`);
