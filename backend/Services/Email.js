@@ -18,9 +18,9 @@ function getTransporter() {
         rejectUnauthorized: false,
         minVersion: 'TLSv1.2',
       },
-      connectionTimeout: 5000, // 5 seconds
-      greetingTimeout: 5000, // 5 seconds
-      socketTimeout: 5000, // 5 seconds
+      connectionTimeout: 15000, // 5 seconds
+      greetingTimeout: 15000, // 5 seconds
+      socketTimeout: 15000, // 5 seconds
       pool: true, // Use connection pooling
       maxConnections: 1,
       maxMessages: 3,
