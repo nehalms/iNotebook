@@ -6,33 +6,19 @@ let transporter = null;
 function getTransporter() {
   if (!transporter) {
     transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // true for 465, false for other ports
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.ADMIN_EMAIL,
         pass: process.env.ADMIN_PASSWORD,
       },
-      tls: {
-        rejectUnauthorized: false,
-        minVersion: 'TLSv1.2',
-      },
-      connectionTimeout: 15000, // 5 seconds
-      greetingTimeout: 15000, // 5 seconds
-      socketTimeout: 15000, // 5 seconds
-      pool: true, // Use connection pooling
-      maxConnections: 1,
-      maxMessages: 3,
+      connectionTimeout: 20000,
     });
 
-    // Verify connection on creation
-    transporter.verify(function (error, success) {
-      if (error) {
-        console.log('Email transporter verification error:', error);
-      } else {
-        console.log('Email transporter is ready to send messages');
-      }
+    transporter.verify((error, success) => {
+      if (error) console.log("Email transporter verification error:", error);
+      else console.log("Email transporter is ready to send messages");
     });
   }
   return transporter;
