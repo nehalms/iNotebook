@@ -1,23 +1,18 @@
 const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
 const checkPermission = require('../middleware/checkPermission')
+const checkPinVerification = require('../middleware/checkPinVerification')
 const router = express.Router()
 const { body, validationResult } = require("express-validator"); //to validate the inputs
 const UserHistory = require('../models/UserHistory');
 const Task = require('../models/Task');
 const Folder = require('../models/Folder');
-const SecurityPin = require('../models/SecurityPin')
 
 const decrypt = require('../middleware/decrypt');
 const scope = 'tasks';
 
-router.get('/', fetchuser, checkPermission(scope),  async (req, res)=> {
+router.get('/', fetchuser, checkPermission(scope), checkPinVerification, async (req, res)=> {
     try{
-        // Use lean() for read-only query and select only needed fields
-        const securityPin = await SecurityPin.findOne({user: req.user.id}).select('isPinVerified').lean();
-        if(!securityPin || !securityPin.isPinVerified) {
-            return res.status(401).json({ error: "Security pin not verified" });
-        }
         const tasks = await Task.find({ user: req.user.id }).lean();
         if(!tasks || tasks.length === 0) {
             return res.send({error: "No tasks found for the given user id"});
@@ -35,7 +30,7 @@ router.post('/addTask',
     [
         body("data", "Missing body data").isLength({ min: 1 }),
     ], 
-    fetchuser, checkPermission(scope),  async (req, res)=> {
+    fetchuser, checkPermission(scope), checkPinVerification, async (req, res)=> {
 
     try{
         const errors = validationResult(req);
@@ -68,7 +63,7 @@ router.put('/updatetask/:id',
     [
         body("data", "Missing body data").isLength({ min: 1 }),
     ], 
-    fetchuser, checkPermission(scope),  async (req, res)=> {
+    fetchuser, checkPermission(scope), checkPinVerification, async (req, res)=> {
         
     try{
         const errors = validationResult(req);
@@ -102,7 +97,7 @@ router.put('/updatetask/:id',
     }
 })
 
-router.delete('/deletetask/:id', fetchuser, checkPermission(scope),  async (req, res)=> {
+router.delete('/deletetask/:id', fetchuser, checkPermission(scope), checkPinVerification, async (req, res)=> {
     try{
         let task = await Task.findById(req.params.id).select('user subtasks').lean();
         if(!task){

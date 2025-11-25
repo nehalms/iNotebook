@@ -1,6 +1,6 @@
 const express = require('express')
 const { Email } = require('../Services/Email');
-const { getForgotPasshtml, getAdminhtml, getSignUphtml } = require('../Services/getEmailHtml');
+const { getForgotPasshtml, getAdminhtml, getSignUphtml, getSecurityPinEnablehtml, getSecurityPinDisablehtml } = require('../Services/getEmailHtml');
 const { updateOTP, getOTP } = require('../store/dataStore');
 const bcrpyt = require("bcryptjs");
 const decrypt = require('../middleware/decrypt');
@@ -10,12 +10,18 @@ router.post('/send', async (req, res) => {
     try {
         var val = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
         let html;
-        if(req.body.subject == 'Reset Password' || req.body.subject == 'Reset security pin') {
+        const subject = req.body.subject || '';
+        
+        if(subject == 'Reset Password' || subject == 'Reset security pin') {
             html = getForgotPasshtml(val);
-        } else if(req.body.subject == 'Admin Login') {
+        } else if(subject == 'Admin Login') {
             html = getAdminhtml(val);
-        } else if(req.body.subject == 'Create Account') {
+        } else if(subject == 'Create Account') {
             html = getSignUphtml(val);
+        } else if(subject == 'Enable Security Pin') {
+            html = getSecurityPinEnablehtml(val);
+        } else if(subject == 'Disable Security Pin') {
+            html = getSecurityPinDisablehtml(val);
         }
         const salt = await bcrpyt.genSalt(10); 
         const hashedVal = await bcrpyt.hash(val.toString(), salt);

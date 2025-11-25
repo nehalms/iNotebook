@@ -4,7 +4,9 @@ const { Schema } = mongoose;
 const PinSchema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
+        required: true,
+        unique: true
     },
     pin: {
         type: String,
@@ -15,6 +17,10 @@ const PinSchema = new Schema({
         default: false
     },
     createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
         type: Date,
         default: Date.now
     },

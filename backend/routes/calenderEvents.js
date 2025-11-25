@@ -1,19 +1,14 @@
 const express = require('express')
 const fetchuser = require('../middleware/fetchuser')
 const checkPermission = require('../middleware/checkPermission')
+const checkPinVerification = require('../middleware/checkPinVerification')
 const router = express.Router()
 const Events = require('../models/Events')
 const UserHistory = require('../models/UserHistory');
-const SecurityPin = require('../models/SecurityPin')
 const scope = 'calendar';
 
-router.get('/', fetchuser, checkPermission(scope), async (req, res) => {
+router.get('/', fetchuser, checkPermission(scope), checkPinVerification, async (req, res) => {
     try {
-        // Use lean() for read-only query and select only needed fields
-        const securityPin = await SecurityPin.findOne({user: req.user.id}).select('isPinVerified').lean();
-        if(!securityPin || !securityPin.isPinVerified) {
-            return res.status(401).json({ error: "Security pin not verified" });
-        }
         const events = await Events.find({user: req.user.id}).lean();
         res.send({
             status: 1,
@@ -25,7 +20,7 @@ router.get('/', fetchuser, checkPermission(scope), async (req, res) => {
     }
 });
 
-router.post('/add', fetchuser, checkPermission(scope), async (req, res) => {
+router.post('/add', fetchuser, checkPermission(scope), checkPinVerification, async (req, res) => {
     try {
         let body = req.body;
         if(!body) {
@@ -56,7 +51,7 @@ router.post('/add', fetchuser, checkPermission(scope), async (req, res) => {
     }
 });
 
-router.delete('/:id', fetchuser, checkPermission(scope), async (req, res) => {
+router.delete('/:id', fetchuser, checkPermission(scope), checkPinVerification, async (req, res) => {
     try {
         let id = req.params.id;
         if(!id) {

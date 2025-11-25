@@ -133,7 +133,17 @@ router.post(
       const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
       success = true;
 
-      const isPinSet = await SecurityPin.findOne({user: user.id}).select('_id').lean();
+      const securityPin = await SecurityPin.findOne({user: user.id}).select('_id isPinVerified').lean();
+      const isPinSet = securityPin ? true : false;
+      
+      // Reset pin verification status on login
+      if (isPinSet) {
+        await SecurityPin.findOneAndUpdate(
+          { user: user.id },
+          {  inisPinVerified: false },
+          { new: true }
+        );
+      }
 
       if(user.isAdmin == true) {
         if(req.query.verified == 'true') {
@@ -144,7 +154,7 @@ router.post(
             maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
           });
         }
-        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet: isPinSet ? true : false});
+        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet});
       } else {
         res.cookie('authToken', authToken, {
           httpOnly: true,   
@@ -152,7 +162,7 @@ router.post(
           sameSite: 'none',
           maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
         });
-        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet: isPinSet ? true : false});
+        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet});
       }
       axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
         .then(response => {
@@ -313,20 +323,22 @@ router.post("/changestatus", fetchuser,  async (req, res) => {
 
 router.get('/getstate', fetchuser, async (req, res) => {
   try {
-    const [user, isPinSet] = await Promise.all([
+    const [user, securityPin] = await Promise.all([
       User.findById(req.user.id).select("-password").lean(),
-      SecurityPin.exists({ user: req.user.id }).lean()
+      SecurityPin.findOne({ user: req.user.id }).select('isPinVerified').lean()
     ]);
+    const isPinSet = securityPin ? true : false;
+    const isPinVerified = securityPin?.isPinVerified || false;
     res.send({
       status: 1,
       data: {
         email: user.email,
         isAdminUser: user.isAdmin,
         permissions: user.permissions,
-        isPinSet: isPinSet ? true : false,
+        isPinSet: isPinSet,
+        isPinVerified: isPinVerified,
       }
     });
-    await SecurityPin.findOneAndUpdate({user: req.user.id}, {isPinVerified: false});
   }  catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");
@@ -339,7 +351,14 @@ router.post('/logout', fetchuser, async (req, res) => {
       userId: req.user.id,
       action: "Logged out",
     });
-    await SecurityPin.findOneAndUpdate({user: req.user.id}, {isPinVerified: false});
+    
+    // Reset pin verification status on logout
+    await SecurityPin.findOneAndUpdate(
+      { user: req.user.id },
+      { isPinVerified: false },
+      { new: true }
+    );
+    
     res.clearCookie("authToken", {
       path: "/",     
       httpOnly: true, 
