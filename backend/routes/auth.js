@@ -527,7 +527,7 @@ router.post('/sendadminotp', decrypt, async (req, res) => {
                 'Admin Login',
                 '',
                 html,
-                true, // toAdmin = true
+                false, // toAdmin = false, send to user's email
             );
             
             res.json({ 
