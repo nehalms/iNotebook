@@ -417,6 +417,109 @@ router.put('/toggleadmin/:userId', fetchuser, async (req, res) => {
     }
 });
 
+// Reactivate user account
+router.put('/reactivateuser/:userId', fetchuser, async (req, res) => {
+    try {
+        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(403).json({ success: false, error: 'Not Authorized' });
+            return;
+        }
+        
+        const targetUser = await User.findById(req.params.userId);
+        if(!targetUser) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        
+        // Check if user is already active
+        if(targetUser.isActive) {
+            return res.status(400).json({ success: false, error: 'User is already active' });
+        }
+        
+        // Check if email has appended userId (format: email__userId)
+        const emailParts = targetUser.email.split('__');
+        if(emailParts.length !== 2) {
+            return res.status(400).json({ success: false, error: 'Invalid email format. Cannot reactivate.' });
+        }
+        
+        // Remove the appended userId from email
+        const originalEmail = emailParts[0];
+        
+        // Check if original email already exists for another active user
+        const existingUser = await User.findOne({ 
+            email: originalEmail, 
+            isActive: true,
+            _id: { $ne: targetUser._id }
+        });
+        
+        if(existingUser) {
+            return res.status(400).json({ success: false, error: 'An active account with this email already exists' });
+        }
+        
+        // Reactivate user: restore original email and set isActive to true
+        targetUser.email = originalEmail;
+        targetUser.isActive = true;
+        await targetUser.save();
+        
+        await UserHistory.create({
+            userId: targetUser._id,
+            action: "Account reactivated by admin",
+        });
+        
+        res.json({ success: true, msg: 'User reactivated successfully' });
+    } catch (err) {
+        console.log("Error reactivating user:", err.message);
+        return res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Deactivate user account
+router.put('/deactivateuser/:userId', fetchuser, async (req, res) => {
+    try {
+        const adminUser = await User.findById(req.user.id).select('isAdmin').lean();
+        if(!adminUser || !adminUser.isAdmin) {
+            res.status(403).json({ success: false, error: 'Not Authorized' });
+            return;
+        }
+        
+        const targetUser = await User.findById(req.params.userId);
+        if(!targetUser) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        
+        // Check if user is already inactive
+        if(!targetUser.isActive) {
+            return res.status(400).json({ success: false, error: 'User is already inactive' });
+        }
+        
+        // Prevent deactivating self
+        if(targetUser._id.toString() === req.user.id) {
+            return res.status(400).json({ success: false, error: 'Cannot deactivate your own account' });
+        }
+        
+        // Check if email already has appended userId (should not happen for active users, but check anyway)
+        if(targetUser.email.includes('__')) {
+            return res.status(400).json({ success: false, error: 'Invalid email format. Cannot deactivate.' });
+        }
+        
+        // Append userId to email and set isActive to false
+        const deactivatedEmail = `${targetUser.email}__${targetUser._id}`;
+        targetUser.email = deactivatedEmail;
+        targetUser.isActive = false;
+        await targetUser.save();
+        
+        await UserHistory.create({
+            userId: targetUser._id,
+            action: "Account deactivated by admin",
+        });
+        
+        res.json({ success: true, msg: 'User deactivated successfully' });
+    } catch (err) {
+        console.log("Error deactivating user:", err.message);
+        return res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
 // Notify user to set security pin
 router.post('/notifypinset/:userId', fetchuser, async (req, res) => {
     try {
