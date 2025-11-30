@@ -466,6 +466,28 @@ router.put('/reactivateuser/:userId', fetchuser, async (req, res) => {
             action: "Account reactivated by admin",
         });
         
+        // Send email notification if requested
+        const notifyUser = req.body.notifyUser === true || req.body.notifyUser === 'true';
+        if (notifyUser) {
+            try {
+                const { Email } = require('../Services/Email');
+                const { getAccountActivatedhtml } = require('../Services/getEmailHtml');
+                const html = getAccountActivatedhtml(targetUser.name);
+                Email(
+                    originalEmail,
+                    [],
+                    'Account Reactivated - iNotebook',
+                    '',
+                    html,
+                    false,
+                ).catch((emailError) => {
+                    console.log("Error sending reactivation email (non-blocking):", emailError);
+                });
+            } catch (emailError) {
+                console.log("Error sending reactivation email:", emailError);
+            }
+        }
+        
         res.json({ success: true, msg: 'User reactivated successfully' });
     } catch (err) {
         console.log("Error reactivating user:", err.message);
@@ -502,6 +524,9 @@ router.put('/deactivateuser/:userId', fetchuser, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Invalid email format. Cannot deactivate.' });
         }
         
+        // Store original email before deactivation
+        const originalEmail = targetUser.email;
+        
         // Append userId to email and set isActive to false
         const deactivatedEmail = `${targetUser.email}__${targetUser._id}`;
         targetUser.email = deactivatedEmail;
@@ -512,6 +537,28 @@ router.put('/deactivateuser/:userId', fetchuser, async (req, res) => {
             userId: targetUser._id,
             action: "Account deactivated by admin",
         });
+        
+        // Send email notification if requested
+        const notifyUser = req.body.notifyUser === true || req.body.notifyUser === 'true';
+        if (notifyUser) {
+            try {
+                const { Email } = require('../Services/Email');
+                const { getAccountDeactivatedhtml } = require('../Services/getEmailHtml');
+                const html = getAccountDeactivatedhtml(targetUser.name);
+                Email(
+                    originalEmail,
+                    [],
+                    'Account Deactivated - iNotebook',
+                    '',
+                    html,
+                    false,
+                ).catch((emailError) => {
+                    console.log("Error sending deactivation email (non-blocking):", emailError);
+                });
+            } catch (emailError) {
+                console.log("Error sending deactivation email:", emailError);
+            }
+        }
         
         res.json({ success: true, msg: 'User deactivated successfully' });
     } catch (err) {

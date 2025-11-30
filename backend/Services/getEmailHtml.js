@@ -645,6 +645,114 @@ const getPermissionResponsehtml = (userName, permission, approved, adminComment)
   return html;
 }
 
+const getAccountActivatedhtml = (userName) => {
+  let html = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Account Reactivated - iNotebook</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+                <tr>
+                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">Account Reactivated</h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Welcome Back!</h2>
+                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Hello ${userName},
+                    </p>
+                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Great news! Your iNotebook account has been reactivated. You can now log in and access all your data and features.
+                    </p>
+                    <div style="background-color: #d1fae5; border-left: 4px solid #10b981; padding: 15px; margin: 30px 0; border-radius: 4px;">
+                      <p style="margin: 0; color: #065f46; font-size: 14px; line-height: 1.6;">
+                        <strong>✅ Account Status:</strong> Your account is now active and ready to use. All your previous data has been preserved.
+                      </p>
+                    </div>
+                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      If you have any questions or need assistance, please don't hesitate to contact our support team.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
+                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      Best Regards,<br>
+                      <strong>The iNotebook Team</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>`
+  return html;
+}
+
+const getAccountDeactivatedhtml = (userName) => {
+  let html = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Account Deactivated - iNotebook</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+                <tr>
+                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">Account Deactivated</h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Important Notice</h2>
+                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Hello ${userName},
+                    </p>
+                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Your iNotebook account has been deactivated by an administrator. You will no longer be able to log in to your account until it is reactivated.
+                    </p>
+                    <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 30px 0; border-radius: 4px;">
+                      <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
+                        <strong>⚠️ Account Status:</strong> Your account is currently inactive. All your data has been preserved and will be available when your account is reactivated.
+                      </p>
+                    </div>
+                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      If you believe this was done in error or have any questions, please contact our support team at <a href="mailto:inotebook002@gmail.com" style="color: #f59e0b; text-decoration: none;">inotebook002@gmail.com</a>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
+                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                      Best Regards,<br>
+                      <strong>The iNotebook Team</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>`
+  return html;
+}
+
 module.exports = {
   getForgotPasshtml,
   getSignUphtml,
@@ -655,4 +763,6 @@ module.exports = {
   getSecurityPinNotificationhtml,
   getPermissionRequesthtml,
   getPermissionResponsehtml,
+  getAccountActivatedhtml,
+  getAccountDeactivatedhtml,
 }
