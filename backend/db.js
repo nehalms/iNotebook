@@ -7,7 +7,7 @@ const connectToMongo = async () => {
     await mongoose.connect(MONGO_URI, {
       maxPoolSize: 20,
       minPoolSize: 5,
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 20000,
       socketTimeoutMS: 45000,
     });
     console.log("Connected to MongoDB (pooled connection)");
