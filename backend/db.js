@@ -18,7 +18,7 @@ const connectToMongo = async () => {
     const opts = {
       maxPoolSize: 1,
       minPoolSize: 1,
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 20000,
       socketTimeoutMS: 45000,
     };
 
