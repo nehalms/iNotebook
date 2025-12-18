@@ -22,7 +22,7 @@ router.post('/set', fetchuser, decrypt, async (req, res) => {
         
         await SecurityPin.findOneAndUpdate(
             { user: req.user.id },
-            { pin: hashedPin, isPinVerified: false, updatedAt: Date.now() },
+            { pin: hashedPin, isPinVerified: true, updatedAt: Date.now() },
             { new: true, upsert: true }
         );
         

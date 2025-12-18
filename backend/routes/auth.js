@@ -140,7 +140,7 @@ router.post(
       if (isPinSet) {
         await SecurityPin.findOneAndUpdate(
           { user: user.id },
-          {  inisPinVerified: false },
+          { isPinVerified: false },
           { new: true }
         );
       }
