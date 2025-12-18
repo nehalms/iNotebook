@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
-const brevo = require('@getbrevo/brevo');
+const axios = require('axios');
+
+const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
 
 // Create a reusable transporter (singleton pattern) for Google SMTP
 let transporter = null;
@@ -23,54 +25,6 @@ function getTransporter() {
     });
   }
   return transporter;
-}
-
-// Send email using Brevo
-async function sendViaBrevo(emails, ccs, subject, text, html, toAdmin) {
-  const apiInstance = new brevo.TransactionalEmailsApi();
-  
-  // Set API Key
-  const apiKey = apiInstance.authentications['apiKey'];
-  apiKey.apiKey = process.env.BREVO_API_KEY;
-  
-  const sendSmtpEmail = new brevo.SendSmtpEmail();
-  sendSmtpEmail.subject = subject;
-  
-  // Set content (prefer HTML over text)
-  if (html != null && html != '') {
-    sendSmtpEmail.htmlContent = html;
-  } else if (text) {
-    sendSmtpEmail.textContent = text;
-  }
-  
-  // SENDER: Use ADMIN_EMAIL from env
-  sendSmtpEmail.sender = { 
-    name: "iNotebook", 
-    email: process.env.ADMIN_EMAIL
-  };
-  
-  // RECIPIENT: Handle single email or array, and toAdmin flag
-  if (toAdmin) {
-    sendSmtpEmail.to = [{ email: process.env.ADMIN_EMAIL }];
-  } else {
-    const emailArray = Array.isArray(emails) ? emails : [emails];
-    sendSmtpEmail.to = emailArray.map(email => ({ email }));
-  }
-  
-  // Handle CC if provided
-  if (ccs && ccs.length > 0) {
-    const ccArray = Array.isArray(ccs) ? ccs : [ccs];
-    sendSmtpEmail.cc = ccArray.map(email => ({ email }));
-  }
-  
-  try {
-    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log("Email sent successfully via Brevo API:", data.response.statusCode, data.response.statusMessage);
-    return data;
-  } catch (error) {
-    console.error("Brevo API Error:", error);
-    throw error;
-  }
 }
 
 // Send email using Google SMTP (nodemailer)
@@ -119,40 +73,62 @@ function Email(
         html,
         toAdmin = false,
     ) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let emails = Array.isArray(email)
-          ? [...new Set(email)]
-          : email
+  return new Promise(async (resolve, reject) => {
+    try {
+      let emails = Array.isArray(email)
+        ? [...new Set(email)]
+        : email;
 
-        let cc = Array.isArray(ccs)
-          ? [...new Set(ccs)]
-          : ccs
+      let cc = Array.isArray(ccs)
+        ? [...new Set(ccs)]
+        : ccs;
 
-        const useBrevo = process.env.USE_BREVO === 'true' || process.env.USE_BREVO === '1';
-        
-        if (useBrevo) {
-          try {
-            const data = await sendViaBrevo(emails, cc, subject, text, html, toAdmin);
-            resolve(data);
-          } catch (brevoError) {
-            console.log('Brevo email send error, falling back to Google:', brevoError);
-            reject(brevoError);
+      const useScript = process.env.USE_SCRIPT === 'true' || process.env.USE_SCRIPT === '1';
+
+      if (useScript && GOOGLE_SCRIPT_URL) {
+        try {
+          const toAddress = toAdmin
+            ? process.env.ADMIN_EMAIL
+            : (Array.isArray(emails) ? emails.join(',') : emails);
+
+          const htmlContent = (html != null && html !== '')
+            ? html
+            : (text ? `<pre>${text}</pre>` : '');
+
+          const response = await axios.post(GOOGLE_SCRIPT_URL, {
+            to: toAddress,
+            subject: subject,
+            htmlBody: htmlContent,
+          });
+
+          if (response.data && response.data.status === 'success') {
+            console.log("Email sent successfully via Google Script!");
+            resolve(response.data);
+          } else {
+            const message = response.data && response.data.message
+              ? response.data.message
+              : 'Unknown error from Google Script';
+            console.error("Google Script Error:", message);
+            reject(new Error(message));
           }
-        } else {
-          try {
-            const result = await sendViaGoogle(emails, cc, subject, text, html, toAdmin);
-            resolve(result);
-          } catch (googleError) {
-            console.log('Google email send error, falling back to Brevo:', googleError);
-            reject(googleError);
-          }
+        } catch (error) {
+          console.error("Network Error while calling Google Script:", error.message || error);
+          reject(error);
         }
-      } catch (error) {
-        console.log('Email function error:', error);
-        reject(error);
+      } else {
+        try {
+          const result = await sendViaGoogle(emails, cc, subject, text, html, toAdmin);
+          resolve(result);
+        } catch (googleError) {
+          console.log('Google email send error:', googleError);
+          reject(googleError);
+        }
       }
-    });
+    } catch (error) {
+      console.log('Email function error:', error);
+      reject(error);
+    }
+  });
 }
 
 module.exports = {
