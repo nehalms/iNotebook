@@ -1,69 +1,84 @@
+const APP_URL = process.env.APP_URL || 'https://inotebook-net.vercel.app/';
+const BRAND_COLOR = '#4f46e5';
+
 const getForgotPasshtml = (otp) => {
   let html = `<!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reset Password - iNotebook</title>
+    <title>Reset Password</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
-          <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+  <body style="margin: 0; padding: 0; background-color: #F4F6F8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #F4F6F8;">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <!-- Top Accent -->
+            <tr>
+              <td style="height: 6px; background-color: #0077C5;"></td>
+            </tr>
                 <!-- Header -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">iNotebook</h1>
+              <td style="padding: 40px 40px 20px 40px; text-align: center;">
+                <div style="display: inline-block; padding: 12px; background-color: #E0F2FE; border-radius: 50%; margin-bottom: 20px;">
+                  <span style="font-size: 24px;">🔑</span>
+                </div>
+                <h1 style="margin: 0; color: #1F2937; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Reset Password</h1>
+                <p style="margin: 12px 0 0; color: #6B7280; font-size: 16px; line-height: 1.5;">
+                  Hello, we received a request to reset your <strong>iNotebook</strong> account password.
+                </p>
+              </td>
+            </tr>
+            <!-- OTP Box -->
+            <tr>
+              <td style="padding: 0 40px;">
+                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td align="center" style="padding: 30px; background-color: #F9FAFB; border: 1px dashed #D1D5DB; border-radius: 8px;">
+                      <span style="display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #6B7280; margin-bottom: 12px; font-weight: 600;">Use this code to reset password</span>
+                      <span style="font-family: 'SF Mono', 'Menlo', Consolas, monospace; font-size: 32px; font-weight: 700; color: #111827; letter-spacing: 8px;">
+                        ${otp}
+                      </span>
+                    </td>
+                  </tr>
+                </table>
                   </td>
                 </tr>
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Reset Your Password</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello,
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      We received a request to reset your account password. Please use the following One-Time Password (OTP) to complete the password reset process:
-                    </p>
-                    <!-- OTP Box -->
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-                      <p style="margin: 0 0 10px; color: #ffffff; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-                      <p style="margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otp}</p>
-                    </div>
-                    <!-- Important Notice -->
-                    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
-                        <strong>⚠️ Important:</strong> This code is valid for the next <strong>10 minutes</strong> and can only be used once. If you didn't request this password reset, please ignore this email or contact our support team.
+            <!-- Info -->
+            <tr>
+              <td style="padding: 30px 40px;">
+                <div style="background-color: #FFF7ED; border-left: 4px solid #F97316; padding: 16px; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 14px; color: #9A3412; line-height: 1.5;">
+                    <strong>⚠️ Important:</strong> This code expires in <strong>10 minutes</strong>. If you did not request a password reset, you can safely ignore this email.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      For security reasons, never share this code with anyone. Our team will never ask for your OTP.
+                <p style="margin: 30px 0 0; color: #6B7280; font-size: 14px; line-height: 1.5; text-align: center;">
+                  For security reasons, never share this code with anyone.
                     </p>
                   </td>
                 </tr>
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong style="color: #333333;">The iNotebook Team</strong>
-                    </p>
-                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6;">
-                      If you have any questions or concerns, please contact us at <a href="mailto:inotebook002@gmail.com" style="color: #667eea; text-decoration: none;">inotebook002@gmail.com</a>
-                    </p>
-                    <p style="margin: 15px 0 0; color: #999999; font-size: 11px; line-height: 1.6;">
-                      © ${new Date().getFullYear()} iNotebook. All rights reserved.
+              <td style="background-color: #F9FAFB; padding: 24px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                <p style="margin: 0 0 10px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Need help? Contact us at <a href="mailto:inotebook002@gmail.com" style="color: #0077C5; text-decoration: none; font-weight: 600;">inotebook002@gmail.com</a>
+                </p>
+                <p style="margin: 0 0 6px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Or open the app: <a href="${APP_URL}" style="color: #0077C5; text-decoration: none; font-weight: 600;">iNotebook</a>
+                </p>
+                <p style="margin: 0; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  &copy; ${new Date().getFullYear()} iNotebook. All rights reserved.
                     </p>
                   </td>
                 </tr>
               </table>
+          <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
       </body>
-    </html>`
+  </html>`;
   return html;
 }
 
@@ -75,59 +90,69 @@ const getSignUphtml = (otp) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Verify Your Account - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
-          <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+  <body style="margin: 0; padding: 0; background-color: #F3F4FF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #F3F4FF;">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <!-- Top Accent -->
+            <tr>
+              <td style="height: 6px; background-color: #4F46E5;"></td>
+            </tr>
                 <!-- Header -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">Welcome to iNotebook</h1>
+              <td style="padding: 40px 40px 20px 40px; text-align: center;">
+                <div style="display: inline-block; padding: 12px; background-color: #E0E7FF; border-radius: 50%; margin-bottom: 20px;">
+                  <span style="font-size: 24px;">✉️</span>
+                </div>
+                <h1 style="margin: 0; color: #111827; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Verify your email</h1>
+                <p style="margin: 12px 0 0; color: #6B7280; font-size: 16px; line-height: 1.5;">
+                  Thanks for signing up to <strong>iNotebook</strong>. Enter this code to finish creating your account.
+                </p>
+              </td>
+            </tr>
+            <!-- OTP Box -->
+            <tr>
+              <td style="padding: 0 40px;">
+                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td align="center" style="padding: 30px; background-color: #F9FAFB; border: 1px dashed #D1D5DB; border-radius: 8px;">
+                      <span style="display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #6B7280; margin-bottom: 12px; font-weight: 600;">Your verification code</span>
+                      <span style="font-family: 'SF Mono', 'Menlo', Consolas, monospace; font-size: 32px; font-weight: 700; color: #111827; letter-spacing: 8px;">
+                        ${otp}
+                      </span>
+                      <span style="display:block;margin-top:10px;font-size:12px;color:#6B7280;">Valid for 10 minutes</span>
+                    </td>
+                  </tr>
+                </table>
                   </td>
                 </tr>
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Verify Your Email Address</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello,
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Thank you for signing up for iNotebook! To complete your account creation and ensure the security of your account, please use the following One-Time Password (OTP) to verify your email address:
-                    </p>
-                    <!-- OTP Box -->
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-                      <p style="margin: 0 0 10px; color: #ffffff; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-                      <p style="margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otp}</p>
-                    </div>
-                    <!-- Important Notice -->
-                    <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.6;">
-                        <strong>ℹ️ Important:</strong> This verification code is valid for the next <strong>10 minutes</strong> and is required to finalize your registration. Once verified, you'll be able to access all features of iNotebook.
+            <!-- Info -->
+            <tr>
+              <td style="padding: 30px 40px;">
+                <div style="background-color: #EEF2FF; border-left: 4px solid #4F46E5; padding: 16px; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 14px; color: #312E81; line-height: 1.5;">
+                    If you didn't create an iNotebook account, you can safely ignore this email and your address won't be used.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      If you didn't create an account with iNotebook, please ignore this email.
-                    </p>
                   </td>
                 </tr>
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong style="color: #333333;">The iNotebook Team</strong>
-                    </p>
-                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6;">
-                      If you have any questions or concerns, please contact us at <a href="mailto:inotebook002@gmail.com" style="color: #667eea; text-decoration: none;">inotebook002@gmail.com</a>
-                    </p>
-                    <p style="margin: 15px 0 0; color: #999999; font-size: 11px; line-height: 1.6;">
-                      © ${new Date().getFullYear()} iNotebook. All rights reserved.
+              <td style="background-color: #F9FAFB; padding: 24px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                <p style="margin: 0 0 10px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Need help? Contact us at <a href="mailto:inotebook002@gmail.com" style="color: #4F46E5; text-decoration: none; font-weight: 600;">inotebook002@gmail.com</a>
+                </p>
+                <p style="margin: 0 0 6px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Open the app: <a href="${APP_URL}" style="color: #4F46E5; text-decoration: none; font-weight: 600;">iNotebook</a>
+                </p>
+                <p style="margin: 0; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  &copy; ${new Date().getFullYear()} iNotebook. All rights reserved.
                     </p>
                   </td>
                 </tr>
               </table>
+          <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -144,68 +169,71 @@ const getAdminNotifyhtml = (name, email) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>New User Registration - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
-          <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+  <body style="margin: 0; padding: 0; background-color: #F4F5FB; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #F4F5FB;">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <!-- Top Accent -->
+            <tr>
+              <td style="height: 6px; background-color: #7C3AED;"></td>
+            </tr>
                 <!-- Header -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">New User Registration</h1>
+              <td style="padding: 32px 40px 12px 40px;">
+                <p style="margin: 0 0 4px; font-size: 12px; color: #6B21A8; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">
+                  Admin notification
+                </p>
+                <h1 style="margin: 0; color: #111827; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">
+                  New user joined iNotebook
+                </h1>
+                <p style="margin: 10px 0 0; color: #6B7280; font-size: 14px; line-height: 1.6;">
+                  A new user has just created an account. Here are their details:
+                </p>
                   </td>
                 </tr>
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Admin Notification</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello Administrator,
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      A new user has just registered on the iNotebook platform. Please review their account details and ensure everything is in order.
-                    </p>
-                    <!-- User Details Box -->
-                    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 30px 0;">
+            <!-- User Details -->
+            <tr>
+              <td style="padding: 0 40px 24px 40px;">
                       <table role="presentation" style="width: 100%; border-collapse: collapse;">
                         <tr>
-                          <td style="padding: 10px 0; border-bottom: 1px solid #dee2e6;">
-                            <strong style="color: #333333; font-size: 14px; display: inline-block; width: 100px;">Name:</strong>
-                            <span style="color: #666666; font-size: 14px;">${name}</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 10px 0;">
-                            <strong style="color: #333333; font-size: 14px; display: inline-block; width: 100px;">Email:</strong>
-                            <a href="mailto:${email}" style="color: #667eea; font-size: 14px; text-decoration: none;">${email}</a>
+                    <td style="padding: 18px 18px; background-color: #F9FAFB; border-radius: 8px; border: 1px solid #E5E7EB;">
+                      <p style="margin: 0 0 8px; font-size: 14px; color: #374151;">
+                        <strong style="display:inline-block;width:70px;color:#4B5563;">Name</strong>
+                        <span>${name}</span>
+                      </p>
+                      <p style="margin: 8px 0 0; font-size: 14px; color: #374151; border-top: 1px solid #E5E7EB; padding-top: 8px;">
+                        <strong style="display:inline-block;width:70px;color:#4B5563;">Email</strong>
+                        <a href="mailto:${email}" style="color: #7C3AED; text-decoration: none; font-weight: 500;">${email}</a>
+                      </p>
                           </td>
                         </tr>
                       </table>
-                    </div>
-                    <!-- Action Notice -->
-                    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
-                        <strong>📋 Action Required:</strong> If any action is required on your part, please address it promptly. You can view the user's complete information and manage their account from the admin dashboard.
+              </td>
+            </tr>
+            <!-- Info -->
+            <tr>
+              <td style="padding: 0 40px 28px 40px;">
+                <div style="background-color: #F5F3FF; border-left: 4px solid #7C3AED; padding: 14px 16px; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 13px; color: #4C1D95; line-height: 1.6;">
+                    Review this account in the admin area if you need to adjust permissions, security settings, or usage limits.
                       </p>
                     </div>
                   </td>
                 </tr>
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong style="color: #333333;">The iNotebook System</strong>
-                    </p>
-                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6;">
-                      This is an automated notification from the iNotebook platform.
-                    </p>
-                    <p style="margin: 15px 0 0; color: #999999; font-size: 11px; line-height: 1.6;">
-                      © ${new Date().getFullYear()} iNotebook. All rights reserved.
+              <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Open the dashboard: <a href="${APP_URL}" style="color: #7C3AED; text-decoration: none; font-weight: 600;">iNotebook admin</a>
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                  &copy; ${new Date().getFullYear()} iNotebook. Automated admin notification.
                     </p>
                   </td>
                 </tr>
               </table>
+          <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -222,59 +250,68 @@ const getAdminhtml = (otp) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Admin Login Verification - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
-          <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+  <body style="margin: 0; padding: 0; background-color: #FEF2F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #FEF2F2;">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <!-- Top Accent -->
+            <tr>
+              <td style="height: 6px; background-color: #DC2626;"></td>
+            </tr>
                 <!-- Header -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">Admin Dashboard Access</h1>
+              <td style="padding: 32px 40px 16px 40px;">
+                <p style="margin: 0 0 4px; font-size: 12px; color: #B91C1C; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">
+                  Security verification
+                </p>
+                <h1 style="margin: 0; color: #111827; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">
+                  Confirm admin login
+                </h1>
+                <p style="margin: 10px 0 0; color: #6B7280; font-size: 14px; line-height: 1.6;">
+                  Use this one-time code to finish signing in to the iNotebook admin dashboard.
+                </p>
+              </td>
+            </tr>
+            <!-- OTP -->
+            <tr>
+              <td style="padding: 0 40px;">
+                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td align="center" style="padding: 26px 24px; background-color: #FEF2F2; border-radius: 8px; border: 1px solid #FCA5A5;">
+                      <span style="display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #B91C1C; margin-bottom: 10px; font-weight: 600;">Admin verification code</span>
+                      <span style="font-family: 'SF Mono', 'Menlo', Consolas, monospace; font-size: 32px; font-weight: 700; color: #111827; letter-spacing: 8px;">
+                        ${otp}
+                      </span>
+                      <span style="display:block;margin-top:10px;font-size:12px;color:#991B1B;">Expires in 10 minutes • For this login only</span>
+                    </td>
+                  </tr>
+                </table>
                   </td>
                 </tr>
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Login Verification Required</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello Administrator,
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      For security purposes, please use the following One-Time Password (OTP) to complete your login to the admin dashboard:
-                    </p>
-                    <!-- OTP Box -->
-                    <div style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-                      <p style="margin: 0 0 10px; color: #ffffff; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-                      <p style="margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otp}</p>
-                    </div>
-                    <!-- Security Notice -->
-                    <div style="background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #721c24; font-size: 14px; line-height: 1.6;">
-                        <strong>🔒 Security Notice:</strong> This code is valid for the next <strong>10 minutes</strong> and can only be used once. Never share this code with anyone. If you didn't request this login, please contact security immediately.
+            <!-- Warning -->
+            <tr>
+              <td style="padding: 28px 40px 24px 40px;">
+                <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 16px; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 13px; color: #7F1D1D; line-height: 1.6;">
+                    <strong>🔒 Keep this code private.</strong> Never share it in chat, email, or screenshots. If you didn't start this login, change your password and review recent activity immediately.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      This additional verification step helps protect your admin account from unauthorized access.
-                    </p>
                   </td>
                 </tr>
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong style="color: #333333;">The iNotebook Security Team</strong>
-                    </p>
-                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6;">
-                      If you have any security concerns, please contact us immediately at <a href="mailto:inotebook002@gmail.com" style="color: #dc3545; text-decoration: none;">inotebook002@gmail.com</a>
-                    </p>
-                    <p style="margin: 15px 0 0; color: #999999; font-size: 11px; line-height: 1.6;">
-                      © ${new Date().getFullYear()} iNotebook. All rights reserved.
+              <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Open admin: <a href="${APP_URL}" style="color: #DC2626; text-decoration: none; font-weight: 600;">iNotebook admin</a>
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                  &copy; ${new Date().getFullYear()} iNotebook. Security notification.
                     </p>
                   </td>
                 </tr>
               </table>
+          <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -283,7 +320,6 @@ const getAdminhtml = (otp) => {
     return html;
 }
 
-// Security Pin Enable Email Template
 const getSecurityPinEnablehtml = (otp) => {
   let html = `<!DOCTYPE html>
     <html lang="en">
@@ -292,68 +328,71 @@ const getSecurityPinEnablehtml = (otp) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Enable Security Pin - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
-          <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+  <body style="margin: 0; padding: 0; background-color: #ECFDF3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #ECFDF3;">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <!-- Top Accent -->
+            <tr>
+              <td style="height: 6px; background-color: #16A34A;"></td>
+            </tr>
                 <!-- Header -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">🔒 Enable Security Pin</h1>
+              <td style="padding: 36px 40px 18px 40px; text-align: center;">
+                <div style="display: inline-block; padding: 12px; background-color: #DCFCE7; border-radius: 50%; margin-bottom: 18px;">
+                  <span style="font-size: 24px;">🔒</span>
+                </div>
+                <h1 style="margin: 0; color: #14532D; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">Enable Security Pin</h1>
+                <p style="margin: 10px 0 0; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                  Add an extra layer of protection to your <strong>iNotebook</strong> account with a Security Pin.
+                </p>
+              </td>
+            </tr>
+            <!-- OTP Box -->
+            <tr>
+              <td style="padding: 0 40px;">
+                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td align="center" style="padding: 26px 24px; background-color: #F9FAFB; border-radius: 8px; border: 1px dashed #D1D5DB;">
+                      <span style="display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #6B7280; margin-bottom: 10px; font-weight: 600;">Verification code</span>
+                      <span style="font-family: 'SF Mono', 'Menlo', Consolas, monospace; font-size: 32px; font-weight: 700; color: #111827; letter-spacing: 8px;">
+                        ${otp}
+                      </span>
+                      <span style="display:block;margin-top:10px;font-size:12px;color:#6B7280;">Valid for 10 minutes</span>
+                    </td>
+                  </tr>
+                </table>
                   </td>
                 </tr>
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Secure Your Account</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello,
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      You've requested to enable the Security Pin feature for your iNotebook account. This adds an extra layer of protection to your sensitive data. To proceed, please verify your email address using the One-Time Password (OTP) below:
-                    </p>
-                    <!-- OTP Box -->
-                    <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-                      <p style="margin: 0 0 10px; color: #ffffff; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-                      <p style="margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otp}</p>
-                    </div>
-                    <!-- Info Box -->
-                    <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0 0 10px; color: #0c5460; font-size: 14px; line-height: 1.6;">
-                        <strong>ℹ️ What is Security Pin?</strong>
-                      </p>
-                      <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.6;">
-                        Security Pin is a 6-digit code that protects your sensitive data (notes, tasks, images, etc.). Once enabled, you'll be asked to enter this pin whenever you access your account or view protected content.
+            <!-- Info -->
+            <tr>
+              <td style="padding: 26px 40px 22px 40px;">
+                <div style="background-color: #ECFDF3; border-left: 4px solid #16A34A; padding: 14px 16px; border-radius: 4px; margin-bottom: 16px;">
+                  <p style="margin: 0; font-size: 13px; color: #14532D; line-height: 1.6;">
+                    <strong>What is a Security Pin?</strong> It's a 6‑digit code that helps protect notes, tasks, images and other sensitive content in your account.
                       </p>
                     </div>
-                    <!-- Important Notice -->
-                    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
-                        <strong>⚠️ Important:</strong> This verification code is valid for the next <strong>10 minutes</strong>. After verification, you'll be prompted to set your 6-digit security pin. If you didn't request this, please ignore this email or contact support.
+                <div style="background-color: #FEFCE8; border-left: 4px solid #EAB308; padding: 14px 16px; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 13px; color: #713F12; line-height: 1.6;">
+                    <strong>Important:</strong> After confirming this code, you’ll be prompted in the app to set your 6‑digit Security Pin. Don’t share this code or your pin with anyone.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      For security reasons, never share this code with anyone. Our team will never ask for your OTP.
-                    </p>
                   </td>
                 </tr>
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong style="color: #333333;">The iNotebook Security Team</strong>
-                    </p>
-                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6;">
-                      If you have any questions or concerns, please contact us at <a href="mailto:inotebook002@gmail.com" style="color: #28a745; text-decoration: none;">inotebook002@gmail.com</a>
-                    </p>
-                    <p style="margin: 15px 0 0; color: #999999; font-size: 11px; line-height: 1.6;">
-                      © ${new Date().getFullYear()} iNotebook. All rights reserved.
+              <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Questions? Contact us at <a href="mailto:inotebook002@gmail.com" style="color: #16A34A; text-decoration: none; font-weight: 600;">inotebook002@gmail.com</a>
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                  &copy; ${new Date().getFullYear()} iNotebook. All rights reserved.
                     </p>
                   </td>
                 </tr>
               </table>
+          <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -362,7 +401,6 @@ const getSecurityPinEnablehtml = (otp) => {
   return html;
 }
 
-// Security Pin Disable Email Template
 const getSecurityPinDisablehtml = (otp) => {
   let html = `<!DOCTYPE html>
     <html lang="en">
@@ -371,68 +409,71 @@ const getSecurityPinDisablehtml = (otp) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Disable Security Pin - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
-          <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+  <body style="margin: 0; padding: 0; background-color: #FEF2F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #FEF2F2;">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <!-- Top Accent -->
+            <tr>
+              <td style="height: 6px; background-color: #DC2626;"></td>
+            </tr>
                 <!-- Header -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">🔓 Disable Security Pin</h1>
+              <td style="padding: 36px 40px 18px 40px; text-align: center;">
+                <div style="display: inline-block; padding: 12px; background-color: #FEE2E2; border-radius: 50%; margin-bottom: 18px;">
+                  <span style="font-size: 24px;">🔓</span>
+                </div>
+                <h1 style="margin: 0; color: #991B1B; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">Disable Security Pin</h1>
+                <p style="margin: 10px 0 0; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                  You requested to remove the Security Pin from your <strong>iNotebook</strong> account.
+                </p>
+              </td>
+            </tr>
+            <!-- OTP Box -->
+            <tr>
+              <td style="padding: 0 40px;">
+                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td align="center" style="padding: 26px 24px; background-color: #FEF2F2; border-radius: 8px; border: 1px dashed #FCA5A5;">
+                      <span style="display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #B91C1C; margin-bottom: 10px; font-weight: 600;">Verification code</span>
+                      <span style="font-family: 'SF Mono', 'Menlo', Consolas, monospace; font-size: 32px; font-weight: 700; color: #111827; letter-spacing: 8px;">
+                        ${otp}
+                      </span>
+                      <span style="display:block;margin-top:10px;font-size:12px;color:#991B1B;">Valid for 10 minutes</span>
+                    </td>
+                  </tr>
+                </table>
                   </td>
                 </tr>
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Security Verification Required</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello,
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      You've requested to disable the Security Pin feature for your iNotebook account. For security purposes, please verify your email address using the One-Time Password (OTP) below to complete this action:
-                    </p>
-                    <!-- OTP Box -->
-                    <div style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-                      <p style="margin: 0 0 10px; color: #ffffff; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-                      <p style="margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otp}</p>
-                    </div>
-                    <!-- Warning Box -->
-                    <div style="background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0 0 10px; color: #721c24; font-size: 14px; line-height: 1.6;">
-                        <strong>⚠️ Important Security Notice:</strong>
-                      </p>
-                      <p style="margin: 0; color: #721c24; font-size: 14px; line-height: 1.6;">
-                        Disabling your Security Pin will remove the extra layer of protection from your account. Your sensitive data (notes, tasks, images, etc.) will no longer require pin verification to access. We recommend keeping this feature enabled for better security.
+            <!-- Info -->
+            <tr>
+              <td style="padding: 26px 40px 22px 40px;">
+                <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 14px 16px; border-radius: 4px; margin-bottom: 14px;">
+                  <p style="margin: 0; font-size: 13px; color: #7F1D1D; line-height: 1.6;">
+                    <strong>Important:</strong> Disabling your Security Pin removes an extra layer of protection. Sensitive content will no longer require the pin.
                       </p>
                     </div>
-                    <!-- Info Box -->
-                    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
-                        <strong>⏱️ Time Limit:</strong> This verification code is valid for the next <strong>10 minutes</strong>. If you didn't request to disable your Security Pin, please ignore this email or contact support immediately.
+                <div style="background-color: #FEF3C7; border-left: 4px solid #F59E0B; padding: 14px 16px; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 13px; color: #92400E; line-height: 1.6;">
+                    If you didn’t request this change, do not use this code and contact support immediately.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      For security reasons, never share this code with anyone. Our team will never ask for your OTP.
-                    </p>
                   </td>
                 </tr>
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong style="color: #333333;">The iNotebook Security Team</strong>
-                    </p>
-                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6;">
-                      If you have any security concerns or didn't request this change, please contact us immediately at <a href="mailto:inotebook002@gmail.com" style="color: #dc3545; text-decoration: none;">inotebook002@gmail.com</a>
-                    </p>
-                    <p style="margin: 15px 0 0; color: #999999; font-size: 11px; line-height: 1.6;">
-                      © ${new Date().getFullYear()} iNotebook. All rights reserved.
+              <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Security help: <a href="mailto:inotebook002@gmail.com" style="color: #DC2626; text-decoration: none; font-weight: 600;">inotebook002@gmail.com</a>
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                  &copy; ${new Date().getFullYear()} iNotebook. All rights reserved.
                     </p>
                   </td>
                 </tr>
               </table>
+          <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -449,62 +490,64 @@ const getSecurityPinNotificationhtml = (userName) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Set Security Pin - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
-          <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+  <body style="margin: 0; padding: 0; background-color: #EFF6FF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #EFF6FF;">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <!-- Top Accent -->
+            <tr>
+              <td style="height: 6px; background-color: #2563EB;"></td>
+            </tr>
                 <!-- Header -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">iNotebook</h1>
+              <td style="padding: 32px 40px 16px 40px;">
+                <h1 style="margin: 0; color: #111827; font-size: 22px; font-weight: 700; letter-spacing: -0.3px; text-align:center;">
+                  Set up your Security Pin
+                </h1>
+                <p style="margin: 10px 0 0; color: #4B5563; font-size: 14px; line-height: 1.6; text-align:center;">
+                  Hello ${userName}, keep your workspace safer by adding a Security Pin.
+                </p>
                   </td>
                 </tr>
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Set Your Security Pin</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello ${userName},
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      For enhanced security of your account, we recommend setting up a 6-digit security pin. This pin will be required when accessing sensitive data.
-                    </p>
-                    <!-- Steps -->
-                    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0;">
-                      <h3 style="margin: 0 0 15px; color: #333333; font-size: 18px; font-weight: 600;">How to Set Your Security Pin:</h3>
-                      <ol style="margin: 0; padding-left: 20px; color: #666666; font-size: 16px; line-height: 1.8;">
-                        <li>Log in to your iNotebook account</li>
-                        <li>Go to your Profile page</li>
-                        <li>Find the "Security Pin" section</li>
-                        <li>Click on the toggle to enable security pin</li>
-                        <li>Follow the on-screen instructions to set your 6-digit pin</li>
+            <!-- Steps -->
+            <tr>
+              <td style="padding: 0 40px 24px 40px;">
+                <div style="background-color: #F9FAFB; border-radius: 8px; padding: 20px 20px 18px 20px; border: 1px solid #E5E7EB;">
+                  <h3 style="margin: 0 0 12px; color: #111827; font-size: 16px; font-weight: 600;">How to set your 6‑digit pin</h3>
+                  <ol style="margin: 0; padding-left: 20px; color: #4B5563; font-size: 14px; line-height: 1.8;">
+                    <li>Open the <strong>iNotebook</strong> app.</li>
+                    <li>Go to your <strong>Profile</strong> page.</li>
+                    <li>Find the <strong>Security Pin</strong> section.</li>
+                    <li>Switch the toggle on to enable the pin.</li>
+                    <li>Follow the prompts to choose your 6‑digit pin.</li>
                       </ol>
                     </div>
-                    <!-- Important Notice -->
-                    <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
-                        <strong>🔒 Security Tip:</strong> Choose a pin that is easy for you to remember but hard for others to guess. Never share your security pin with anyone.
+              </td>
+            </tr>
+            <!-- Info -->
+            <tr>
+              <td style="padding: 0 40px 26px 40px;">
+                <div style="background-color: #FEF3C7; border-left: 4px solid #F59E0B; padding: 14px 16px; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 13px; color: #92400E; line-height: 1.6;">
+                    <strong>Tip:</strong> Choose a pin that’s easy for you to remember but hard for others to guess. Never share your Security Pin with anyone.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      If you have any questions or need assistance, please don't hesitate to contact our support team.
-                    </p>
                   </td>
                 </tr>
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong>The iNotebook Team</strong>
-                    </p>
-                    <p style="margin: 20px 0 0; color: #999999; font-size: 12px; line-height: 1.6; text-align: center;">
-                      This is an automated email. Please do not reply to this message.
+              <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                  Need help? Reach us at <a href="mailto:inotebook002@gmail.com" style="color: #2563EB; text-decoration: none; font-weight: 600;">inotebook002@gmail.com</a>
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                  This is an automated email. Please don’t reply directly.
                     </p>
                   </td>
                 </tr>
               </table>
+          <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -531,41 +574,75 @@ const getPermissionRequesthtml = (userName, userEmail, permission) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Permission Request - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+      <body style="margin: 0; padding: 0; background-color: #EEF2FF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #EEF2FF;">
           <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+            <td align="center" style="padding: 40px 0;">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden;">
+                <!-- Top Accent -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">iNotebook</h1>
+                  <td style="height: 6px; background-color: #4F46E5;"></td>
+                </tr>
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 32px 40px 14px 40px;">
+                    <p style="margin: 0 0 4px; font-size: 12px; color: #4338CA; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">
+                      Permission request
+                    </p>
+                    <h1 style="margin: 0; color: #111827; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">
+                      A user requested access
+                    </h1>
+                    <p style="margin: 10px 0 0; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                      Review the details below and decide whether to approve this request in the admin area.
+                    </p>
                   </td>
                 </tr>
+                <!-- Details -->
                 <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">New Permission Request</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      A user has requested access to a feature:
-                    </p>
-                    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0;">
-                      <p style="margin: 0 0 10px; color: #333333; font-size: 16px;"><strong>User:</strong> ${userName}</p>
-                      <p style="margin: 0 0 10px; color: #333333; font-size: 16px;"><strong>Email:</strong> ${userEmail}</p>
-                      <p style="margin: 0; color: #333333; font-size: 16px;"><strong>Requested Feature:</strong> ${permissionNames[permission] || permission}</p>
+                  <td style="padding: 0 40px 24px 40px;">
+                    <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                      <tr>
+                        <td style="padding: 18px 18px; background-color: #F9FAFB; border-radius: 8px; border: 1px solid #E5E7EB;">
+                          <p style="margin: 0 0 8px; font-size: 14px; color: #374151;">
+                            <strong style="display:inline-block;width:90px;color:#4B5563;">User</strong>
+                            <span>${userName}</span>
+                          </p>
+                          <p style="margin: 8px 0 8px; font-size: 14px; color: #374151; border-top: 1px solid #E5E7EB; padding-top: 8px;">
+                            <strong style="display:inline-block;width:90px;color:#4B5563;">Email</strong>
+                            <a href="mailto:${userEmail}" style="color: #4F46E5; text-decoration: none; font-weight: 500;">${userEmail}</a>
+                          </p>
+                          <p style="margin: 0; font-size: 14px; color: #374151; border-top: 1px solid #E5E7EB; padding-top: 8px;">
+                            <strong style="display:inline-block;width:90px;color:#4B5563;">Feature</strong>
+                            <span>${permissionNames[permission] || permission}</span>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- Info -->
+                <tr>
+                  <td style="padding: 0 40px 26px 40px;">
+                    <div style="background-color: #EEF2FF; border-left: 4px solid #4F46E5; padding: 14px 16px; border-radius: 4px;">
+                      <p style="margin: 0; font-size: 13px; color: #312E81; line-height: 1.6;">
+                        Go to the admin dashboard to approve or decline this request. Changes will apply immediately for the user.
+                      </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Please log in to the admin dashboard to review and respond to this request.
-                    </p>
                   </td>
                 </tr>
+                <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong>The iNotebook Team</strong>
+                  <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                      Open admin: <a href="${APP_URL}" style="color: #4F46E5; text-decoration: none; font-weight: 600;">iNotebook admin</a>
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                      &copy; ${new Date().getFullYear()} iNotebook. Automated permission notification.
                     </p>
                   </td>
                 </tr>
               </table>
+              <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -585,6 +662,13 @@ const getPermissionResponsehtml = (userName, permission, approved, adminComment)
     calendar: 'Calendar'
   };
   
+  const bgColor = approved ? '#ECFDF3' : '#FEF2F2';
+  const accentColor = approved ? '#16A34A' : '#DC2626';
+  const textAccent = approved ? '#166534' : '#991B1B';
+  const badgeBg = approved ? '#DCFCE7' : '#FEE2E2';
+  const badgeText = approved ? '#14532D' : '#7F1D1D';
+  const statusLabel = approved ? 'Approved' : 'Declined';
+
   let html = `<!DOCTYPE html>
     <html lang="en">
       <head>
@@ -592,51 +676,62 @@ const getPermissionResponsehtml = (userName, permission, approved, adminComment)
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Permission Request Response - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+      <body style="margin: 0; padding: 0; background-color: ${bgColor}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: ${bgColor};">
           <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+            <td align="center" style="padding: 40px 0;">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden;">
+                <!-- Top Accent -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, ${approved ? '#10b981' : '#ef4444'} 0%, ${approved ? '#059669' : '#dc2626'} 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">iNotebook</h1>
+                  <td style="height: 6px; background-color: ${accentColor};"></td>
+                </tr>
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 28px 40px 10px 40px;">
+                    <div style="text-align:left;">
+                      <span style="display:inline-block;padding:4px 10px;border-radius:999px;background-color:${badgeBg};color:${badgeText};font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;">
+                        ${statusLabel}
+                      </span>
+                    </div>
+                    <h1 style="margin: 0; color: ${textAccent}; font-size: 20px; font-weight: 700; letter-spacing: -0.3px;">
+                      Permission for ${permissionNames[permission] || permission}
+                    </h1>
+                    <p style="margin: 10px 0 0; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                      Hello ${userName}, your request to use <strong>${permissionNames[permission] || permission}</strong> has been <strong>${statusLabel.toLowerCase()}</strong>.
+                    </p>
                   </td>
                 </tr>
+                <!-- Admin note and next steps -->
                 <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Permission Request ${approved ? 'Approved' : 'Declined'}</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello ${userName},
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Your request for access to <strong>${permissionNames[permission] || permission}</strong> has been <strong>${approved ? 'approved' : 'declined'}</strong>.
-                    </p>
+                  <td style="padding: 0 40px 24px 40px;">
                     ${adminComment ? `
-                    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0;">
-                      <p style="margin: 0 0 10px; color: #333333; font-size: 14px; font-weight: 600;">Admin Comment:</p>
-                      <p style="margin: 0; color: #666666; font-size: 16px; line-height: 1.6;">${adminComment}</p>
+                    <div style="background-color: #F9FAFB; border-radius: 8px; padding: 14px 16px; border: 1px solid #E5E7EB; margin-bottom: 16px;">
+                      <p style="margin: 0 0 6px; font-size: 13px; color: #4B5563; font-weight: 600;">Message from admin</p>
+                      <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.6;">${adminComment}</p>
                     </div>
                     ` : ''}
-                    ${approved ? `
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      You can now access this feature. Please refresh your browser if needed.
-                    </p>
-                    ` : `
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      If you have any questions, please contact the administrator.
-                    </p>
-                    `}
+                    <div style="background-color: ${badgeBg}; border-left: 4px solid ${accentColor}; padding: 14px 16px; border-radius: 4px;">
+                      <p style="margin: 0; font-size: 13px; color: ${badgeText}; line-height: 1.6;">
+                        ${approved
+                          ? 'You can start using this feature in your iNotebook workspace. If you don’t see it immediately, try refreshing the page or signing in again.'
+                          : 'You won’t be able to use this feature right now. If you need access or more context about this decision, contact the administrator.'}
+                      </p>
+                    </div>
                   </td>
                 </tr>
+                <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong>The iNotebook Team</strong>
+                  <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                      Open your workspace: <a href="${APP_URL}" style="color: ${accentColor}; text-decoration: none; font-weight: 600;">iNotebook</a>
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                      &copy; ${new Date().getFullYear()} iNotebook. Permission update.
                     </p>
                   </td>
                 </tr>
               </table>
+              <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -653,44 +748,52 @@ const getAccountActivatedhtml = (userName) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Account Reactivated - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+      <body style="margin: 0; padding: 0; background-color: #ECFDF3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #ECFDF3;">
           <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+            <td align="center" style="padding: 40px 0;">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden;">
+                <!-- Top Accent -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">Account Reactivated</h1>
+                  <td style="height: 6px; background-color: #16A34A;"></td>
+                </tr>
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 32px 40px 16px 40px; text-align:center;">
+                    <h1 style="margin: 0; color: #166534; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">
+                      Your account is active again
+                    </h1>
+                    <p style="margin: 10px 0 0; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                      Hello ${userName}, your <strong>iNotebook</strong> account has been reactivated and is ready to use.
+                    </p>
                   </td>
                 </tr>
+                <!-- Content -->
                 <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Welcome Back!</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello ${userName},
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Great news! Your iNotebook account has been reactivated. You can now log in and access all your data and features.
-                    </p>
-                    <div style="background-color: #d1fae5; border-left: 4px solid #10b981; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #065f46; font-size: 14px; line-height: 1.6;">
-                        <strong>✅ Account Status:</strong> Your account is now active and ready to use. All your previous data has been preserved.
+                  <td style="padding: 0 40px 26px 40px;">
+                    <div style="background-color: #DCFCE7; border-left: 4px solid #16A34A; padding: 14px 16px; border-radius: 4px; margin-bottom: 18px;">
+                      <p style="margin: 0; color: #166534; font-size: 13px; line-height: 1.6;">
+                        <strong>Account status:</strong> Active. Your notes, tasks, and other data are available again.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      If you have any questions or need assistance, please don't hesitate to contact our support team.
+                    <p style="margin: 0 0 8px; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                      You can sign in as usual and continue where you left off.
                     </p>
                   </td>
                 </tr>
+                <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong>The iNotebook Team</strong>
+                  <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                      Open your workspace: <a href="${APP_URL}" style="color: #16A34A; text-decoration: none; font-weight: 600;">iNotebook</a>
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                      &copy; ${new Date().getFullYear()} iNotebook. Account status update.
                     </p>
                   </td>
                 </tr>
               </table>
+              <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
@@ -707,44 +810,52 @@ const getAccountDeactivatedhtml = (userName) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Account Deactivated - iNotebook</title>
       </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 20px 0;">
+      <body style="margin: 0; padding: 0; background-color: #FEF3C7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #FEF3C7;">
           <tr>
-            <td align="center">
-              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+            <td align="center" style="padding: 40px 0;">
+              <table role="presentation" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden;">
+                <!-- Top Accent -->
                 <tr>
-                  <td style="padding: 30px 30px 20px; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">Account Deactivated</h1>
+                  <td style="height: 6px; background-color: #F59E0B;"></td>
+                </tr>
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 32px 40px 16px 40px; text-align:center;">
+                    <h1 style="margin: 0; color: #92400E; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">
+                      Your account is currently inactive
+                    </h1>
+                    <p style="margin: 10px 0 0; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                      Hello ${userName}, your <strong>iNotebook</strong> account has been deactivated by an administrator.
+                    </p>
                   </td>
                 </tr>
+                <!-- Content -->
                 <tr>
-                  <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px; font-weight: 600;">Important Notice</h2>
-                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Hello ${userName},
-                    </p>
-                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      Your iNotebook account has been deactivated by an administrator. You will no longer be able to log in to your account until it is reactivated.
-                    </p>
-                    <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                      <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
-                        <strong>⚠️ Account Status:</strong> Your account is currently inactive. All your data has been preserved and will be available when your account is reactivated.
+                  <td style="padding: 0 40px 26px 40px;">
+                    <div style="background-color: #FFFBEB; border-left: 4px solid #F59E0B; padding: 14px 16px; border-radius: 4px; margin-bottom: 18px;">
+                      <p style="margin: 0; color: #92400E; font-size: 13px; line-height: 1.6;">
+                        <strong>Account status:</strong> Inactive. You won’t be able to sign in until an admin reactivates your account. Your data is preserved and will be available again after reactivation.
                       </p>
                     </div>
-                    <p style="margin: 30px 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      If you believe this was done in error or have any questions, please contact our support team at <a href="mailto:inotebook002@gmail.com" style="color: #f59e0b; text-decoration: none;">inotebook002@gmail.com</a>
+                    <p style="margin: 0 0 8px; color: #4B5563; font-size: 14px; line-height: 1.6;">
+                      If you think this was a mistake or you need access restored, please contact support.
                     </p>
                   </td>
                 </tr>
+                <!-- Footer -->
                 <tr>
-                  <td style="padding: 30px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
-                      Best Regards,<br>
-                      <strong>The iNotebook Team</strong>
+                  <td style="background-color: #F9FAFB; padding: 20px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
+                      Contact support: <a href="mailto:inotebook002@gmail.com" style="color: #F59E0B; text-decoration: none; font-weight: 600;">inotebook002@gmail.com</a>
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #9CA3AF; line-height: 1.5;">
+                      &copy; ${new Date().getFullYear()} iNotebook. Account status update.
                     </p>
                   </td>
                 </tr>
               </table>
+              <div style="height: 40px;"></div>
             </td>
           </tr>
         </table>
