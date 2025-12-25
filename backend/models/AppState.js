@@ -10,6 +10,9 @@ const sessionEntrySchema = new Schema({
 const otpEntrySchema = new Schema({
   code: String,
   expiryTime: Date,
+  isVerified: { type: Boolean, default: false },
+  type: { type: String, enum: ['login', 'signup', 'forgot-password', 'security-pin'], default: 'security-pin' },
+  createdAt: { type: Date, default: Date.now },
 }, { _id: false });
 
 const appStateSchema = new Schema({

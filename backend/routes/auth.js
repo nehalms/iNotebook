@@ -12,10 +12,17 @@ const GameDetails = require("../models/GameDetails");
 const SecurityPin = require("../models/SecurityPin");
 const Keys = require("../models/Keys");
 const { Email } = require("../Services/Email");
-const { getAdminNotifyhtml } = require("../Services/getEmailHtml");
+const { getAdminNotifyhtml, getAdminhtml, getSignUphtml, getForgotPasshtml } = require("../Services/getEmailHtml");
+const { getOTPByKey, deleteOTPByKey } = require("../store/dataStore");
+const crypto = require("crypto");
 const axios = require("axios");
 const JWT_SCERET = process.env.JWT_SCERET;
 const SESSION_EXPIRY_TIME = parseInt(process.env.SESSION_EXPIRY_TIME);
+
+// Helper function to extract session ID from cookies
+function getSessionIdFromCookie(req) {
+  return req.cookies?.otpSessionId || null;
+}
 //Route-1 : Create user using : POST "/api/auth/CreateUser => no login required
 
 router.post("/createuser", decrypt,
@@ -33,23 +40,97 @@ router.post("/createuser", decrypt,
     }
 
     try {
-      //check wheather the user with this email exists already
-      let user = await User.findOne({ email: req.body.email, isActive: true});
+      const { name, email, password } = req.body;
+      const sessionKey = getSessionIdFromCookie(req);
+
+      // If no session key, send OTP
+      if (!sessionKey) {
+        // Check if user already exists
+        let existingUser = await User.findOne({ email: email, isActive: true});
+        if (existingUser) {
+          return res.status(400).json({ 
+            success: false, 
+            error: "A user with this email already exists" 
+          });
+        }
+
+        // Generate session key and OTP
+        const newSessionKey = crypto.randomBytes(16).toString('hex');
+        const otpCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+        const salt = await bcrpyt.genSalt(10);
+        const hashedCode = await bcrpyt.hash(otpCode.toString(), salt);
+        const expiryTime = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        // Save OTP with email + sessionKey as key
+        const { saveOTP } = require("../store/dataStore");
+        await saveOTP(email, newSessionKey, {
+          code: hashedCode,
+          expiryTime: expiryTime,
+          type: 'signup'
+        });
+
+        // Set session key in cookie
+        res.cookie('otpSessionId', newSessionKey, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        // Send OTP email
+        const html = getSignUphtml(otpCode);
+        await Email(
+          email,
+          [],
+          'Signup Verification OTP',
+          '',
+          html,
+          false,
+        );
+
+        return res.status(400).json({ 
+          success: false, 
+          requiresOTP: true,
+          error: "OTP has been sent to your email. Please verify OTP first.",
+          message: "OTP has been sent to your email"
+        });
+      }
+
+      // Session key exists, check if OTP is verified
+      const otpEntry = await getOTPByKey(email, sessionKey);
+      
+      if (!otpEntry || otpEntry.type !== 'signup') {
+        return res.status(400).json({ 
+          success: false, 
+          requiresOTP: true,
+          error: "Invalid OTP session. Please request OTP again." 
+        });
+      }
+
+      if (!otpEntry.isVerified) {
+        return res.status(400).json({ 
+          success: false, 
+          requiresOTP: true,
+          error: "OTP not verified. Please verify OTP first." 
+        });
+      }
+
+      // OTP verified, proceed with signup
+      // Check if user already exists (double check)
+      let user = await User.findOne({ email: email, isActive: true});
       if (user) {
-        return res
-          .status(400)
-          .json({ success, error: "sorry a user with this mail already exist" });
+        return res.status(400).json({ success, error: "sorry a user with this mail already exist" });
       }
 
       //await helps to make processor to wait further processing next line till the current line is resolved and take data of this line n move
       // to use await the function must be async
       const salt = await bcrpyt.genSalt(10); //for generating salt
-      secPass = await bcrpyt.hash(req.body.password, salt); // convert password to hash value
+      secPass = await bcrpyt.hash(password, salt); // convert password to hash value
       //Create new user
       user = await User.create({
         // adds data to database
-        name: req.body.name,
-        email: req.body.email,
+        name: name,
+        email: email,
         password: secPass,
         permissions: ['notes', 'tasks', 'games', 'images', 'messages', 'news', 'calendar']
       });
@@ -74,6 +155,14 @@ router.post("/createuser", decrypt,
         sameSite: 'none',
         maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
       });
+
+      // Clear OTP session cookie and delete OTP entry
+      res.clearCookie('otpSessionId', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
+      await deleteOTPByKey(email, sessionKey);
       
       let html = getAdminNotifyhtml(user.name, user.email);
       Email(
@@ -110,6 +199,7 @@ router.post(
     }
 
       const { email, password } = req.body;
+      const sessionKey = getSessionIdFromCookie(req);
     try {
       // Select only needed fields for login (including name and email for LoginHistory)
       let user = await User.findOne({ email: email, isActive: true }).select('_id password permissions isAdmin name email');
@@ -124,78 +214,174 @@ router.post(
         return res.status(400).json({ success, error: "Please try to login with correct credentials: Incorrect password" });
       }
 
-      const payload = {
-        user: {
-          id: user.id,
-          permissions: user.permissions,
-        },
-      };
-      const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
-      success = true;
+      // If user is NOT admin, set cookie and send response
+      if (!user.isAdmin) {
+        const payload = {
+          user: {
+            id: user.id,
+            permissions: user.permissions,
+          },
+        };
+        const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
+        success = true;
 
-      const securityPin = await SecurityPin.findOne({user: user.id}).select('_id isPinVerified').lean();
-      const isPinSet = securityPin ? true : false;
-      
-      // Reset pin verification status on login
-      if (isPinSet) {
-        await SecurityPin.findOneAndUpdate(
-          { user: user.id },
-          { isPinVerified: false },
-          { new: true }
-        );
-      }
-
-      if(user.isAdmin == true) {
-        if(req.query.verified == 'true') {
-          res.cookie('authToken', authToken, {
-            httpOnly: true,   
-            secure: true,           
-            sameSite: 'none',
-            maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
-          });
+        const securityPin = await SecurityPin.findOne({user: user.id}).select('_id isPinVerified').lean();
+        const isPinSet = securityPin ? true : false;
+        
+        // Reset pin verification status on login
+        if (isPinSet) {
+          await SecurityPin.findOneAndUpdate(
+            { user: user.id },
+            { isPinVerified: false },
+            { new: true }
+          );
         }
-        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet});
-      } else {
+
         res.cookie('authToken', authToken, {
           httpOnly: true,   
           secure: true,           
           sameSite: 'none',
           maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
         });
-        res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet});
+
+        // Parallelize history and user update operations
+        await Promise.all([
+          LoginHistory.create({
+            userId: user.id,
+            name: user.name,
+            email: user.email,
+          }),
+          UserHistory.create({
+            userId: user.id,
+            action: "Logged In",
+          }),
+          User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
+        ]);
+
+        return res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet});
       }
-      axios.get(`${process.env.TTT_BOOTSTRAP_URL}/game/test`)
-        .then(response => {
-          console.log("Server status(TTT) ", response.data, '\n');
-        })
-        .catch(error => {
-          console.error("Error in waking tictactoe server", error.message);
+
+      // If user is admin, check OTP session
+      if (user.isAdmin) {
+        // If no session key, send OTP
+        if (!sessionKey) {
+          // Generate session key and OTP
+          const newSessionKey = crypto.randomBytes(16).toString('hex');
+          const otpCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+          const salt = await bcrpyt.genSalt(10);
+          const hashedCode = await bcrpyt.hash(otpCode.toString(), salt);
+          const expiryTime = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+          // Save OTP with email + sessionKey as key
+          const { saveOTP } = require("../store/dataStore");
+          await saveOTP(email, newSessionKey, {
+            code: hashedCode,
+            expiryTime: expiryTime,
+            type: 'login'
+          });
+
+          // Set session key in cookie
+          res.cookie('otpSessionId', newSessionKey, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 15 * 60 * 1000, // 15 minutes
+          });
+
+          // Send OTP email
+          const html = getAdminhtml(otpCode);
+          await Email(
+            email,
+            [],
+            'Admin Login OTP',
+            '',
+            html,
+            false,
+          );
+
+          return res.status(400).json({ 
+            success: false, 
+            isAdminUser: true, 
+            requiresOTP: true,
+            error: "OTP has been sent to your email. Please verify OTP first.",
+            message: "OTP has been sent to your email"
+          });
+        }
+
+        // Session key exists, check if OTP is verified
+        const otpEntry = await getOTPByKey(email, sessionKey);
+        
+        if (!otpEntry || otpEntry.type !== 'login') {
+          return res.status(400).json({ 
+            success: false, 
+            isAdminUser: true,
+            requiresOTP: true,
+            error: "Invalid OTP session. Please request OTP again." 
+          });
+        }
+
+        if (!otpEntry.isVerified) {
+          return res.status(400).json({ 
+            success: false, 
+            isAdminUser: true,
+            requiresOTP: true,
+            error: "OTP not verified. Please verify OTP first." 
+          });
+        }
+
+        // OTP verified, proceed with login
+        const payload = {
+          user: {
+            id: user.id,
+            permissions: user.permissions,
+          },
+        };
+        const authToken = jwt.sign(payload, JWT_SCERET, {expiresIn: SESSION_EXPIRY_TIME * 60 * 60 });
+        success = true;
+
+        const securityPin = await SecurityPin.findOne({user: user.id}).select('_id isPinVerified').lean();
+        const isPinSet = securityPin ? true : false;
+        
+        // Reset pin verification status on login
+        if (isPinSet) {
+          await SecurityPin.findOneAndUpdate(
+            { user: user.id },
+            { isPinVerified: false },
+            { new: true }
+          );
+        }
+
+        res.cookie('authToken', authToken, {
+          httpOnly: true,   
+          secure: true,           
+          sameSite: 'none',
+          maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
         });
 
-      axios.get(`${process.env.C4_BOOTSTRAP_URL}/game/test`)
-        .then(response => {
-          console.log("Server status(C4) ", response.data, '\n');
-        })
-        .catch(error => {
-          console.error("Error in waking connect4 server:", error.message);
+        // Clear OTP session cookie and delete OTP entry
+        res.clearCookie('otpSessionId', {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
         });
-      
-      if(user.isAdmin && req.query.verified != 'true') {
-        return;
+        await deleteOTPByKey(email, sessionKey);
+
+        // Parallelize history and user update operations
+        await Promise.all([
+          LoginHistory.create({
+            userId: user.id,
+            name: user.name,
+            email: user.email,
+          }),
+          UserHistory.create({
+            userId: user.id,
+            action: "Logged In",
+          }),
+          User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
+        ]);
+
+        return res.json({ success, isAdminUser: user.isAdmin, permissions: user.permissions, isPinSet});
       }
-      // Parallelize history and user update operations
-      await Promise.all([
-        LoginHistory.create({
-          userId: user.id,
-          name: user.name,
-          email: user.email,
-        }),
-        UserHistory.create({
-          userId: user.id,
-          action: "Logged In",
-        }),
-        User.findByIdAndUpdate(user.id, {lastLogIn: new Date()}, {new: true})
-      ]);
     } 
     catch (err) {
       console.log("Error in logging in", err.message);
@@ -244,7 +430,6 @@ router.post("/updatePassword", decrypt,
   [
     body("id", "Enter a valid id"),
     body("email", "Enter a valid email").isEmail(),
-    body("password", "Password must be 6 characters").isLength({min : 6})
   ],
   async (req, res) => {
 
@@ -254,16 +439,109 @@ router.post("/updatePassword", decrypt,
     }
 
     try {
+      const { id, email, password } = req.body;
+      const sessionKey = getSessionIdFromCookie(req);
+
+      // If no session key, send OTP (password not required at this stage)
+      if (!sessionKey) {
+        // Verify user exists
+        const user = await User.findOne({ email: email, isActive: true }).select('_id').lean();
+        if (!user) {
+          return res.status(400).json({ 
+            success: false, 
+            error: "No user found with this email" 
+          });
+        }
+
+        // Generate session key and OTP
+        const newSessionKey = crypto.randomBytes(16).toString('hex');
+        const otpCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+        const salt = await bcrpyt.genSalt(10);
+        const hashedCode = await bcrpyt.hash(otpCode.toString(), salt);
+        const expiryTime = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        // Save OTP with email + sessionKey as key
+        const { saveOTP } = require("../store/dataStore");
+        await saveOTP(email, newSessionKey, {
+          code: hashedCode,
+          expiryTime: expiryTime,
+          type: 'forgot-password'
+        });
+
+        // Set session key in cookie
+        res.cookie('otpSessionId', newSessionKey, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        // Send OTP email
+        const html = getForgotPasshtml(otpCode);
+        await Email(
+          email,
+          [],
+          'Reset Password OTP',
+          '',
+          html,
+          false,
+        );
+
+        return res.status(400).json({ 
+          success: false, 
+          requiresOTP: true,
+          error: "OTP has been sent to your email. Please verify OTP first.",
+          message: "OTP has been sent to your email"
+        });
+      }
+
+      // Session key exists, check if OTP is verified
+      const otpEntry = await getOTPByKey(email, sessionKey);
+      
+      if (!otpEntry || otpEntry.type !== 'forgot-password') {
+        return res.status(400).json({ 
+          success: false, 
+          requiresOTP: true,
+          error: "Invalid OTP session. Please request OTP again." 
+        });
+      }
+
+      if (!otpEntry.isVerified) {
+        return res.status(400).json({ 
+          success: false, 
+          requiresOTP: true,
+          error: "OTP not verified. Please verify OTP first." 
+        });
+      }
+
+      // OTP verified, validate password is provided
+      if (!password || password.length < 6) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Password must be at least 6 characters" 
+        });
+      }
+
+      // OTP verified, proceed with password update
       const salt = await bcrpyt.genSalt(10); //for generating salt
-      secPass = await bcrpyt.hash(req.body.password, salt);
+      secPass = await bcrpyt.hash(password, salt);
 
       const newUser = {};
       newUser.password = secPass;
-      let user = await User.findByIdAndUpdate(req.body.id, {$set: newUser}, {new: true})
+      let user = await User.findByIdAndUpdate(id, {$set: newUser}, {new: true})
       await UserHistory.create({
         userId: user.id,
         action: "Password updated",
       });
+
+      // Clear OTP session cookie and delete OTP entry
+      res.clearCookie('otpSessionId', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
+      await deleteOTPByKey(email, sessionKey);
+
       let success = true;
       res.json({success, user});
     }
@@ -296,6 +574,56 @@ router.post('/updateName', fetchuser, decrypt, async (req, res) => {
   } catch (err) {
     console.log(err.message);
     return res.status(500).send("Internal Server Error!!");
+  }
+});
+
+// Change password for authenticated users (from profile page)
+router.post('/changePassword', fetchuser, decrypt, async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    // Validate password
+    if (!password) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Password is required" 
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Password must be at least 6 characters" 
+      });
+    }
+
+    // Hash the new password
+    const salt = await bcrpyt.genSalt(10);
+    const hashedPassword = await bcrpyt.hash(password, salt);
+
+    // Update user password
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { password: hashedPassword },
+      { new: true }
+    ).select('-password');
+
+    // Create history entry
+    await UserHistory.create({
+      userId: req.user.id,
+      action: "Password changed from profile",
+    });
+
+    res.json({ 
+      success: true, 
+      message: "Password updated successfully", 
+    });
+  } catch (err) {
+    console.log("Error in changePassword:", err.message);
+    return res.status(500).json({ 
+      success: false, 
+      error: "Internal Server Error" 
+    });
   }
 });
 

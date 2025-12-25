@@ -22,22 +22,82 @@ async function setLiveUsers(usersMap) {
 }
 
 
+// Legacy function - for backward compatibility with security pin and EmailController
 async function updateOTP(email, { code, expiryTime }) {
   const doc = await AppState.findById('singleton');
   if (!doc) throw new Error('AppState not initialized');
-  doc.otpManager.set(email.toString().split(".").join("").toString(), { code, expiryTime });
+  const normalizedEmail = email.toString().split(".").join("");
+  doc.otpManager.set(normalizedEmail, { 
+    code, 
+    expiryTime,
+    isVerified: false,
+    type: 'security-pin',
+    createdAt: new Date()
+  });
   await doc.save();
 }
 
+// Legacy function - for backward compatibility
 async function getOTP(email) {
   const doc = await AppState.findById('singleton').lean();
-  return doc.otpManager[email.toString().split(".").join("").toString()] || null;
+  const normalizedEmail = email.toString().split(".").join("");
+  return doc.otpManager[normalizedEmail] || null;
+}
+
+// New OTP functions for auth flows (login, signup, forgot-password)
+// Key format: email + sessionKey
+async function saveOTP(email, sessionKey, { code, expiryTime, type }) {
+  const doc = await AppState.findById('singleton');
+  if (!doc) throw new Error('AppState not initialized');
+  const normalizedEmail = email.toString().split(".").join("");
+  const key = `${normalizedEmail}::${sessionKey}`;
+  doc.otpManager.set(key, { 
+    code, 
+    expiryTime,
+    isVerified: false,
+    type: type || 'login',
+    createdAt: new Date()
+  });
+  await doc.save();
+}
+
+async function getOTPByKey(email, sessionKey) {
+  const doc = await AppState.findById('singleton').lean();
+  const normalizedEmail = email.toString().split(".").join("");
+  const key = `${normalizedEmail}::${sessionKey}`;
+  return doc.otpManager[key] || null;
+}
+
+async function verifyOTPByKey(email, sessionKey) {
+  const doc = await AppState.findById('singleton');
+  if (!doc) throw new Error('AppState not initialized');
+  const normalizedEmail = email.toString().split(".").join("");
+  const key = `${normalizedEmail}::${sessionKey}`;
+  const otpEntry = doc.otpManager.get(key);
+  if (otpEntry) {
+    otpEntry.isVerified = true;
+    doc.otpManager.set(key, otpEntry);
+    await doc.save();
+  }
+}
+
+async function deleteOTPByKey(email, sessionKey) {
+  const doc = await AppState.findById('singleton');
+  if (!doc) throw new Error('AppState not initialized');
+  const normalizedEmail = email.toString().split(".").join("");
+  const key = `${normalizedEmail}::${sessionKey}`;
+  doc.otpManager.delete(key);
+  await doc.save();
 }
 
 module.exports = {
   updateLiveUser,
   getLiveUsers,
   setLiveUsers,
-  updateOTP,
-  getOTP,
+  updateOTP, // Legacy - for security pin
+  getOTP, // Legacy - for security pin
+  saveOTP, // New - for auth flows
+  getOTPByKey, // New - for auth flows
+  verifyOTPByKey, // New - for auth flows
+  deleteOTPByKey, // New - for auth flows
 };
