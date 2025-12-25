@@ -6,7 +6,6 @@ const router = express.Router()
 const { body, validationResult } = require("express-validator"); //to validate the inputs
 const UserHistory = require('../models/UserHistory');
 const Task = require('../models/Task');
-const Folder = require('../models/Folder');
 
 const decrypt = require('../middleware/decrypt');
 const scope = 'tasks';

@@ -13,7 +13,7 @@ const SecurityPin = require("../models/SecurityPin");
 const Keys = require("../models/Keys");
 const { Email } = require("../Services/Email");
 const { getAdminNotifyhtml, getAdminhtml, getSignUphtml, getForgotPasshtml } = require("../Services/getEmailHtml");
-const { getOTPByKey, deleteOTPByKey } = require("../store/dataStore");
+const { getOTPByKey } = require("../store/dataStore");
 const crypto = require("crypto");
 const axios = require("axios");
 const JWT_SCERET = process.env.JWT_SCERET;
@@ -96,14 +96,50 @@ router.post("/createuser", decrypt,
         });
       }
 
-      // Session key exists, check if OTP is verified
+      // Session key exists, check if OTP type matches
       const otpEntry = await getOTPByKey(email, sessionKey);
       
+      // If session exists but type doesn't match, send new OTP (cookie not cleared properly)
       if (!otpEntry || otpEntry.type !== 'signup') {
+        // Generate new session key and OTP
+        const newSessionKey = crypto.randomBytes(16).toString('hex');
+        const otpCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+        const salt = await bcrpyt.genSalt(10);
+        const hashedCode = await bcrpyt.hash(otpCode.toString(), salt);
+        const expiryTime = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        // Save OTP with email + sessionKey as key
+        const { saveOTP } = require("../store/dataStore");
+        await saveOTP(email, newSessionKey, {
+          code: hashedCode,
+          expiryTime: expiryTime,
+          type: 'signup'
+        });
+
+        // Set new session key in cookie
+        res.cookie('otpSessionId', newSessionKey, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        // Send OTP email
+        const html = getSignUphtml(otpCode);
+        await Email(
+          email,
+          [],
+          'Signup Verification OTP',
+          '',
+          html,
+          false,
+        );
+
         return res.status(400).json({ 
           success: false, 
           requiresOTP: true,
-          error: "Invalid OTP session. Please request OTP again." 
+          error: "OTP has been sent to your email. Please verify OTP first.",
+          message: "OTP has been sent to your email"
         });
       }
 
@@ -161,9 +197,7 @@ router.post("/createuser", decrypt,
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-      });
-      await deleteOTPByKey(email, sessionKey);
-      
+      });      
       let html = getAdminNotifyhtml(user.name, user.email);
       Email(
         process.env.ADMIN_EMAIL,
@@ -308,15 +342,51 @@ router.post(
           });
         }
 
-        // Session key exists, check if OTP is verified
+        // Session key exists, check if OTP type matches
         const otpEntry = await getOTPByKey(email, sessionKey);
         
+        // If session exists but type doesn't match, send new OTP (cookie not cleared properly)
         if (!otpEntry || otpEntry.type !== 'login') {
+          // Generate new session key and OTP
+          const newSessionKey = crypto.randomBytes(16).toString('hex');
+          const otpCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+          const salt = await bcrpyt.genSalt(10);
+          const hashedCode = await bcrpyt.hash(otpCode.toString(), salt);
+          const expiryTime = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+          // Save OTP with email + sessionKey as key
+          const { saveOTP } = require("../store/dataStore");
+          await saveOTP(email, newSessionKey, {
+            code: hashedCode,
+            expiryTime: expiryTime,
+            type: 'login'
+          });
+
+          // Set new session key in cookie
+          res.cookie('otpSessionId', newSessionKey, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 15 * 60 * 1000, // 15 minutes
+          });
+
+          // Send OTP email
+          const html = getAdminhtml(otpCode);
+          await Email(
+            email,
+            [],
+            'Admin Login OTP',
+            '',
+            html,
+            false,
+          );
+
           return res.status(400).json({ 
             success: false, 
-            isAdminUser: true,
+            isAdminUser: true, 
             requiresOTP: true,
-            error: "Invalid OTP session. Please request OTP again." 
+            error: "OTP has been sent to your email. Please verify OTP first.",
+            message: "OTP has been sent to your email"
           });
         }
 
@@ -358,14 +428,12 @@ router.post(
           maxAge: (SESSION_EXPIRY_TIME * 2) * 60 * 60 * 1000,          
         });
 
-        // Clear OTP session cookie and delete OTP entry
+        // Clear OTP session cookie (OTP will be automatically cleaned up by MongoDB TTL)
         res.clearCookie('otpSessionId', {
           httpOnly: true,
           secure: true,
           sameSite: 'none',
         });
-        await deleteOTPByKey(email, sessionKey);
-
         // Parallelize history and user update operations
         await Promise.all([
           LoginHistory.create({
@@ -495,14 +563,59 @@ router.post("/updatePassword", decrypt,
         });
       }
 
-      // Session key exists, check if OTP is verified
+      // Session key exists, check if OTP type matches
       const otpEntry = await getOTPByKey(email, sessionKey);
       
+      // If session exists but type doesn't match, send new OTP (cookie not cleared properly)
       if (!otpEntry || otpEntry.type !== 'forgot-password') {
+        // Verify user exists
+        const user = await User.findOne({ email: email, isActive: true }).select('_id').lean();
+        if (!user) {
+          return res.status(400).json({ 
+            success: false, 
+            error: "No user found with this email" 
+          });
+        }
+
+        // Generate new session key and OTP
+        const newSessionKey = crypto.randomBytes(16).toString('hex');
+        const otpCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+        const salt = await bcrpyt.genSalt(10);
+        const hashedCode = await bcrpyt.hash(otpCode.toString(), salt);
+        const expiryTime = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        // Save OTP with email + sessionKey as key
+        const { saveOTP } = require("../store/dataStore");
+        await saveOTP(email, newSessionKey, {
+          code: hashedCode,
+          expiryTime: expiryTime,
+          type: 'forgot-password'
+        });
+
+        // Set new session key in cookie
+        res.cookie('otpSessionId', newSessionKey, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        // Send OTP email
+        const html = getForgotPasshtml(otpCode);
+        await Email(
+          email,
+          [],
+          'Reset Password OTP',
+          '',
+          html,
+          false,
+        );
+
         return res.status(400).json({ 
           success: false, 
           requiresOTP: true,
-          error: "Invalid OTP session. Please request OTP again." 
+          error: "OTP has been sent to your email. Please verify OTP first.",
+          message: "OTP has been sent to your email"
         });
       }
 
@@ -534,14 +647,12 @@ router.post("/updatePassword", decrypt,
         action: "Password updated",
       });
 
-      // Clear OTP session cookie and delete OTP entry
+      // Clear OTP session cookie (OTP will be automatically cleaned up by MongoDB TTL)
       res.clearCookie('otpSessionId', {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
       });
-      await deleteOTPByKey(email, sessionKey);
-
       let success = true;
       res.json({success, user});
     }

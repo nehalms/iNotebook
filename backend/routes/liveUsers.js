@@ -2,7 +2,7 @@ const express = require('express');
 const fetchuser = require('../middleware/fetchuser');
 const router = express.Router();
 const User = require("../models/User");
-const { updateLiveUser, getLiveUsers, setLiveUsers } = require('../store/dataStore');
+const { updateLiveUser, getLiveUsers } = require('../store/dataStore');
 
 router.get('/:deviceId', fetchuser, async (req, res) => {
     try {
@@ -38,24 +38,17 @@ router.get('/live/users', fetchuser, async (req, res) => {
         return;
     }
     try {
-        let activeLiveUsersObj = [];
-        let activeLiveUsers = {};
         let liveUsers = await getLiveUsers();
-        Object.keys(liveUsers).map((key) => {
-            let heartbeatDate = liveUsers[key].date;
-            let currDate = new Date();
-            let seconds = Math.abs(currDate - heartbeatDate) / 1000;
-            if(seconds <= 30) {
-                let obj = {
-                    id: key.split("::")[0],
-                    name: liveUsers[key].name,
-                    ip: liveUsers[key].ip,
-                }
-                activeLiveUsersObj.push(obj);
-                activeLiveUsers[key] = liveUsers[key];
-            }
+        let activeLiveUsersObj = [];
+        
+        Object.keys(liveUsers).forEach((key) => {
+            let obj = {
+                id: key.split("::")[0],
+                name: liveUsers[key].name,
+                ip: liveUsers[key].ip,
+            };
+            activeLiveUsersObj.push(obj);
         });
-        setLiveUsers(activeLiveUsers);
         res.send({status: 1, liveUsers: activeLiveUsersObj});
     } catch(err) {
         console.error(err.message);

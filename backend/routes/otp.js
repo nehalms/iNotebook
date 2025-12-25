@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrpyt = require("bcryptjs");
 const decrypt = require("../middleware/decrypt");
 const crypto = require("crypto");
-const { saveOTP, getOTPByKey, verifyOTPByKey, deleteOTPByKey } = require("../store/dataStore");
+const { saveOTP, getOTPByKey, verifyOTPByKey } = require("../store/dataStore");
 const { Email } = require("../Services/Email");
 const { getAdminhtml, getForgotPasshtml, getSignUphtml } = require("../Services/getEmailHtml");
 const User = require("../models/User");
@@ -166,7 +166,7 @@ router.post('/verifyotp', decrypt, async (req, res) => {
 
     // Check if expired
     if (Date.now() > new Date(otpEntry.expiryTime).getTime()) {
-      await deleteOTPByKey(email, sessionKey);
+      // OTP will be automatically cleaned up by MongoDB TTL
       return res.status(400).json({ 
         success: false, 
         error: "OTP has expired. Please request a new one." 
