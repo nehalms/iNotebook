@@ -42,8 +42,10 @@ router.get('/live/users', fetchuser, async (req, res) => {
         let activeLiveUsersObj = [];
         
         Object.keys(liveUsers).forEach((key) => {
+            const parts = key.split("::");
             let obj = {
-                id: key.split("::")[0],
+                id: parts[0],
+                deviceId: parts[1] || '',
                 name: liveUsers[key].name,
                 ip: liveUsers[key].ip,
             };
