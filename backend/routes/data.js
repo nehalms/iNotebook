@@ -436,28 +436,6 @@ router.put('/reactivateuser/:userId', fetchuser, async (req, res) => {
             return res.status(400).json({ success: false, error: 'User is already active' });
         }
         
-        // Check if email has appended userId (format: email__userId)
-        const emailParts = targetUser.email.split('__');
-        if(emailParts.length !== 2) {
-            return res.status(400).json({ success: false, error: 'Invalid email format. Cannot reactivate.' });
-        }
-        
-        // Remove the appended userId from email
-        const originalEmail = emailParts[0];
-        
-        // Check if original email already exists for another active user
-        const existingUser = await User.findOne({ 
-            email: originalEmail, 
-            isActive: true,
-            _id: { $ne: targetUser._id }
-        });
-        
-        if(existingUser) {
-            return res.status(400).json({ success: false, error: 'An active account with this email already exists' });
-        }
-        
-        // Reactivate user: restore original email and set isActive to true
-        targetUser.email = originalEmail;
         targetUser.isActive = true;
         await targetUser.save();
         
@@ -474,7 +452,7 @@ router.put('/reactivateuser/:userId', fetchuser, async (req, res) => {
                 const { getAccountActivatedhtml } = require('../Services/getEmailHtml');
                 const html = getAccountActivatedhtml(targetUser.name);
                 Email(
-                    originalEmail,
+                    targetUser.email,
                     [],
                     'Account Reactivated - iNotebook',
                     '',
@@ -519,17 +497,6 @@ router.put('/deactivateuser/:userId', fetchuser, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Cannot deactivate your own account' });
         }
         
-        // Check if email already has appended userId (should not happen for active users, but check anyway)
-        if(targetUser.email.includes('__')) {
-            return res.status(400).json({ success: false, error: 'Invalid email format. Cannot deactivate.' });
-        }
-        
-        // Store original email before deactivation
-        const originalEmail = targetUser.email;
-        
-        // Append userId to email and set isActive to false
-        const deactivatedEmail = `${targetUser.email}__${targetUser._id}`;
-        targetUser.email = deactivatedEmail;
         targetUser.isActive = false;
         await targetUser.save();
         
@@ -546,7 +513,7 @@ router.put('/deactivateuser/:userId', fetchuser, async (req, res) => {
                 const { getAccountDeactivatedhtml } = require('../Services/getEmailHtml');
                 const html = getAccountDeactivatedhtml(targetUser.name);
                 Email(
-                    originalEmail,
+                    targetUser.email,
                     [],
                     'Account Deactivated - iNotebook',
                     '',

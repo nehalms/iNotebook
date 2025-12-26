@@ -236,10 +236,16 @@ router.post(
       const sessionKey = getSessionIdFromCookie(req);
     try {
       // Select only needed fields for login (including name and email for LoginHistory)
-      let user = await User.findOne({ email: email, isActive: true }).select('_id password permissions isAdmin name email');
+      let user = await User.findOne({ email: email }).select('_id password permissions isAdmin name email isActive');
       if (!user) {
         success = false;
         return res.status(400).json({success, error: "Sorry no user found with this email" });
+      }
+
+      // Check if account is active
+      if (!user.isActive) {
+        success = false;
+        return res.status(403).json({success, error: "Your account has been deactivated. Please contact administrator." });
       }
 
       const passwordCompare = bcrpyt.compareSync(password, user.password);
@@ -480,10 +486,14 @@ router.post("/getPassword", decrypt,
     try{
       let found = true;
       const email = req.body.email;
-      const user = await User.findOne({email: email}).select("-password");
+      const user = await User.findOne({email: email}).select("_id isActive");
       if (!user) {
         found = false;
         return res.status(400).json({found, error: "No user found with the given mail" });
+      }
+      if (!user.isActive) {
+        found = false;
+        return res.status(400).json({found, error: "Your account has been deactivated. Please contact administrator." });
       }
       res.json({found, user})
     }
