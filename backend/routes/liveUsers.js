@@ -38,18 +38,22 @@ router.get('/live/users', fetchuser, async (req, res) => {
         return;
     }
     try {
-        let liveUsers = await getLiveUsers();
         let activeLiveUsersObj = [];
-        
-        Object.keys(liveUsers).forEach((key) => {
-            const parts = key.split("::");
-            let obj = {
-                id: parts[0],
-                deviceId: parts[1] || '',
-                name: liveUsers[key].name,
-                ip: liveUsers[key].ip,
-            };
-            activeLiveUsersObj.push(obj);
+        let liveUsers = await getLiveUsers();
+        Object.keys(liveUsers).map((key) => {
+            let heartbeatDate = liveUsers[key].date;
+            let currDate = new Date();
+            let seconds = Math.abs(currDate - heartbeatDate) / 1000;
+            if(seconds <= 30) {
+                const parts = key.split("::");
+                let obj = {
+                    id: parts[0],
+                    deviceId: parts[1] || '',
+                    name: liveUsers[key].name,
+                    ip: liveUsers[key].ip,
+                };
+                activeLiveUsersObj.push(obj);
+            }
         });
         res.send({status: 1, liveUsers: activeLiveUsersObj});
     } catch(err) {
